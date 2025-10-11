@@ -15,10 +15,10 @@ const ScheduleSection = () => {
         <div className="text-center mb-12">
           <Calendar className="w-16 h-16 mx-auto mb-4 text-primary" />
           <h2 className="text-4xl md:text-5xl font-bold mb-4">
-            Stream Schedule
+            Yayın Akışı
           </h2>
           <p className="text-muted-foreground">
-            Catch me live at these times (subject to change)
+            Beni bu saatlerde canlı yakalayabilirsin (değişebilir).
           </p>
         </div>
         
@@ -47,7 +47,7 @@ const ScheduleSection = () => {
         </div>
         
         <p className="text-center text-sm text-muted-foreground mt-8">
-          Times are approximate. Follow on social media for live notifications!
+       Saatler yaklaşık olarak verilmiştir. Canlı bildirimler için sosyal medyadan takip et!
         </p>
       </div>
     </section>
