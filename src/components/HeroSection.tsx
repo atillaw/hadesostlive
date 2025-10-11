@@ -19,12 +19,12 @@ const HeroSection = () => {
         <div className="flex items-center justify-center gap-3 mb-6">
           <div className="w-3 h-3 bg-secondary rounded-full animate-pulse" />
           <span className="text-secondary font-semibold uppercase tracking-wider text-sm">
-            Live Now
+            LİVE NOW
           </span>
         </div>
         
         <h1 className="text-6xl md:text-8xl font-bold mb-6 glow-text">
-          HadesOST
+          Hadesost
         </h1>
         
         <p className="text-xl md:text-2xl text-muted-foreground mb-8 max-w-2xl mx-auto">
@@ -34,7 +34,7 @@ const HeroSection = () => {
         <div className="flex flex-wrap gap-4 justify-center">
           <Button size="lg" className="text-lg px-8">
             <Radio className="w-5 h-5" />
-            Watch Live on Kick
+            Kick'te İzle
           </Button>
           <Button size="lg" variant="outline" className="text-lg px-8">
             <Twitch className="w-5 h-5" />
