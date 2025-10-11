@@ -20,7 +20,7 @@ const SocialSection = () => {
       name: "Kick",
       icon: Radio,
       url: "https://kick.com/hadesost",
-      description: "Watch live streams",
+      description: "Canlı Yayınları İzle",
       color: "text-green-500"
     },
     {
