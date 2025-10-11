@@ -28,7 +28,7 @@ const HeroSection = () => {
         </h1>
         
         <p className="text-xl md:text-2xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-          Gaming streams, epic music, and legendary vibes. Join the underworld's finest community.
+         Oyun yayınları, destansı müzikler ve efsanevi atmosfer. Yeraltı dünyasının en özel topluluğuna katıl!
         </p>
         
         <div className="flex flex-wrap gap-4 justify-center">
@@ -38,7 +38,7 @@ const HeroSection = () => {
           </Button>
           <Button size="lg" variant="outline" className="text-lg px-8">
             <Twitch className="w-5 h-5" />
-            Join Discord
+           Discord linki
           </Button>
         </div>
       </div>
