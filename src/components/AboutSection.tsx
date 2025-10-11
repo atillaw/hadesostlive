@@ -11,7 +11,7 @@ const AboutSection = () => {
         
         <Card className="p-8 mb-8 border-primary/20 card-glow">
           <p className="text-lg text-muted-foreground leading-relaxed">
-            Yeraltı dünyasına hoş geldiniz! Ben HadesOST, size kalbinizi hızlandıracak epik müziklerle birleşen yüksek enerjili oyun yayınları sunuyorum. 
+            Yeraltı dünyasına hoş geldiniz! Ben HadesOST, size kalbinizi hızlandıracak yüksek enerjili oyun yayınları sunuyorum. 
             İster roguelike oyunlarda grind yapıyor olun, ister yeni dünyaları keşfediyor olun ya da sadece harika müziklerle takılıyor olun, 
             burası kaliteli eğlence ve efsane bir topluluk için doğru adresiniz.
           </p>
