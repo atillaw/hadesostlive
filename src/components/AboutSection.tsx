@@ -11,10 +11,7 @@ const AboutSection = () => {
         
         <Card className="p-8 mb-8 border-primary/20 card-glow">
           <p className="text-lg text-muted-foreground leading-relaxed">
-            Welcome to the underworld! I'm HadesOST, and I bring you high-energy gaming streams 
-            combined with epic soundtracks that'll make your heart race. Whether it's grinding through 
-            roguelikes, exploring new worlds, or just vibing to incredible music, this is your destination 
-            for quality entertainment and a legendary community.
+            Yeraltı dünyasına hoş geldiniz! Ben HadesOST, size kalbinizi hızlandıracak epik müziklerle birleşen yüksek enerjili oyun yayınları sunuyorum. İster roguelike oyunlarda grind yapıyor olun, ister yeni dünyaları keşfediyor olun ya da sadece harika müziklerle takılıyor olun, burası kaliteli eğlence ve efsane bir topluluk için doğru adresiniz.
           </p>
         </Card>
         
