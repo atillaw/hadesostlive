@@ -20,7 +20,7 @@ const AboutSection = () => {
             <Gamepad2 className="w-12 h-12 mx-auto mb-4 text-primary" />
             <h3 className="text-xl font-bold mb-2">Gaming</h3>
             <p className="text-muted-foreground">
-              Roguelikes, RPGs, and everything in between
+              Roguelike’lar, RPG’ler ve aradaki her şey
             </p>
           </Card>
           
@@ -28,7 +28,7 @@ const AboutSection = () => {
             <Music className="w-12 h-12 mx-auto mb-4 text-primary" />
             <h3 className="text-xl font-bold mb-2">Music</h3>
             <p className="text-muted-foreground">
-              Epic soundtracks and original compositions
+              Yayınımıza Bekleriz
             </p>
           </Card>
           
@@ -36,7 +36,7 @@ const AboutSection = () => {
             <Users className="w-12 h-12 mx-auto mb-4 text-primary" />
             <h3 className="text-xl font-bold mb-2">Community</h3>
             <p className="text-muted-foreground">
-              Join a vibrant community of gamers and music lovers
+              Eğlenceli Yayınların Adresi
             </p>
           </Card>
         </div>
