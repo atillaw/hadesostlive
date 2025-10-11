@@ -24,9 +24,14 @@ const StreamSection = () => {
             </div>
           </Card>
           
-          <Card className="overflow-hidden border-primary/20 card-glow lg:h-[720px] h-[500px]">
-           https://kick.com/popout/hadesost/chat
-          </Card>
+        <Card className="overflow-hidden border-primary/20 card-glow lg:h-[720px] h-[500px]">
+  <iframe
+    src="https://kick.com/popout/hadesost/chat"
+    className="w-full h-full border-0"
+    allowFullScreen
+  ></iframe>
+</Card>
+
         </div>
         
         <div className="flex justify-center mt-6">
