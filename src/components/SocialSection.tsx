@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { MessageCircle, Radio, Youtube } from "lucide-react";
+import { MessageCircle, Radio, Youtube, Instagram } from "lucide-react";
 
 const SocialSection = () => {
   const socials = [
@@ -23,6 +23,20 @@ const SocialSection = () => {
       url: "https://www.youtube.com/@hadesost",
       description: "VODs & highlights",
       color: "text-red-500"
+    },
+    {
+      name: "Instagram (Skeç Kanalı)",
+      icon: Instagram,
+      url: "https://www.instagram.com/ganarekopek/",
+      description: "Sketch & comedy content",
+      color: "text-pink-500"
+    },
+    {
+      name: "Instagram (Yayın Kesitleri)",
+      icon: Instagram,
+      url: "https://www.instagram.com/hadesdenost/",
+      description: "Stream highlights & clips",
+      color: "text-pink-500"
     },
   ];
 
