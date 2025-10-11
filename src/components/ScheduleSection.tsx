@@ -3,10 +3,10 @@ import { Calendar, Clock } from "lucide-react";
 
 const ScheduleSection = () => {
   const schedule = [
-    { day: "Monday", time: "7:00 PM - 11:00 PM EST", game: "Just Chatting" },
-    { day: "Wednesday", time: "7:00 PM - 11:00 PM EST", game: "Just Chatting" },
-    { day: "Friday", time: "8:00 PM - 12:00 AM EST", game: "Just Chatting" },
-    { day: "Sunday", time: "3:00 PM - 7:00 PM EST", game: "Just Chatting" },
+    { day: "Pazartesi", time: "08:30 PM", game: "Just Chatting" },
+    { day: "Salı", time: "08:30 PM", game: "Just Chatting" },
+    { day: "Çarşamba", time: "08:30 PM", game: "Just Chatting" },
+    { day: "Perşembe", time: "08:30 PM", game: "Just Chatting" },
   ];
 
   return (
