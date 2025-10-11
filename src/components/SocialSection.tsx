@@ -27,35 +27,35 @@ const SocialSection = () => {
       name: "Discord",
       icon: MessageCircle,
       url: "https://discord.gg/FK48T8D77Y",
-      description: "Join the community",
+      description: "Discord Toplulugu",
       color: "text-indigo-500"
     },
     {
       name: "YouTube",
       icon: Youtube,
       url: "https://www.youtube.com/@hadesost",
-      description: "VODs & highlights",
+      description: "Yayın Tekrarları",
       color: "text-red-500"
     },
     {
-      name: "Instagram (Skeç Kanalı)",
+      name: "Instagram(Skeç)",
       icon: Instagram,
       url: "https://www.instagram.com/ganarekopek/",
-      description: "Sketch & comedy content",
+      description: "Skeç Komedi İçerigi",
       color: "text-pink-500"
     },
     {
-      name: "Instagram (Yayın Kesitleri)",
+      name: "Instagram(Yayın)",
       icon: Instagram,
       url: "https://www.instagram.com/hadesdenost/",
-      description: "Stream highlights & clips",
+      description: "Yayın Enleri, Klipler",
       color: "text-pink-500"
     },
     {
       name: "Reddit",
       icon: RedditIcon,
       url: "https://www.reddit.com/r/HadesostveMelekleri/",
-      description: "Community on Reddit",
+      description: "Reddit Toplulugu",
       color: "text-orange-500"
     },
   ];
