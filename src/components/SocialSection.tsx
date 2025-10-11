@@ -20,35 +20,35 @@ const SocialSection = () => {
       name: "Kick",
       icon: Radio,
       url: "https://kick.com/hadesost",
-      description: "Watch live streams",
+      description: "Canlı Yayın Kanalı",
       color: "text-green-500"
     },
     {
       name: "Discord",
       icon: MessageCircle,
       url: "https://discord.gg/FK48T8D77Y",
-      description: "Join the community",
+      description: "Discord Topluluğu",
       color: "text-indigo-500"
     },
     {
       name: "YouTube",
       icon: Youtube,
       url: "https://www.youtube.com/@hadesost",
-      description: "VODs & highlights",
+      description: "Yayın geçmişleri,Klipler",
       color: "text-red-500"
     },
     {
       name: "Instagram (Skeç Kanalı)",
       icon: Instagram,
       url: "https://www.instagram.com/ganarekopek/",
-      description: "Sketch & comedy content",
+      description: "Skeç Hesabım",
       color: "text-pink-500"
     },
     {
       name: "Instagram (Yayın Kesitleri)",
       icon: Instagram,
       url: "https://www.instagram.com/hadesdenost/",
-      description: "Stream highlights & clips",
+      description: "Yayın Ve Kesit Hesabım",
       color: "text-pink-500"
     },
     {
