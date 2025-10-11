@@ -6,7 +6,7 @@ const AboutSection = () => {
     <section className="py-20 container mx-auto px-4 bg-gradient-to-b from-transparent via-primary/5 to-transparent">
       <div className="max-w-4xl mx-auto">
         <h2 className="text-4xl md:text-5xl font-bold text-center mb-12">
-          About HadesOST
+          Hadesost Hakkında
         </h2>
         
         <Card className="p-8 mb-8 border-primary/20 card-glow">
