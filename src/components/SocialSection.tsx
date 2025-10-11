@@ -25,7 +25,7 @@ const SocialSection = () => {
     },
     {
       name: "Discord",
-      icon: MessageCircle,
+      icon: FaDiscord,
       url: "https://discord.gg/FK48T8D77Y",
       description: "Discord Toplulugu",
       color: "text-indigo-500"
