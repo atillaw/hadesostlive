@@ -38,14 +38,14 @@ const SocialSection = () => {
       color: "text-red-500"
     },
     {
-      name: "Instagram(Skeç)",
+      name: "Ganare Kopek",
       icon: Instagram,
       url: "https://www.instagram.com/ganarekopek/",
       description: "Skeç Komedi İçerigi",
       color: "text-pink-500"
     },
     {
-      name: "Instagram(Yayın)",
+      name: "Hadesdenost",
       icon: Instagram,
       url: "https://www.instagram.com/hadesdenost/",
       description: "Yayın Enleri, Klipler",
