@@ -37,7 +37,7 @@ const HeroSection = () => {
             Kick'te İzle
           </Button>
           <Button size="lg" variant="outline" className="text-lg px-8">
-            <Radio className="w-5 h-5" />
+            <MessageCircle className="w-5 h-5" />
            Discord linki
           </Button>
         </div>
