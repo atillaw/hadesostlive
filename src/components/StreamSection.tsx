@@ -25,12 +25,7 @@ const StreamSection = () => {
           </Card>
           
           <Card className="overflow-hidden border-primary/20 card-glow lg:h-[720px] h-[500px]">
-            <iframe
-              src="https://kick.com/popout/hadesost/chat"
-              className="w-full h-full"
-              frameBorder="0"
-              title="HadesOST Chat"
-            />
+           https://kick.com/popout/hadesost/chat
           </Card>
         </div>
         
