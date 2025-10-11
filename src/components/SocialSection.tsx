@@ -64,10 +64,10 @@ const SocialSection = () => {
     <section className="py-20 container mx-auto px-4">
       <div className="max-w-4xl mx-auto text-centered">
         <h2 className="text-4xl md:text-5xl font-bold mb-4">
-          Connect With Me
+          Topluluklarımıza Katılın
         </h2>
         <p className="text-muted-foreground mb-12 text-lg">
-          Follow, subscribe, and join the community across all platforms
+          Tüm platformlarda takip et, abone ol ve topluluğa katıl.
         </p>
         
         <div className="grid md:grid-cols-3 lg:grid-cols-4 gap-6">
