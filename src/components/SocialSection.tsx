@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Twitter, MessageCircle, Radio, Youtube } from "lucide-react";
+import { MessageCircle, Radio, Youtube } from "lucide-react";
 
 const SocialSection = () => {
   const socials = [
@@ -13,16 +13,9 @@ const SocialSection = () => {
     {
       name: "Discord",
       icon: MessageCircle,
-      url: "#",
+      url: "https://discord.gg/FK48T8D77Y",
       description: "Join the community",
       color: "text-indigo-500"
-    },
-    {
-      name: "Twitter",
-      icon: Twitter,
-      url: "#",
-      description: "Latest updates",
-      color: "text-blue-500"
     },
     {
       name: "YouTube",
@@ -43,7 +36,7 @@ const SocialSection = () => {
           Follow, subscribe, and join the community across all platforms
         </p>
         
-        <div className="grid md:grid-cols-2 gap-6">
+        <div className="grid md:grid-cols-3 gap-6">
           {socials.map((social) => (
             <a 
               key={social.name}

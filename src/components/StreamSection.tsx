@@ -9,27 +9,39 @@ const StreamSection = () => {
         </h2>
         
         <Card className="overflow-hidden border-primary/20 card-glow">
-          <div className="aspect-video bg-muted flex items-center justify-center">
-            {/* Replace with actual Kick embed iframe */}
+          <div className="aspect-video bg-muted">
             <iframe
               src="https://player.kick.com/hadesost"
+              height="720"
+              width="1280"
               className="w-full h-full"
-              allowFullScreen
+              frameBorder="0"
+              scrolling="no"
+              allowFullScreen={true}
               title="HadesOST Live Stream"
             />
-            {/* Fallback if embed doesn't work */}
-            <div className="absolute inset-0 flex flex-col items-center justify-center bg-card/50 backdrop-blur-sm">
-              <p className="text-muted-foreground mb-4">Stream embed will appear here</p>
-              <p className="text-sm text-muted-foreground">
-                Replace the iframe src with your actual Kick channel embed URL
-              </p>
-            </div>
           </div>
         </Card>
         
-        <p className="text-center text-muted-foreground mt-6">
-          Can't see the stream? <a href="https://kick.com/hadesost" className="text-primary hover:underline">Watch on Kick</a>
-        </p>
+        <div className="flex flex-col sm:flex-row gap-4 justify-center mt-6">
+          <a 
+            href="https://kick.com/hadesost" 
+            className="text-primary hover:underline text-center"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Watch on Kick
+          </a>
+          <span className="hidden sm:inline text-muted-foreground">•</span>
+          <a 
+            href="https://kick.com/popout/hadesost/chat" 
+            className="text-primary hover:underline text-center"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Open Chat
+          </a>
+        </div>
       </div>
     </section>
   );
