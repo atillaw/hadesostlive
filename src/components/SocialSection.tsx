@@ -20,36 +20,43 @@ const SocialSection = () => {
       name: "Kick",
       icon: Radio,
       url: "https://kick.com/hadesost",
-      description: "Canlı Yayın Kanalı",
+      description: "Watch live streams",
       color: "text-green-500"
     },
     {
       name: "Discord",
       icon: MessageCircle,
       url: "https://discord.gg/FK48T8D77Y",
-      description: "Discord Topluluğu",
+      description: "Join the community",
       color: "text-indigo-500"
     },
     {
       name: "YouTube",
       icon: Youtube,
       url: "https://www.youtube.com/@hadesost",
-      description: "Yayın geçmişleri,Klipler",
+      description: "VODs & highlights",
       color: "text-red-500"
     },
     {
-      name: "Instagram",
+      name: "Instagram (Skeç Kanalı)",
       icon: Instagram,
       url: "https://www.instagram.com/ganarekopek/",
-      description: "Skeç Hesabım",
+      description: "Sketch & comedy content",
       color: "text-pink-500"
     },
     {
-      name: "Instagram(kesit)",
+      name: "Instagram (Yayın Kesitleri)",
       icon: Instagram,
       url: "https://www.instagram.com/hadesdenost/",
-      description: "Yayın Ve Kesit Hesabım",
+      description: "Stream highlights & clips",
       color: "text-pink-500"
+    },
+    {
+      name: "Reddit",
+      icon: RedditIcon,
+      url: "https://www.reddit.com/r/HadesostveMelekleri/",
+      description: "Community on Reddit",
+      color: "text-orange-500"
     },
   ];
 
@@ -57,10 +64,10 @@ const SocialSection = () => {
     <section className="py-20 container mx-auto px-4">
       <div className="max-w-4xl mx-auto text-centered">
         <h2 className="text-4xl md:text-5xl font-bold mb-4">
-          Bize Ulaşmak İçin
+          Connect With Me
         </h2>
         <p className="text-muted-foreground mb-12 text-lg">
-         Tüm platformlarda takip et, abone ol ve topluluğa katıl.
+          Follow, subscribe, and join the community across all platforms
         </p>
         
         <div className="grid md:grid-cols-3 lg:grid-cols-4 gap-6">
