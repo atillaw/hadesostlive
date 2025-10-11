@@ -41,7 +41,7 @@ const StreamSection = () => {
             target="_blank"
             rel="noopener noreferrer"
           >
-            Watch on Kick →
+            Kick'te İzle →
           </a>
         </div>
       </div>
