@@ -38,25 +38,18 @@ const SocialSection = () => {
       color: "text-red-500"
     },
     {
-      name: "Instagram (Skeç Kanalı)",
+      name: "Instagram",
       icon: Instagram,
       url: "https://www.instagram.com/ganarekopek/",
       description: "Skeç Hesabım",
       color: "text-pink-500"
     },
     {
-      name: "Instagram (Yayın Kesitleri)",
+      name: "Instagram(kesit)",
       icon: Instagram,
       url: "https://www.instagram.com/hadesdenost/",
       description: "Yayın Ve Kesit Hesabım",
       color: "text-pink-500"
-    },
-    {
-      name: "Reddit",
-      icon: RedditIcon,
-      url: "https://www.reddit.com/r/HadesostveMelekleri/",
-      description: "Reddit Toplulugumuz",
-      color: "text-orange-500"
     },
   ];
 
