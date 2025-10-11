@@ -20,7 +20,7 @@ const SocialSection = () => {
     {
       name: "YouTube",
       icon: Youtube,
-      url: "#",
+      url: "https://www.youtube.com/@hadesost",
       description: "VODs & highlights",
       color: "text-red-500"
     },
