@@ -1,7 +1,4 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import { Resend } from "npm:resend@4.0.0";
-
-const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -28,24 +25,35 @@ const handler = async (req: Request): Promise<Response> => {
 
     console.log("Sending team application email to:", recipientEmail);
 
-    const emailResponse = await resend.emails.send({
-      from: "HadesOST Team <onboarding@resend.dev>",
-      to: [recipientEmail],
-      subject: `New Team Application from ${fullName}`,
-      html: `
-        <h1>New Team Application</h1>
-        <p><strong>Full Name:</strong> ${fullName}</p>
-        <p><strong>Age:</strong> ${age}</p>
-        <p><strong>City:</strong> ${city}</p>
-        <p><strong>Talent/Skill:</strong> ${talent}</p>
-        <p><strong>Why they want to join:</strong></p>
-        <p>${reason}</p>
-      `,
+    // Using Resend API directly
+    const resendApiKey = Deno.env.get("RESEND_API_KEY");
+    
+    const emailResponse = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${resendApiKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        from: "HadesOST Team <onboarding@resend.dev>",
+        to: [recipientEmail],
+        subject: `New Team Application from ${fullName}`,
+        html: `
+          <h1>New Team Application</h1>
+          <p><strong>Full Name:</strong> ${fullName}</p>
+          <p><strong>Age:</strong> ${age}</p>
+          <p><strong>City:</strong> ${city}</p>
+          <p><strong>Talent/Skill:</strong> ${talent}</p>
+          <p><strong>Why they want to join:</strong></p>
+          <p>${reason}</p>
+        `,
+      }),
     });
 
-    console.log("Email sent successfully:", emailResponse);
+    const data = await emailResponse.json();
+    console.log("Email sent successfully:", data);
 
-    return new Response(JSON.stringify(emailResponse), {
+    return new Response(JSON.stringify(data), {
       status: 200,
       headers: {
         "Content-Type": "application/json",
