@@ -21,7 +21,7 @@ const AboutSection = () => {
           {/* Gaming Kartı */}
           <Card className="p-6 text-center border-primary/20 hover:border-primary/40 transition-all duration-300">
             <Gamepad2 className="w-12 h-12 mx-auto mb-4 text-primary" />
-            <h3 className="text-xl font-bold mb-2">Gaming</h3>
+            <h3 className="text-xl font-bold mb-2">Oyun</h3>
             <p className="text-muted-foreground">
               Roguelike’lar, RPG’ler ve aradaki her şey
             </p>
@@ -47,7 +47,7 @@ const AboutSection = () => {
           {/* Community Kartı */}
           <Card className="p-6 text-center border-primary/20 hover:border-primary/40 transition-all duration-300">
             <Users className="w-12 h-12 mx-auto mb-4 text-primary" />
-            <h3 className="text-xl font-bold mb-2">Community</h3>
+            <h3 className="text-xl font-bold mb-2">Topluluk</h3>
             <p className="text-muted-foreground">
               Eğlenceli Yayınların Adresi
             </p>
