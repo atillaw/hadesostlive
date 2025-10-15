@@ -14,10 +14,83 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      vod_ratings: {
+        Row: {
+          created_at: string
+          id: string
+          rating: number
+          user_identifier: string
+          vod_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          rating: number
+          user_identifier: string
+          vod_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          rating?: number
+          user_identifier?: string
+          vod_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "vod_ratings_vod_id_fkey"
+            columns: ["vod_id"]
+            isOneToOne: false
+            referencedRelation: "vod_stats"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "vod_ratings_vod_id_fkey"
+            columns: ["vod_id"]
+            isOneToOne: false
+            referencedRelation: "vods"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      vods: {
+        Row: {
+          created_at: string
+          id: string
+          thumbnail_url: string | null
+          title: string
+          video_url: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          thumbnail_url?: string | null
+          title: string
+          video_url: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          thumbnail_url?: string | null
+          title?: string
+          video_url?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
-      [_ in never]: never
+      vod_stats: {
+        Row: {
+          average_rating: number | null
+          created_at: string | null
+          id: string | null
+          thumbnail_url: string | null
+          title: string | null
+          video_url: string | null
+          vote_count: number | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       [_ in never]: never
