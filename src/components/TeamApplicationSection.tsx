@@ -13,7 +13,7 @@ const TeamApplicationSection = () => {
     city: "",
     talent: "",
     reason: "",
-    recipientEmail: "team@hadesost.com", // Default, can be changed
+    recipientEmail: "hadesostbusiness@gmail.com", // Default, can be changed
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
