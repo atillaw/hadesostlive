@@ -70,12 +70,12 @@ const TeamApplicationSection = () => {
       <div className="container mx-auto max-w-2xl">
         <h2 className="text-4xl font-bold mb-4 text-center glow-text">Join Our Team</h2>
         <p className="text-muted-foreground text-center mb-8">
-          Think you have what it takes? Apply to become part of the HadesOST team!
+          Buna hazır olduğunu mu düşünüyorsun? HadesOST ekibine katılmak için başvur!
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-6 bg-card/50 backdrop-blur p-8 rounded-lg border border-border card-glow">
           <div className="space-y-2">
-            <Label htmlFor="fullName">Full Name *</Label>
+            <Label htmlFor="fullName">İsim Soyisim</Label>
             <Input
               id="fullName"
               value={formData.fullName}
@@ -87,7 +87,7 @@ const TeamApplicationSection = () => {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="age">Age *</Label>
+            <Label htmlFor="age">Yaş </Label>
             <Input
               id="age"
               type="number"
@@ -101,7 +101,7 @@ const TeamApplicationSection = () => {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="city">City *</Label>
+            <Label htmlFor="city">Şehir </Label>
             <Input
               id="city"
               value={formData.city}
@@ -113,7 +113,7 @@ const TeamApplicationSection = () => {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="talent">Talent / Skill *</Label>
+            <Label htmlFor="talent">Yetenek / Beceri </Label>
             <Input
               id="talent"
               value={formData.talent}
@@ -125,7 +125,7 @@ const TeamApplicationSection = () => {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="reason">Why do you want to join our team? *</Label>
+            <Label htmlFor="reason">Ekibimize katılmak istemenizin nedeni nedir?</Label>
             <Textarea
               id="reason"
               value={formData.reason}
