@@ -5,3 +5,9 @@ verify_jwt = false
 
 [functions.scrape-kick-vods]
 verify_jwt = false
+
+[functions.send-broadcast-email]
+verify_jwt = true
+
+[functions.create-admin-user]
+verify_jwt = true

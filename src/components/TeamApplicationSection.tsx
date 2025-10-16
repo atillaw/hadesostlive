@@ -9,6 +9,9 @@ import { supabase } from "@/integrations/supabase/client";
 const TeamApplicationSection = () => {
   const [formData, setFormData] = useState({
     fullName: "",
+    email: "",
+    instagram: "",
+    discord: "",
     age: "",
     city: "",
     talent: "",
@@ -21,10 +24,10 @@ const TeamApplicationSection = () => {
     e.preventDefault();
     
     // Validation
-    if (!formData.fullName || !formData.age || !formData.city || !formData.talent || !formData.reason) {
+    if (!formData.fullName || !formData.email || !formData.age || !formData.city || !formData.talent || !formData.reason) {
       toast({
-        title: "Missing Information",
-        description: "Please fill in all required fields.",
+        title: "Eksik Bilgi",
+        description: "Lütfen tüm zorunlu alanları doldurun.",
         variant: "destructive",
       });
       return;
@@ -40,13 +43,16 @@ const TeamApplicationSection = () => {
       if (error) throw error;
 
       toast({
-        title: "Application Sent!",
-        description: "Your team application has been submitted successfully.",
+        title: "Başvuru Gönderildi!",
+        description: "Takım başvurunuz başarıyla gönderildi.",
       });
 
       // Reset form
       setFormData({
         fullName: "",
+        email: "",
+        instagram: "",
+        discord: "",
         age: "",
         city: "",
         talent: "",
@@ -56,8 +62,8 @@ const TeamApplicationSection = () => {
     } catch (error) {
       console.error("Error submitting application:", error);
       toast({
-        title: "Submission Failed",
-        description: "There was an error submitting your application. Please try again.",
+        title: "Gönderim Başarısız",
+        description: "Başvurunuz gönderilirken bir hata oluştu. Lütfen tekrar deneyin.",
         variant: "destructive",
       });
     } finally {
@@ -75,25 +81,60 @@ const TeamApplicationSection = () => {
 
         <form onSubmit={handleSubmit} className="space-y-6 bg-card/50 backdrop-blur p-8 rounded-lg border border-border card-glow">
           <div className="space-y-2">
-            <Label htmlFor="fullName">İsim Soyisim</Label>
+            <Label htmlFor="fullName">İsim Soyisim *</Label>
             <Input
               id="fullName"
               value={formData.fullName}
               onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
-              placeholder="Your full name"
+              placeholder="Adınız ve soyadınız"
               required
               maxLength={100}
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="age">Yaş </Label>
+            <Label htmlFor="email">E-posta *</Label>
+            <Input
+              id="email"
+              type="email"
+              value={formData.email}
+              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+              placeholder="ornek@email.com"
+              required
+              maxLength={100}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="instagram">Instagram</Label>
+            <Input
+              id="instagram"
+              value={formData.instagram}
+              onChange={(e) => setFormData({ ...formData, instagram: e.target.value })}
+              placeholder="@kullaniciadi"
+              maxLength={100}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="discord">Discord</Label>
+            <Input
+              id="discord"
+              value={formData.discord}
+              onChange={(e) => setFormData({ ...formData, discord: e.target.value })}
+              placeholder="kullaniciadi#1234"
+              maxLength={100}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="age">Yaş *</Label>
             <Input
               id="age"
               type="number"
               value={formData.age}
               onChange={(e) => setFormData({ ...formData, age: e.target.value })}
-              placeholder="Your age"
+              placeholder="Yaşınız"
               required
               min="1"
               max="120"
@@ -101,36 +142,36 @@ const TeamApplicationSection = () => {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="city">Şehir </Label>
+            <Label htmlFor="city">Şehir *</Label>
             <Input
               id="city"
               value={formData.city}
               onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-              placeholder="Your city"
+              placeholder="Şehriniz"
               required
               maxLength={100}
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="talent">Yetenek / Beceri </Label>
+            <Label htmlFor="talent">Yetenek / Beceri *</Label>
             <Input
               id="talent"
               value={formData.talent}
               onChange={(e) => setFormData({ ...formData, talent: e.target.value })}
-              placeholder="e.g., Game strategy, Video editing, Community management"
+              placeholder="Örn: Oyun stratejisi, Video düzenleme, Topluluk yönetimi"
               required
               maxLength={200}
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="reason">Ekibimize katılmak istemenizin nedeni nedir?</Label>
+            <Label htmlFor="reason">Ekibimize katılmak istemenizin nedeni nedir? *</Label>
             <Textarea
               id="reason"
               value={formData.reason}
               onChange={(e) => setFormData({ ...formData, reason: e.target.value })}
-              placeholder="Tell us why you'd be a great fit for the team..."
+              placeholder="Ekip için neden harika bir seçim olacağınızı bize anlatın..."
               required
               maxLength={1000}
               rows={6}
@@ -138,7 +179,7 @@ const TeamApplicationSection = () => {
           </div>
 
           <Button type="submit" disabled={isSubmitting} className="w-full">
-            {isSubmitting ? "Submitting..." : "Submit Application"}
+            {isSubmitting ? "Gönderiliyor..." : "Başvuruyu Gönder"}
           </Button>
         </form>
       </div>

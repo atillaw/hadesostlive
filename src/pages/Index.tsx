@@ -3,9 +3,10 @@ import StreamSection from "@/components/StreamSection";
 import AboutSection from "@/components/AboutSection";
 import ScheduleSection from "@/components/ScheduleSection";
 import TeamApplicationSection from "@/components/TeamApplicationSection";
-import VODManagement from "@/components/VODManagement";
 import VODSection from "@/components/VODSection";
 import SocialSection from "@/components/SocialSection";
+import ContentIdeasSection from "@/components/ContentIdeasSection";
+import EmailSubscribeSection from "@/components/EmailSubscribeSection";
 import Footer from "@/components/Footer";
 
 const Index = () => {
@@ -15,9 +16,10 @@ const Index = () => {
       <StreamSection />
       <AboutSection />
       <ScheduleSection />
-      <TeamApplicationSection />
-      <VODManagement />
       <VODSection />
+      <ContentIdeasSection />
+      <EmailSubscribeSection />
+      <TeamApplicationSection />
       <SocialSection />
       <Footer />
     </div>
