@@ -23,6 +23,38 @@ const handler = async (req: Request): Promise<Response> => {
   try {
     const { fullName, age, city, talent, reason, recipientEmail }: TeamApplicationRequest = await req.json();
 
+    // Input validation
+    if (!fullName || fullName.length > 100) {
+      throw new Error("Geçersiz ad");
+    }
+    if (!age || age.length > 3) {
+      throw new Error("Geçersiz yaş");
+    }
+    if (!city || city.length > 100) {
+      throw new Error("Geçersiz şehir");
+    }
+    if (!talent || talent.length > 200) {
+      throw new Error("Geçersiz yetenek");
+    }
+    if (!reason || reason.length > 2000) {
+      throw new Error("Geçersiz açıklama");
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(recipientEmail)) {
+      throw new Error("Geçersiz e-posta adresi");
+    }
+
+    // Escape HTML to prevent XSS
+    const escapeHtml = (unsafe: string) => {
+      return unsafe
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    };
+
     console.log("Sending team application email to:", recipientEmail);
 
     // Using Resend API directly
@@ -40,12 +72,12 @@ const handler = async (req: Request): Promise<Response> => {
         subject: `New Team Application from ${fullName}`,
         html: `
           <h1>New Team Application</h1>
-          <p><strong>Full Name:</strong> ${fullName}</p>
-          <p><strong>Age:</strong> ${age}</p>
-          <p><strong>City:</strong> ${city}</p>
-          <p><strong>Talent/Skill:</strong> ${talent}</p>
+          <p><strong>Full Name:</strong> ${escapeHtml(fullName)}</p>
+          <p><strong>Age:</strong> ${escapeHtml(age)}</p>
+          <p><strong>City:</strong> ${escapeHtml(city)}</p>
+          <p><strong>Talent/Skill:</strong> ${escapeHtml(talent)}</p>
           <p><strong>Why they want to join:</strong></p>
-          <p>${reason}</p>
+          <p>${escapeHtml(reason)}</p>
         `,
       }),
     });
@@ -61,9 +93,9 @@ const handler = async (req: Request): Promise<Response> => {
       },
     });
   } catch (error: any) {
-    console.error("Error in send-team-application function:", error);
+    console.error("[Server Error] Team application:", error);
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ error: "Başvuru gönderilemedi" }),
       {
         status: 500,
         headers: { "Content-Type": "application/json", ...corsHeaders },

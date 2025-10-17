@@ -24,14 +24,67 @@ serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
     );
 
+    // Check authentication
+    const authHeader = req.headers.get("authorization");
+    if (!authHeader) {
+      return new Response(
+        JSON.stringify({ error: "Yetkilendirme gerekli" }),
+        { headers: { "Content-Type": "application/json", ...corsHeaders }, status: 401 }
+      );
+    }
+
+    const token = authHeader.replace("Bearer ", "");
+    const { data: { user }, error: userAuthError } = await supabaseAdmin.auth.getUser(token);
+    
+    if (userAuthError || !user) {
+      return new Response(
+        JSON.stringify({ error: "Geçersiz kimlik doğrulama" }),
+        { headers: { "Content-Type": "application/json", ...corsHeaders }, status: 401 }
+      );
+    }
+
+    // Check if user is admin
+    const { data: roleData, error: checkRoleError } = await supabaseAdmin
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", user.id)
+      .eq("role", "admin")
+      .single();
+
+    if (checkRoleError || !roleData) {
+      return new Response(
+        JSON.stringify({ error: "Yalnızca yöneticiler kullanıcı oluşturabilir" }),
+        { headers: { "Content-Type": "application/json", ...corsHeaders }, status: 403 }
+      );
+    }
+
     const { email, password, username, role }: CreateUserRequest = await req.json();
+
+    // Input validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      throw new Error("Geçersiz e-posta formatı");
+    }
+
+    if (password.length < 8) {
+      throw new Error("Şifre en az 8 karakter olmalıdır");
+    }
+
+    if (!username || username.length < 3 || username.length > 50) {
+      throw new Error("Kullanıcı adı 3-50 karakter arasında olmalıdır");
+    }
+
+    const validRoles: CreateUserRequest["role"][] = ["admin", "editor", "developer"];
+    if (!validRoles.includes(role)) {
+      throw new Error("Geçersiz rol");
+    }
 
     if (!email || !password || !username || !role) {
       throw new Error("Missing required fields");
     }
 
     // Create user in auth
-    const { data: authData, error: authError } = await supabaseAdmin.auth.admin.createUser({
+    const { data: authData, error: createAuthError } = await supabaseAdmin.auth.admin.createUser({
       email,
       password,
       email_confirm: true,
@@ -40,17 +93,17 @@ serve(async (req) => {
       },
     });
 
-    if (authError) throw authError;
+    if (createAuthError || !authData.user) throw createAuthError;
 
     // Add user role
-    const { error: roleError } = await supabaseAdmin
+    const { error: insertRoleError } = await supabaseAdmin
       .from("user_roles")
       .insert({
         user_id: authData.user.id,
         role,
       });
 
-    if (roleError) throw roleError;
+    if (insertRoleError) throw insertRoleError;
 
     return new Response(
       JSON.stringify({ 
@@ -63,9 +116,9 @@ serve(async (req) => {
       }
     );
   } catch (error: any) {
-    console.error("Create user error:", error);
+    console.error("[Server Error] Create user:", error);
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ error: "Kullanıcı oluşturma başarısız oldu" }),
       { 
         headers: { "Content-Type": "application/json", ...corsHeaders },
         status: 500,
