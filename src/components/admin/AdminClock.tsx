@@ -38,12 +38,12 @@ const AdminClock = () => {
       .from("site_settings")
       .select("value")
       .eq("key", "footer_clock")
-      .single();
+      .maybeSingle();
 
     if (error) {
       console.error("Error loading clock settings:", error);
     } else if (data) {
-      setSettings(data.value as ClockSettings);
+      setSettings(data.value as unknown as ClockSettings);
     }
     setLoading(false);
   };
@@ -55,7 +55,9 @@ const AdminClock = () => {
       .from("site_settings")
       .upsert({
         key: "footer_clock",
-        value: settings,
+        value: settings as any,
+      }, {
+        onConflict: 'key'
       });
 
     if (error) {

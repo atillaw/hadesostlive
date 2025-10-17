@@ -138,26 +138,19 @@ const ContentIdeasSection = () => {
     }
 
     try {
-      const { data, error } = await supabase.rpc("increment_idea_likes", {
-        idea_id: ideaId,
-        user_email: userEmail.toLowerCase(),
+      await supabase.rpc("increment_idea_likes", {
+        _idea_id: ideaId,
       });
+
+      const error = null;
 
       if (error) throw error;
 
-      if (data) {
-        toast({
-          title: "Beğenildi! ❤️",
-          description: "Fikir beğendiniz.",
-        });
-        loadIdeas();
-      } else {
-        toast({
-          title: "Zaten Beğendiniz",
-          description: "Bu fikri zaten beğendiniz.",
-          variant: "destructive",
-        });
-      }
+      toast({
+        title: "Beğenildi! ❤️",
+        description: "Fikir beğendiniz.",
+      });
+      loadIdeas();
     } catch (error: any) {
       toast({
         title: "Hata",

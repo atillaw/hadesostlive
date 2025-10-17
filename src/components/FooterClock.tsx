@@ -60,10 +60,10 @@ const FooterClock = () => {
       .from("site_settings")
       .select("value")
       .eq("key", "footer_clock")
-      .single();
+      .maybeSingle();
 
     if (data) {
-      setSettings(data.value as ClockSettings);
+      setSettings(data.value as unknown as ClockSettings);
     }
   };
 
