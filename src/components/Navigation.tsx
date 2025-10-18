@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Settings, Gamepad2 } from "lucide-react";
+import { Settings } from "lucide-react";
 
 const Navigation = () => {
   return (
@@ -10,20 +10,12 @@ const Navigation = () => {
           Hadesost
         </Link>
         
-        <div className="flex gap-3">
-          <Link to="/games" target="_blank">
-            <Button variant="outline" size="sm">
-              <Gamepad2 className="mr-2 h-4 w-4" />
-              Oyun İçerikleri
-            </Button>
-          </Link>
-          <Link to="/admin" target="_blank">
-            <Button variant="outline" size="sm">
-              <Settings className="mr-2 h-4 w-4" />
-              Admin Panel
-            </Button>
-          </Link>
-        </div>
+        <Link to="/admin" target="_blank">
+          <Button variant="outline" size="sm">
+            <Settings className="mr-2 h-4 w-4" />
+            Admin Panel
+          </Button>
+        </Link>
       </div>
     </nav>
   );
