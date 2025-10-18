@@ -4,9 +4,10 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { LogOut, Settings, Mail, Heart, Clock, Video, Users } from "lucide-react";
+import { LogOut, Settings, Mail, Heart, Clock, Video, Users, Timer } from "lucide-react";
 import AdminIdeas from "@/components/admin/AdminIdeas";
 import AdminClock from "@/components/admin/AdminClock";
+import AdminCountdown from "@/components/admin/AdminCountdown";
 import AdminSubscribers from "@/components/admin/AdminSubscribers";
 import AdminVODs from "@/components/admin/AdminVODs";
 import AdminUsers from "@/components/admin/AdminUsers";
@@ -100,14 +101,18 @@ const Admin = () => {
 
       <main className="container mx-auto px-4 py-8">
         <Tabs defaultValue="ideas" className="space-y-6">
-          <TabsList className="grid grid-cols-2 md:grid-cols-5 gap-2">
+          <TabsList className="grid grid-cols-2 md:grid-cols-6 gap-2">
             <TabsTrigger value="ideas">
               <Heart className="mr-2 h-4 w-4" />
               Fikirler
             </TabsTrigger>
             <TabsTrigger value="clock">
               <Clock className="mr-2 h-4 w-4" />
-              Saat Ayarları
+              Saat
+            </TabsTrigger>
+            <TabsTrigger value="countdown">
+              <Timer className="mr-2 h-4 w-4" />
+              Geri Sayım
             </TabsTrigger>
             <TabsTrigger value="subscribers">
               <Mail className="mr-2 h-4 w-4" />
@@ -131,6 +136,10 @@ const Admin = () => {
 
           <TabsContent value="clock">
             <AdminClock />
+          </TabsContent>
+
+          <TabsContent value="countdown">
+            <AdminCountdown />
           </TabsContent>
 
           <TabsContent value="subscribers">

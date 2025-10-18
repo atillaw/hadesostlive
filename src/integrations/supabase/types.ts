@@ -38,6 +38,33 @@ export type Database = {
         }
         Relationships: []
       }
+      countdown_timer: {
+        Row: {
+          created_at: string
+          enabled: boolean
+          id: string
+          label: string
+          target_date: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          enabled?: boolean
+          id?: string
+          label?: string
+          target_date: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          enabled?: boolean
+          id?: string
+          label?: string
+          target_date?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       email_subscribers: {
         Row: {
           created_at: string
