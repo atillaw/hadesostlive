@@ -93,7 +93,23 @@ serve(async (req) => {
       },
     });
 
-    if (createAuthError || !authData.user) throw createAuthError;
+    if (createAuthError) {
+      console.error("Auth creation error:", createAuthError);
+      
+      // Return specific error messages
+      if (createAuthError.message.includes("already been registered")) {
+        return new Response(
+          JSON.stringify({ error: "Bu e-posta adresi zaten kayıtlı" }),
+          { headers: { "Content-Type": "application/json", ...corsHeaders }, status: 400 }
+        );
+      }
+      
+      throw createAuthError;
+    }
+
+    if (!authData.user) {
+      throw new Error("Kullanıcı oluşturulamadı");
+    }
 
     // Add user role
     const { error: insertRoleError } = await supabaseAdmin
@@ -103,12 +119,26 @@ serve(async (req) => {
         role,
       });
 
-    if (insertRoleError) throw insertRoleError;
+    if (insertRoleError) {
+      console.error("Role insertion error:", insertRoleError);
+      
+      // If role insertion fails, we should delete the created user
+      await supabaseAdmin.auth.admin.deleteUser(authData.user.id);
+      
+      throw new Error("Kullanıcı rolü atanamadı");
+    }
+
+    console.log(`[Success] User created: ${email} with role: ${role}`);
 
     return new Response(
       JSON.stringify({ 
         success: true,
-        user: authData.user,
+        user: {
+          id: authData.user.id,
+          email: authData.user.email,
+          username,
+          role,
+        },
       }),
       { 
         headers: { "Content-Type": "application/json", ...corsHeaders },
@@ -117,8 +147,12 @@ serve(async (req) => {
     );
   } catch (error: any) {
     console.error("[Server Error] Create user:", error);
+    
+    // Return the actual error message to help with debugging
+    const errorMessage = error.message || "Kullanıcı oluşturma başarısız oldu";
+    
     return new Response(
-      JSON.stringify({ error: "Kullanıcı oluşturma başarısız oldu" }),
+      JSON.stringify({ error: errorMessage }),
       { 
         headers: { "Content-Type": "application/json", ...corsHeaders },
         status: 500,
