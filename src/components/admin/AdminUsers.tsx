@@ -77,7 +77,27 @@ const AdminUsers = () => {
         },
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error("Edge function error:", error);
+        
+        // Try to get the error message from the response
+        let errorMessage = "Kullanıcı oluşturma başarısız oldu";
+        
+        if (error.message) {
+          errorMessage = error.message;
+        }
+        
+        // Check if there's a context with more details
+        if (error.context?.error) {
+          errorMessage = error.context.error;
+        }
+        
+        throw new Error(errorMessage);
+      }
+
+      if (data?.error) {
+        throw new Error(data.error);
+      }
 
       toast({
         title: "Kullanıcı Oluşturuldu!",
@@ -90,9 +110,11 @@ const AdminUsers = () => {
       setNewRole("editor");
       loadUsers();
     } catch (error: any) {
+      console.error("Create user error:", error);
+      
       toast({
         title: "Hata",
-        description: error.message,
+        description: error.message || "Kullanıcı oluşturma başarısız oldu",
         variant: "destructive",
       });
     } finally {
