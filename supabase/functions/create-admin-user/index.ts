@@ -9,7 +9,6 @@ const corsHeaders = {
 interface CreateUserRequest {
   email: string;
   password: string;
-  username: string;
   role: "admin" | "editor" | "developer";
 }
 
@@ -58,7 +57,7 @@ serve(async (req) => {
       );
     }
 
-    const { email, password, username, role }: CreateUserRequest = await req.json();
+    const { email, password, role }: CreateUserRequest = await req.json();
 
     // Input validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -70,18 +69,17 @@ serve(async (req) => {
       throw new Error("Şifre en az 8 karakter olmalıdır");
     }
 
-    if (!username || username.length < 3 || username.length > 50) {
-      throw new Error("Kullanıcı adı 3-50 karakter arasında olmalıdır");
-    }
-
     const validRoles: CreateUserRequest["role"][] = ["admin", "editor", "developer"];
     if (!validRoles.includes(role)) {
       throw new Error("Geçersiz rol");
     }
 
-    if (!email || !password || !username || !role) {
+    if (!email || !password || !role) {
       throw new Error("Missing required fields");
     }
+
+    // Generate username from email
+    const username = email.split('@')[0];
 
     // Create user in auth
     const { data: authData, error: createAuthError } = await supabaseAdmin.auth.admin.createUser({

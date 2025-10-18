@@ -20,7 +20,6 @@ const AdminUsers = () => {
   const [loading, setLoading] = useState(true);
   const [newEmail, setNewEmail] = useState("");
   const [newPassword, setNewPassword] = useState("");
-  const [newUsername, setNewUsername] = useState("");
   const [newRole, setNewRole] = useState<"admin" | "editor" | "developer">("editor");
   const [creating, setCreating] = useState(false);
 
@@ -46,7 +45,7 @@ const AdminUsers = () => {
   const handleCreateUser = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!newEmail || !newPassword || !newUsername) {
+    if (!newEmail || !newPassword) {
       toast({
         title: "Hata",
         description: "Lütfen tüm alanları doldurun.",
@@ -72,7 +71,6 @@ const AdminUsers = () => {
         body: {
           email: newEmail,
           password: newPassword,
-          username: newUsername,
           role: newRole,
         },
       });
@@ -95,12 +93,11 @@ const AdminUsers = () => {
       if (response.data?.success) {
         toast({
           title: "Kullanıcı Oluşturuldu!",
-          description: `${newUsername} başarıyla oluşturuldu.`,
+          description: `${newEmail} başarıyla oluşturuldu.`,
         });
 
         setNewEmail("");
         setNewPassword("");
-        setNewUsername("");
         setNewRole("editor");
         loadUsers();
       } else {
@@ -132,17 +129,6 @@ const AdminUsers = () => {
         </h2>
 
         <form onSubmit={handleCreateUser} className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="username">Kullanıcı Adı</Label>
-            <Input
-              id="username"
-              value={newUsername}
-              onChange={(e) => setNewUsername(e.target.value)}
-              placeholder="kullaniciadi"
-              required
-            />
-          </div>
-
           <div className="space-y-2">
             <Label htmlFor="email">E-posta</Label>
             <Input
