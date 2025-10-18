@@ -77,35 +77,18 @@ const AdminUsers = () => {
         },
       });
 
-      console.log("Function response:", response);
+      console.log("Full function response:", response);
 
-      // Check for HTTP errors first
-      if (response.error) {
-        console.error("Edge function error:", response.error);
-        
-        // Parse the error message from the response
-        let errorMessage = "Kullanıcı oluşturma başarısız oldu";
-        
-        try {
-          // If the error is a FunctionsHttpError, check the context
-          if (response.error.context) {
-            const errorData = response.error.context;
-            if (errorData.error) {
-              errorMessage = errorData.error;
-            }
-          } else if (response.error.message) {
-            errorMessage = response.error.message;
-          }
-        } catch (parseError) {
-          console.error("Error parsing error message:", parseError);
-        }
-        
-        throw new Error(errorMessage);
+      // Check for errors - Supabase puts the response body in 'data' even for errors
+      if (response.data?.error) {
+        // This is the actual error message from the edge function
+        throw new Error(response.data.error);
       }
 
-      // Check if the response data has an error
-      if (response.data?.error) {
-        throw new Error(response.data.error);
+      // Check for network/other errors
+      if (response.error) {
+        console.error("Edge function error:", response.error);
+        throw new Error(response.error.message || "Kullanıcı oluşturma başarısız oldu");
       }
 
       // Success case
