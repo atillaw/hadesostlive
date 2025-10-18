@@ -68,7 +68,7 @@ const AdminUsers = () => {
 
     try {
       // Call edge function to create user with role
-      const { data, error } = await supabase.functions.invoke("create-admin-user", {
+      const response = await supabase.functions.invoke("create-admin-user", {
         body: {
           email: newEmail,
           password: newPassword,
@@ -77,38 +77,52 @@ const AdminUsers = () => {
         },
       });
 
-      if (error) {
-        console.error("Edge function error:", error);
+      console.log("Function response:", response);
+
+      // Check for HTTP errors first
+      if (response.error) {
+        console.error("Edge function error:", response.error);
         
-        // Try to get the error message from the response
+        // Parse the error message from the response
         let errorMessage = "Kullanıcı oluşturma başarısız oldu";
         
-        if (error.message) {
-          errorMessage = error.message;
-        }
-        
-        // Check if there's a context with more details
-        if (error.context?.error) {
-          errorMessage = error.context.error;
+        try {
+          // If the error is a FunctionsHttpError, check the context
+          if (response.error.context) {
+            const errorData = response.error.context;
+            if (errorData.error) {
+              errorMessage = errorData.error;
+            }
+          } else if (response.error.message) {
+            errorMessage = response.error.message;
+          }
+        } catch (parseError) {
+          console.error("Error parsing error message:", parseError);
         }
         
         throw new Error(errorMessage);
       }
 
-      if (data?.error) {
-        throw new Error(data.error);
+      // Check if the response data has an error
+      if (response.data?.error) {
+        throw new Error(response.data.error);
       }
 
-      toast({
-        title: "Kullanıcı Oluşturuldu!",
-        description: `${newUsername} başarıyla oluşturuldu.`,
-      });
+      // Success case
+      if (response.data?.success) {
+        toast({
+          title: "Kullanıcı Oluşturuldu!",
+          description: `${newUsername} başarıyla oluşturuldu.`,
+        });
 
-      setNewEmail("");
-      setNewPassword("");
-      setNewUsername("");
-      setNewRole("editor");
-      loadUsers();
+        setNewEmail("");
+        setNewPassword("");
+        setNewUsername("");
+        setNewRole("editor");
+        loadUsers();
+      } else {
+        throw new Error("Beklenmeyen yanıt formatı");
+      }
     } catch (error: any) {
       console.error("Create user error:", error);
       
