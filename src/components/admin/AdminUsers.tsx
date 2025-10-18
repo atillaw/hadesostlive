@@ -4,7 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { UserPlus, Shield } from "lucide-react";
+import { UserPlus, Shield, Trash2 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -22,6 +22,7 @@ const AdminUsers = () => {
   const [newPassword, setNewPassword] = useState("");
   const [newRole, setNewRole] = useState<"admin" | "editor" | "developer">("editor");
   const [creating, setCreating] = useState(false);
+  const [deleting, setDeleting] = useState<string | null>(null);
 
   useEffect(() => {
     loadUsers();
@@ -66,46 +67,39 @@ const AdminUsers = () => {
     setCreating(true);
 
     try {
-      // Call edge function to create user with role
-      let response;
-      let errorMessage = "Kullanıcı oluşturma başarısız oldu";
+      // Direct fetch to the edge function URL to bypass Supabase client issues
+      const { data: { session } } = await supabase.auth.getSession();
       
-      try {
-        response = await supabase.functions.invoke("create-admin-user", {
-          body: {
-            email: newEmail,
-            password: newPassword,
-            role: newRole,
-          },
-        });
-      } catch (invokeError: any) {
-        console.error("Invoke error:", invokeError);
-        
-        // Try to extract the actual error message from the invoke error
-        if (invokeError.context?.error) {
-          errorMessage = invokeError.context.error;
-        } else if (invokeError.message) {
-          errorMessage = invokeError.message;
+      if (!session?.access_token) {
+        throw new Error("Oturum bulunamadı");
+      }
+
+      const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/create-admin-user`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session.access_token}`,
+          'apikey': import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+        },
+        body: JSON.stringify({
+          email: newEmail,
+          password: newPassword,
+          role: newRole,
+        }),
+      });
+
+      const responseData = await response.json();
+      console.log("Direct fetch response:", { status: response.status, data: responseData });
+
+      if (!response.ok) {
+        // Handle specific error cases
+        if (responseData.error) {
+          throw new Error(responseData.error);
         }
-        
-        throw new Error(errorMessage);
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
 
-      console.log("Full function response:", response);
-
-      // Check for errors in the response data (this happens with 400/500 status codes)
-      if (response.data?.error) {
-        throw new Error(response.data.error);
-      }
-
-      // Check for network/other errors
-      if (response.error) {
-        console.error("Edge function error:", response.error);
-        throw new Error(response.error.message || "Kullanıcı oluşturma başarısız oldu");
-      }
-
-      // Success case
-      if (response.data?.success) {
+      if (responseData.success) {
         toast({
           title: "Kullanıcı Oluşturuldu!",
           description: `${newEmail} başarıyla oluşturuldu.`,
@@ -128,6 +122,49 @@ const AdminUsers = () => {
       });
     } finally {
       setCreating(false);
+    }
+  };
+
+  const handleDeleteUser = async (userId: string, userEmail: string) => {
+    if (!confirm(`${userEmail} kullanıcısını silmek istediğinizden emin misiniz?`)) {
+      return;
+    }
+
+    setDeleting(userId);
+
+    try {
+      // Delete user roles first
+      const { error: roleError } = await supabase
+        .from('user_roles')
+        .delete()
+        .eq('user_id', userId);
+
+      if (roleError) {
+        console.warn("Role deletion error:", roleError);
+      }
+
+      // Delete user profile
+      const { error: profileError } = await supabase
+        .from('profiles')
+        .delete()
+        .eq('id', userId);
+
+      if (profileError) throw profileError;
+
+      toast({
+        title: "Kullanıcı Silindi",
+        description: `${userEmail} başarıyla silindi.`,
+      });
+
+      loadUsers();
+    } catch (error: any) {
+      toast({
+        title: "Hata",
+        description: error.message || "Kullanıcı silinemedi",
+        variant: "destructive",
+      });
+    } finally {
+      setDeleting(null);
     }
   };
 
@@ -216,6 +253,21 @@ const AdminUsers = () => {
                   <p className="text-xs text-muted-foreground">
                     {new Date(user.created_at).toLocaleString("tr-TR")}
                   </p>
+                </div>
+                
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="destructive"
+                    size="icon"
+                    onClick={() => handleDeleteUser(user.id, user.email)}
+                    disabled={deleting === user.id}
+                  >
+                    {deleting === user.id ? (
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                    ) : (
+                      <Trash2 className="h-4 w-4" />
+                    )}
+                  </Button>
                 </div>
               </div>
             ))}
