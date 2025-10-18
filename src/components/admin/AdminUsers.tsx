@@ -67,19 +67,34 @@ const AdminUsers = () => {
 
     try {
       // Call edge function to create user with role
-      const response = await supabase.functions.invoke("create-admin-user", {
-        body: {
-          email: newEmail,
-          password: newPassword,
-          role: newRole,
-        },
-      });
+      let response;
+      let errorMessage = "Kullanıcı oluşturma başarısız oldu";
+      
+      try {
+        response = await supabase.functions.invoke("create-admin-user", {
+          body: {
+            email: newEmail,
+            password: newPassword,
+            role: newRole,
+          },
+        });
+      } catch (invokeError: any) {
+        console.error("Invoke error:", invokeError);
+        
+        // Try to extract the actual error message from the invoke error
+        if (invokeError.context?.error) {
+          errorMessage = invokeError.context.error;
+        } else if (invokeError.message) {
+          errorMessage = invokeError.message;
+        }
+        
+        throw new Error(errorMessage);
+      }
 
       console.log("Full function response:", response);
 
-      // Check for errors - Supabase puts the response body in 'data' even for errors
+      // Check for errors in the response data (this happens with 400/500 status codes)
       if (response.data?.error) {
-        // This is the actual error message from the edge function
         throw new Error(response.data.error);
       }
 
