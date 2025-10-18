@@ -93,46 +93,72 @@ serve(async (req) => {
 
     // Send emails using Resend API
     const responses = [];
+    const errors = [];
+    
     for (const email of recipients) {
-      const res = await fetch("https://api.resend.com/emails", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${RESEND_API_KEY}`,
-        },
-        body: JSON.stringify({
-          from: "HadesOST <onboarding@resend.dev>",
-          to: [email],
-          subject: escapeHtml(subject),
-          html: `
-            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-              <h2 style="color: #7C3AED;">${escapeHtml(subject)}</h2>
-              <div style="margin: 20px 0;">
-                ${escapeHtml(message).replace(/\n/g, "<br>")}
+      try {
+        const res = await fetch("https://api.resend.com/emails", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${RESEND_API_KEY}`,
+          },
+          body: JSON.stringify({
+            from: "HadesOST <onboarding@resend.dev>",
+            to: [email],
+            subject: escapeHtml(subject),
+            html: `
+              <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                <h2 style="color: #7C3AED;">${escapeHtml(subject)}</h2>
+                <div style="margin: 20px 0;">
+                  ${escapeHtml(message).replace(/\n/g, "<br>")}
+                </div>
+                <hr style="margin: 30px 0; border: none; border-top: 1px solid #eee;">
+                <p style="color: #666; font-size: 12px;">
+                  Bu e-postayı HadesOST'dan güncellemeler almak için abone olduğunuz için aldınız.
+                </p>
               </div>
-              <hr style="margin: 30px 0; border: none; border-top: 1px solid #eee;">
-              <p style="color: #666; font-size: 12px;">
-                Bu e-postayı HadesOST'dan güncellemeler almak için abone olduğunuz için aldınız.
-              </p>
-            </div>
-          `,
-        }),
-      });
+            `,
+          }),
+        });
 
-      responses.push(res.ok);
+        const responseData = await res.json();
+        
+        if (!res.ok) {
+          console.error(`[Resend Error] Email: ${email}, Status: ${res.status}, Response:`, responseData);
+          errors.push({ email, error: responseData });
+          responses.push(false);
+        } else {
+          console.log(`[Success] Email sent to: ${email}, ID: ${responseData.id}`);
+          responses.push(true);
+        }
+      } catch (emailError: any) {
+        console.error(`[Error] Failed to send to ${email}:`, emailError);
+        errors.push({ email, error: emailError.message });
+        responses.push(false);
+      }
     }
 
     const successCount = responses.filter(Boolean).length;
+    const failedCount = responses.length - successCount;
+
+    console.log(`[Broadcast Summary] Total: ${recipients.length}, Success: ${successCount}, Failed: ${failedCount}`);
+    
+    if (errors.length > 0) {
+      console.error(`[Failed Emails]:`, errors);
+    }
 
     return new Response(
       JSON.stringify({ 
-        success: true,
+        success: successCount > 0,
         sent: successCount,
+        failed: failedCount,
         total: recipients.length,
+        errors: errors.length > 0 ? errors : undefined,
       }),
       { 
         headers: { "Content-Type": "application/json", ...corsHeaders },
-        status: 200,
+        status: successCount > 0 ? 200 : 500,
       }
     );
   } catch (error: any) {
