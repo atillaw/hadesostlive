@@ -9,8 +9,10 @@ import { supabase } from "@/integrations/supabase/client";
 
 const Auth = () => {
   const navigate = useNavigate();
+  const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [username, setUsername] = useState("");
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -35,17 +37,38 @@ const Auth = () => {
     setLoading(true);
 
     try {
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
+      if (isLogin) {
+        const { error } = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
 
-      if (error) throw error;
+        if (error) throw error;
 
-      toast({
-        title: "Giriş Başarılı!",
-        description: "Hoş geldiniz.",
-      });
+        toast({
+          title: "Giriş Başarılı!",
+          description: "Hoş geldiniz.",
+        });
+      } else {
+        const { error } = await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            emailRedirectTo: `${window.location.origin}/`,
+            data: {
+              username: username || email.split('@')[0]
+            }
+          },
+        });
+
+        if (error) throw error;
+
+        toast({
+          title: "Kayıt Başarılı!",
+          description: "Hesabınız oluşturuldu. Giriş yapabilirsiniz.",
+        });
+        setIsLogin(true);
+      }
     } catch (error: any) {
       toast({
         title: "Hata",
@@ -61,10 +84,23 @@ const Auth = () => {
     <div className="min-h-screen flex items-center justify-center px-4 py-12">
       <Card className="w-full max-w-md p-8 bg-card/50 backdrop-blur">
         <h1 className="text-3xl font-bold mb-6 text-center glow-text">
-          Giriş Yap
+          {isLogin ? "Giriş Yap" : "Kayıt Ol"}
         </h1>
 
         <form onSubmit={handleAuth} className="space-y-4">
+          {!isLogin && (
+            <div className="space-y-2">
+              <Label htmlFor="username">Kullanıcı Adı</Label>
+              <Input
+                id="username"
+                type="text"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                placeholder="Kullanıcı adınız"
+              />
+            </div>
+          )}
+
           <div className="space-y-2">
             <Label htmlFor="email">E-posta</Label>
             <Input
@@ -91,9 +127,18 @@ const Auth = () => {
           </div>
 
           <Button type="submit" className="w-full" disabled={loading}>
-            {loading ? "İşleniyor..." : "Giriş Yap"}
+            {loading ? "İşleniyor..." : isLogin ? "Giriş Yap" : "Kayıt Ol"}
           </Button>
         </form>
+
+        <div className="mt-4 text-center">
+          <button
+            onClick={() => setIsLogin(!isLogin)}
+            className="text-sm text-primary hover:underline"
+          >
+            {isLogin ? "Hesabınız yok mu? Kayıt olun" : "Zaten hesabınız var mı? Giriş yapın"}
+          </button>
+        </div>
 
         <div className="mt-4 text-center">
           <button

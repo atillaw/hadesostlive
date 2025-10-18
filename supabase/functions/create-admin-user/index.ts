@@ -9,6 +9,7 @@ const corsHeaders = {
 interface CreateUserRequest {
   email: string;
   password: string;
+  username: string;
   role: "admin" | "editor" | "developer";
 }
 
@@ -57,7 +58,7 @@ serve(async (req) => {
       );
     }
 
-    const { email, password, role }: CreateUserRequest = await req.json();
+    const { email, password, username, role }: CreateUserRequest = await req.json();
 
     // Input validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -69,17 +70,18 @@ serve(async (req) => {
       throw new Error("Şifre en az 8 karakter olmalıdır");
     }
 
+    if (!username || username.length < 3 || username.length > 50) {
+      throw new Error("Kullanıcı adı 3-50 karakter arasında olmalıdır");
+    }
+
     const validRoles: CreateUserRequest["role"][] = ["admin", "editor", "developer"];
     if (!validRoles.includes(role)) {
       throw new Error("Geçersiz rol");
     }
 
-    if (!email || !password || !role) {
+    if (!email || !password || !username || !role) {
       throw new Error("Missing required fields");
     }
-
-    // Generate username from email
-    const username = email.split('@')[0];
 
     // Create user in auth
     const { data: authData, error: createAuthError } = await supabaseAdmin.auth.admin.createUser({
@@ -91,23 +93,7 @@ serve(async (req) => {
       },
     });
 
-    if (createAuthError) {
-      console.error("Auth creation error:", createAuthError);
-      
-      // Return specific error messages
-      if (createAuthError.message.includes("already been registered")) {
-        return new Response(
-          JSON.stringify({ error: "Bu e-posta adresi zaten kayıtlı" }),
-          { headers: { "Content-Type": "application/json", ...corsHeaders }, status: 400 }
-        );
-      }
-      
-      throw createAuthError;
-    }
-
-    if (!authData.user) {
-      throw new Error("Kullanıcı oluşturulamadı");
-    }
+    if (createAuthError || !authData.user) throw createAuthError;
 
     // Add user role
     const { error: insertRoleError } = await supabaseAdmin
@@ -117,26 +103,12 @@ serve(async (req) => {
         role,
       });
 
-    if (insertRoleError) {
-      console.error("Role insertion error:", insertRoleError);
-      
-      // If role insertion fails, we should delete the created user
-      await supabaseAdmin.auth.admin.deleteUser(authData.user.id);
-      
-      throw new Error("Kullanıcı rolü atanamadı");
-    }
-
-    console.log(`[Success] User created: ${email} with role: ${role}`);
+    if (insertRoleError) throw insertRoleError;
 
     return new Response(
       JSON.stringify({ 
         success: true,
-        user: {
-          id: authData.user.id,
-          email: authData.user.email,
-          username,
-          role,
-        },
+        user: authData.user,
       }),
       { 
         headers: { "Content-Type": "application/json", ...corsHeaders },
@@ -145,12 +117,8 @@ serve(async (req) => {
     );
   } catch (error: any) {
     console.error("[Server Error] Create user:", error);
-    
-    // Return the actual error message to help with debugging
-    const errorMessage = error.message || "Kullanıcı oluşturma başarısız oldu";
-    
     return new Response(
-      JSON.stringify({ error: errorMessage }),
+      JSON.stringify({ error: "Kullanıcı oluşturma başarısız oldu" }),
       { 
         headers: { "Content-Type": "application/json", ...corsHeaders },
         status: 500,
