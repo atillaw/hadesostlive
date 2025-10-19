@@ -10,12 +10,10 @@ const StreamSection = () => {
         
         <div className="grid lg:grid-cols-[1fr,380px] gap-4">
           <Card className="overflow-hidden border-primary/20 card-glow">
-            <div className="aspect-video bg-muted">
+            <div className="aspect-video bg-muted relative">
               <iframe
                 src="https://player.kick.com/hadesost"
-                height="720"
-                width="1280"
-                className="w-full h-full"
+                className="absolute inset-0 w-full h-full"
                 frameBorder="0"
                 scrolling="no"
                 allowFullScreen={true}
