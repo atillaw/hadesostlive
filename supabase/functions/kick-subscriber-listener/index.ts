@@ -9,6 +9,7 @@ const corsHeaders = {
 // Kick Pusher configuration
 const PUSHER_URL = "wss://ws-us2.pusher.com/app/32cbd69e4b950bf97679?protocol=7&client=js&version=8.4.0-rc2&flash=false";
 const CHANNEL_NAME = "hadesost"; // Your Kick channel name
+const CHANNEL_ID = "41050427"; // Your Kick channel ID
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -61,12 +62,12 @@ serve(async (req) => {
     kickSocket.onopen = () => {
       console.log("[Kick Listener] Connected to Kick Pusher");
       
-      // Subscribe to chatroom channel for subscription events
+      // Subscribe to channel events for subscription events
       const subscribeMessage = {
         event: "pusher:subscribe",
         data: {
           auth: "",
-          channel: `chatrooms.${chatroomId}.v2`
+          channel: `channel.${CHANNEL_ID}`
         }
       };
       

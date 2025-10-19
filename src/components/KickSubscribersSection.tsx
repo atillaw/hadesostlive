@@ -46,7 +46,7 @@ const KickSubscribersSection = () => {
       .from('kick_subscribers')
       .select('*')
       .order('subscribed_at', { ascending: false })
-      .limit(50);
+      .limit(10);
 
     if (error) {
       console.error('Error fetching subscribers:', error);
