@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Twitch, Radio } from "lucide-react";
 import heroBanner from "@/assets/hero-banner.jpg";
+import CountdownTimer from "./CountdownTimer";
 
 const HeroSection = () => {
   return (
@@ -16,6 +17,8 @@ const HeroSection = () => {
       
       {/* Content */}
       <div className="relative z-10 container mx-auto px-4 text-center">
+        <CountdownTimer />
+        
         <div className="flex items-center justify-center gap-3 mb-6">
           <div className="w-3 h-3 bg-secondary rounded-full animate-pulse" />
           <span className="text-secondary font-semibold uppercase tracking-wider text-sm">

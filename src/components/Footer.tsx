@@ -1,5 +1,4 @@
 import FooterClock from "./FooterClock";
-import CountdownTimer from "./CountdownTimer";
 
 const Footer = () => {
   return (
@@ -14,10 +13,7 @@ const Footer = () => {
               Topluluk için yapıldı, tutkuyla güçlendirildi.
             </p>
           </div>
-          <div className="flex flex-col md:flex-row items-center gap-6">
-            <CountdownTimer />
-            <FooterClock />
-          </div>
+          <FooterClock />
         </div>
       </div>
     </footer>
