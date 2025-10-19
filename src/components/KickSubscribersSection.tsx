@@ -70,9 +70,9 @@ const KickSubscribersSection = () => {
     <section className="py-20 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-12">
-          <h2 className="text-4xl font-bold mb-4 glow-text">Recent Kick Subscribers</h2>
+          <h2 className="text-4xl font-bold mb-4 glow-text">Kick Aboneler</h2>
           <div className="flex items-center justify-center gap-2 mb-4">
-            <p className="text-muted-foreground">Total Active Subscribers:</p>
+            <p className="text-muted-foreground">Aktif Uzun Süreli Aboneler</p>
             <Badge variant="secondary" className="text-lg px-4 py-1">
               {totalSubscribers}
             </Badge>
@@ -81,7 +81,7 @@ const KickSubscribersSection = () => {
 
         <Card className="bg-card/50 backdrop-blur-sm border-border/50 card-glow">
           <CardHeader>
-            <CardTitle className="text-xl">Latest Subscriptions</CardTitle>
+            <CardTitle className="text-xl">Aboneler</CardTitle>
           </CardHeader>
           <CardContent>
             {subscribers.length === 0 ? (
@@ -94,9 +94,9 @@ const KickSubscribersSection = () => {
                   <TableHeader>
                     <TableRow className="border-border/50 hover:bg-muted/30">
                       <TableHead className="text-foreground font-semibold">Username</TableHead>
-                      <TableHead className="text-foreground font-semibold">Tier</TableHead>
-                      <TableHead className="text-foreground font-semibold">Type</TableHead>
-                      <TableHead className="text-foreground font-semibold">Subscribed</TableHead>
+                      <TableHead className="text-foreground font-semibold">Seviye</TableHead>
+                      <TableHead className="text-foreground font-semibold">Şekil</TableHead>
+                      <TableHead className="text-foreground font-semibold">Abone</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
