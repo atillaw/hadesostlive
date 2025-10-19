@@ -83,7 +83,7 @@ serve(async (req) => {
       throw new Error("Missing required fields");
     }
 
-    // Create user in auth
+    // Create user in auth (or attach role if email already exists)
     const { data: authData, error: createAuthError } = await supabaseAdmin.auth.admin.createUser({
       email,
       password,
@@ -93,17 +93,42 @@ serve(async (req) => {
       },
     });
 
-    if (createAuthError || !authData.user) throw createAuthError;
+    // determine user id even if email already exists
+    let targetUserId: string | null = null;
+    if (createAuthError) {
+      const code = (createAuthError as any).code;
+      const status = (createAuthError as any).status;
+      if (code === "email_exists" || status === 422) {
+        // Try to find existing user via profiles table
+        const { data: profile, error: profileError } = await supabaseAdmin
+          .from("profiles")
+          .select("id")
+          .eq("email", email)
+          .single();
+
+        if (profileError || !profile) {
+          throw createAuthError;
+        }
+        targetUserId = profile.id as string;
+      } else {
+        throw createAuthError;
+      }
+    } else if (authData?.user) {
+      targetUserId = authData.user.id;
+    } else {
+      throw new Error("Kullanıcı oluşturulamadı");
+    }
 
     // Add user role
     const { error: insertRoleError } = await supabaseAdmin
       .from("user_roles")
       .insert({
-        user_id: authData.user.id,
+        user_id: targetUserId,
         role,
       });
 
-    if (insertRoleError) throw insertRoleError;
+    // Ignore duplicate role assignment
+    if (insertRoleError && (insertRoleError as any).code !== "23505") throw insertRoleError;
 
     return new Response(
       JSON.stringify({ 
