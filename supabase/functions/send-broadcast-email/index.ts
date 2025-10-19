@@ -50,9 +50,10 @@ serve(async (req) => {
       .select("role")
       .eq("user_id", user.id)
       .eq("role", "admin")
-      .single();
+      .maybeSingle();
 
     if (checkRoleError || !roleData) {
+      console.error("[Auth Error] Not admin:", checkRoleError);
       return new Response(
         JSON.stringify({ error: "Yalnızca yöneticiler toplu e-posta gönderebilir" }),
         { headers: { "Content-Type": "application/json", ...corsHeaders }, status: 403 }
@@ -92,43 +93,69 @@ serve(async (req) => {
     }
 
     // Send emails using Resend API
+    console.log(`Sending broadcast to ${recipients.length} recipients`);
+    
     const responses = [];
+    const errors = [];
+    
     for (const email of recipients) {
-      const res = await fetch("https://api.resend.com/emails", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${RESEND_API_KEY}`,
-        },
-        body: JSON.stringify({
-          from: "HadesOST <onboarding@resend.dev>",
-          to: [email],
-          subject: escapeHtml(subject),
-          html: `
-            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-              <h2 style="color: #7C3AED;">${escapeHtml(subject)}</h2>
-              <div style="margin: 20px 0;">
-                ${escapeHtml(message).replace(/\n/g, "<br>")}
+      try {
+        const res = await fetch("https://api.resend.com/emails", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${RESEND_API_KEY}`,
+          },
+          body: JSON.stringify({
+            from: "HadesOST <onboarding@resend.dev>",
+            to: [email],
+            subject: escapeHtml(subject),
+            html: `
+              <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                <h2 style="color: #7C3AED;">${escapeHtml(subject)}</h2>
+                <div style="margin: 20px 0;">
+                  ${escapeHtml(message).replace(/\n/g, "<br>")}
+                </div>
+                <hr style="margin: 30px 0; border: none; border-top: 1px solid #eee;">
+                <p style="color: #666; font-size: 12px;">
+                  Bu e-postayı HadesOST'dan güncellemeler almak için abone olduğunuz için aldınız.
+                </p>
               </div>
-              <hr style="margin: 30px 0; border: none; border-top: 1px solid #eee;">
-              <p style="color: #666; font-size: 12px;">
-                Bu e-postayı HadesOST'dan güncellemeler almak için abone olduğunuz için aldınız.
-              </p>
-            </div>
-          `,
-        }),
-      });
+            `,
+          }),
+        });
 
-      responses.push(res.ok);
+        if (!res.ok) {
+          const errorData = await res.json();
+          console.error(`[Resend Error] Failed to send to ${email}:`, errorData);
+          errors.push({ email, error: errorData });
+          responses.push(false);
+        } else {
+          const data = await res.json();
+          console.log(`[Resend Success] Sent to ${email}:`, data);
+          responses.push(true);
+        }
+      } catch (error: any) {
+        console.error(`[Network Error] Failed to send to ${email}:`, error);
+        errors.push({ email, error: error?.message || String(error) });
+        responses.push(false);
+      }
     }
 
     const successCount = responses.filter(Boolean).length;
+    
+    console.log(`[Broadcast Result] Sent ${successCount}/${recipients.length} emails`);
+    
+    if (errors.length > 0) {
+      console.error("[Broadcast Errors]:", errors);
+    }
 
     return new Response(
       JSON.stringify({ 
         success: true,
         sent: successCount,
         total: recipients.length,
+        errors: errors.length > 0 ? errors : undefined,
       }),
       { 
         headers: { "Content-Type": "application/json", ...corsHeaders },
@@ -138,7 +165,10 @@ serve(async (req) => {
   } catch (error: any) {
     console.error("[Server Error] Broadcast:", error);
     return new Response(
-      JSON.stringify({ error: "E-posta gönderimi başarısız oldu" }),
+      JSON.stringify({ 
+        error: error.message || "E-posta gönderimi başarısız oldu",
+        details: error.toString()
+      }),
       { 
         headers: { "Content-Type": "application/json", ...corsHeaders },
         status: 500,

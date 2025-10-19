@@ -74,7 +74,7 @@ const AdminSubscribers = () => {
     setSending(true);
 
     try {
-      const { error } = await supabase.functions.invoke("send-broadcast-email", {
+      const { data, error } = await supabase.functions.invoke("send-broadcast-email", {
         body: {
           subject,
           message,
@@ -82,19 +82,34 @@ const AdminSubscribers = () => {
         },
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error("Broadcast error:", error);
+        throw error;
+      }
 
-      toast({
-        title: "Gönderildi!",
-        description: `${activeSubscribers.length} aboneye e-posta gönderildi.`,
-      });
+      console.log("Broadcast response:", data);
+
+      // Check if there were any errors in the response
+      if (data?.errors && data.errors.length > 0) {
+        toast({
+          title: "Kısmi Başarı",
+          description: `${data.sent}/${data.total} e-posta gönderildi. Bazı hatalar oluştu.`,
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Gönderildi!",
+          description: `${data?.sent || activeSubscribers.length} aboneye e-posta gönderildi.`,
+        });
+      }
 
       setSubject("");
       setMessage("");
     } catch (error: any) {
+      console.error("Send broadcast failed:", error);
       toast({
         title: "Hata",
-        description: error.message,
+        description: error.message || "E-posta gönderilemedi. Lütfen tekrar deneyin.",
         variant: "destructive",
       });
     } finally {
