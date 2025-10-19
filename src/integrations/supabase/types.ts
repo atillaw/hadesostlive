@@ -86,6 +86,33 @@ export type Database = {
         }
         Relationships: []
       }
+      kick_subscribers: {
+        Row: {
+          created_at: string
+          id: string
+          subscribed_at: string
+          subscription_tier: string
+          subscription_type: string | null
+          username: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          subscribed_at?: string
+          subscription_tier: string
+          subscription_type?: string | null
+          username: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          subscribed_at?: string
+          subscription_tier?: string
+          subscription_type?: string | null
+          username?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string

@@ -8,6 +8,7 @@ import VODSection from "@/components/VODSection";
 import SocialSection from "@/components/SocialSection";
 import ContentIdeasSection from "@/components/ContentIdeasSection";
 import EmailSubscribeSection from "@/components/EmailSubscribeSection";
+import KickSubscribersSection from "@/components/KickSubscribersSection";
 import Footer from "@/components/Footer";
 
 const Index = () => {
@@ -19,6 +20,7 @@ const Index = () => {
       <AboutSection />
       <ScheduleSection />
       <VODSection />
+      <KickSubscribersSection />
       <ContentIdeasSection />
       <EmailSubscribeSection />
       <TeamApplicationSection />
