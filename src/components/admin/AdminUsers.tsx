@@ -4,7 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { UserPlus, Shield } from "lucide-react";
+import { UserPlus, Shield, Trash2 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -23,6 +23,7 @@ const AdminUsers = () => {
   const [newUsername, setNewUsername] = useState("");
   const [newRole, setNewRole] = useState<"admin" | "editor" | "developer">("editor");
   const [creating, setCreating] = useState(false);
+  const [deletingUserId, setDeletingUserId] = useState<string | null>(null);
 
   useEffect(() => {
     loadUsers();
@@ -97,6 +98,38 @@ const AdminUsers = () => {
       });
     } finally {
       setCreating(false);
+    }
+  };
+
+  const handleDeleteUser = async (userId: string, username: string) => {
+    if (!confirm(`${username} kullanıcısını silmek istediğinizden emin misiniz?`)) {
+      return;
+    }
+
+    setDeletingUserId(userId);
+
+    try {
+      const { error } = await supabase
+        .from("profiles")
+        .delete()
+        .eq("id", userId);
+
+      if (error) throw error;
+
+      toast({
+        title: "Kullanıcı Silindi",
+        description: `${username} başarıyla silindi.`,
+      });
+
+      loadUsers();
+    } catch (error: any) {
+      toast({
+        title: "Hata",
+        description: error.message,
+        variant: "destructive",
+      });
+    } finally {
+      setDeletingUserId(null);
     }
   };
 
@@ -197,6 +230,21 @@ const AdminUsers = () => {
                     {new Date(user.created_at).toLocaleString("tr-TR")}
                   </p>
                 </div>
+                <Button
+                  variant="destructive"
+                  size="sm"
+                  onClick={() => handleDeleteUser(user.id, user.username)}
+                  disabled={deletingUserId === user.id}
+                >
+                  {deletingUserId === user.id ? (
+                    "Siliniyor..."
+                  ) : (
+                    <>
+                      <Trash2 className="h-4 w-4 mr-1" />
+                      Sil
+                    </>
+                  )}
+                </Button>
               </div>
             ))}
           </div>
