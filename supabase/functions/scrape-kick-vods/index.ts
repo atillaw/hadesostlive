@@ -6,12 +6,9 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-const videoUrls = [
-  "https://kick.com/hadesost/videos/8cd5472b-8ef9-4dfe-bcce-5a68514c0527",
-  "https://kick.com/hadesost/videos/e123af50-93d6-4551-94db-023993d1afdc",
-  "https://kick.com/hadesost/videos/2905bf2b-fa89-4428-8196-6135874e2ae9",
-  "https://kick.com/hadesost/videos/f34708e5-2e6c-48d1-b593-34ab91cd1332",
-];
+const KICK_API_URL = "https://kick.com/api/v1/channels/hadesost/videos";
+const MIN_DURATION = 3600; // 1 hour in seconds
+const MAX_VODS = 3;
 
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
@@ -56,59 +53,77 @@ serve(async (req) => {
       });
     }
 
-    const supabase = supabaseAdmin;
+    console.log(`Fetching VODs from: ${KICK_API_URL}`);
+    
+    // Fetch VODs from Kick API
+    const response = await fetch(KICK_API_URL);
+    if (!response.ok) {
+      throw new Error(`Kick API error: ${response.status}`);
+    }
 
-    const vods = [];
+    const data = await response.json();
+    console.log(`Fetched ${data?.length || 0} total videos`);
 
-    for (const url of videoUrls) {
-      console.log(`Fetching: ${url}`);
-      const res = await fetch(url);
-      const html = await res.text();
+    if (!Array.isArray(data)) {
+      throw new Error("Invalid API response format");
+    }
 
-      const jsonMatch = html.match(/<script[^>]*id="__NEXT_DATA__"[^>]*>(.*?)<\/script>/);
-      if (!jsonMatch) {
-        continue;
-      }
+    // Filter VODs longer than 1 hour
+    const longVods = data.filter((video: any) => {
+      const duration = parseInt(video.duration) || 0;
+      return duration >= MIN_DURATION;
+    });
 
-      const json = JSON.parse(jsonMatch[1]);
-      const videoData =
-        json?.props?.pageProps?.video || json?.props?.pageProps?.videos?.[0];
+    console.log(`Found ${longVods.length} VODs longer than 1 hour`);
 
-      if (!videoData) {
-        continue;
-      }
+    // Sort by created_at descending and take top 3
+    const topVods = longVods
+      .sort((a: any, b: any) => {
+        const dateA = new Date(a.created_at).getTime();
+        const dateB = new Date(b.created_at).getTime();
+        return dateB - dateA;
+      })
+      .slice(0, MAX_VODS);
 
+    console.log(`Processing top ${topVods.length} VODs`);
+
+    const processedVods = [];
+
+    for (const video of topVods) {
       const vod = {
-        title: videoData?.title || "Untitled Stream",
-        thumbnail_url: videoData?.thumbnail?.url || videoData?.thumbnail || null,
-        video_url: url,
+        title: video.session_title || video.title || "Untitled Stream",
+        thumbnail_url: video.thumbnail?.url || video.thumbnail || null,
+        video_url: `https://kick.com/hadesost/videos/${video.uuid || video.id}`,
       };
 
-      vods.push(vod);
+      processedVods.push(vod);
 
-      // Supabase'e kaydet
-      const { data: existing } = await supabase
+      // Check if VOD already exists
+      const { data: existing } = await supabaseAdmin
         .from("vods")
         .select("id")
         .eq("video_url", vod.video_url)
         .maybeSingle();
 
       if (!existing) {
-        await supabase.from("vods").insert(vod);
+        console.log(`Inserting new VOD: ${vod.title}`);
+        await supabaseAdmin.from("vods").insert(vod);
+      } else {
+        console.log(`VOD already exists: ${vod.title}`);
       }
     }
 
     return new Response(
       JSON.stringify({
         success: true,
-        total: vods.length,
-        vods,
+        total: processedVods.length,
+        vods: processedVods,
       }),
       { headers: { "Content-Type": "application/json", ...corsHeaders } }
     );
   } catch (err: any) {
     console.error("[Server Error] VOD scrape:", err);
-    return new Response(JSON.stringify({ error: "VOD tarama başarısız oldu" }), {
+    return new Response(JSON.stringify({ error: "VOD tarama başarısız oldu", details: err.message }), {
       status: 500,
       headers: { "Content-Type": "application/json", ...corsHeaders },
     });

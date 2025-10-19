@@ -37,7 +37,8 @@ const VODSection = () => {
       const { data, error } = await supabase
         .from("vod_stats")
         .select("*")
-        .order("average_rating", { ascending: false });
+        .order("created_at", { ascending: false })
+        .limit(3);
 
       if (error) throw error;
       setVods(data || []);
@@ -165,13 +166,17 @@ const VODSection = () => {
                 key={vod.id}
                 className="bg-card/50 backdrop-blur rounded-lg border border-border overflow-hidden card-glow transition-all hover:scale-105"
               >
-                {vod.thumbnail_url && (
+                {vod.thumbnail_url ? (
                   <div className="aspect-video bg-muted overflow-hidden">
                     <img
                       src={vod.thumbnail_url}
                       alt={vod.title}
                       className="w-full h-full object-cover"
                     />
+                  </div>
+                ) : (
+                  <div className="aspect-video bg-muted flex items-center justify-center">
+                    <p className="text-muted-foreground">No thumbnail available</p>
                   </div>
                 )}
                 <div className="p-4 space-y-3">
