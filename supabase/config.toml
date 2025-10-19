@@ -17,3 +17,6 @@ verify_jwt = true
 
 [functions.sync-kick-subscribers]
 verify_jwt = true
+
+[functions.kick-subscriber-listener]
+verify_jwt = false

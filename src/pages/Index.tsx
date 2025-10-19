@@ -9,6 +9,7 @@ import SocialSection from "@/components/SocialSection";
 import ContentIdeasSection from "@/components/ContentIdeasSection";
 import EmailSubscribeSection from "@/components/EmailSubscribeSection";
 import KickSubscribersSection from "@/components/KickSubscribersSection";
+import KickLiveListener from "@/components/KickLiveListener";
 import Footer from "@/components/Footer";
 
 const Index = () => {
@@ -26,6 +27,7 @@ const Index = () => {
       <TeamApplicationSection />
       <SocialSection />
       <Footer />
+      <KickLiveListener />
     </div>
   );
 };
