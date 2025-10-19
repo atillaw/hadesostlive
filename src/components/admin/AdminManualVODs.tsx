@@ -8,60 +8,36 @@ import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 
 const AdminManualVODs = () => {
-  const [videoUrls, setVideoUrls] = useState("");
+  const [title, setTitle] = useState("");
+  const [videoUrl, setVideoUrl] = useState("");
+  const [thumbnailUrl, setThumbnailUrl] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const extractUuid = (url: string): string | null => {
-    const match = url.match(/\/videos\/([a-f0-9-]+)/);
-    return match ? match[1] : null;
-  };
-
-  const handleAddVODs = async () => {
-    if (!videoUrls.trim()) {
-      toast.error("Lütfen en az bir VOD URL'si girin");
+  const handleAddVOD = async () => {
+    if (!title.trim() || !videoUrl.trim()) {
+      toast.error("Başlık ve video URL'si zorunludur");
       return;
     }
 
     setLoading(true);
 
     try {
-      const urls = videoUrls.split('\n').filter(url => url.trim());
-      const uuids = urls.map(extractUuid).filter(Boolean) as string[];
-
-      if (uuids.length === 0) {
-        toast.error("Geçerli VOD URL'si bulunamadı");
-        return;
-      }
-
-      // Fetch metadata from Kick API
-      const { data: functionData, error: functionError } = await supabase.functions.invoke(
-        'fetch-kick-vod-metadata',
-        { body: { videoUuids: uuids } }
-      );
-
-      if (functionError) throw functionError;
-
-      if (!functionData?.success || !functionData?.vods) {
-        throw new Error("VOD metadata alınamadı");
-      }
-
-      // Insert VODs into database
-      const vodsToInsert = functionData.vods.map((vod: any) => ({
-        title: vod.title,
-        video_url: vod.video_url,
-        thumbnail_url: vod.thumbnail,
-      }));
-
       const { error: insertError } = await supabase
         .from('vods')
-        .insert(vodsToInsert);
+        .insert({
+          title: title.trim(),
+          video_url: videoUrl.trim(),
+          thumbnail_url: thumbnailUrl.trim() || null,
+        });
 
       if (insertError) throw insertError;
 
-      toast.success(`${vodsToInsert.length} VOD başarıyla eklendi`);
-      setVideoUrls("");
+      toast.success("VOD başarıyla eklendi");
+      setTitle("");
+      setVideoUrl("");
+      setThumbnailUrl("");
     } catch (error) {
-      console.error('Error adding VODs:', error);
+      console.error('Error adding VOD:', error);
       toast.error("VOD eklenirken hata oluştu");
     } finally {
       setLoading(false);
@@ -78,22 +54,37 @@ const AdminManualVODs = () => {
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="space-y-2">
-          <Label htmlFor="video-urls">VOD URL'leri (Her satıra bir URL)</Label>
-          <textarea
-            id="video-urls"
-            value={videoUrls}
-            onChange={(e) => setVideoUrls(e.target.value)}
-            placeholder="https://kick.com/hadesost/videos/..."
-            className="w-full min-h-[120px] px-3 py-2 text-sm rounded-md border border-input bg-background"
-            rows={5}
+          <Label htmlFor="title">Yayın İsmi</Label>
+          <Input
+            id="title"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            placeholder="Örn: Epic Gameplay - Part 1"
           />
-          <p className="text-sm text-muted-foreground">
-            Örnek: https://kick.com/hadesost/videos/580472d1-cf4f-4ecd-b272-580fe41cd49a
-          </p>
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="video-url">Video URL</Label>
+          <Input
+            id="video-url"
+            value={videoUrl}
+            onChange={(e) => setVideoUrl(e.target.value)}
+            placeholder="https://kick.com/hadesost/videos/..."
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="thumbnail-url">Thumbnail URL (Opsiyonel)</Label>
+          <Input
+            id="thumbnail-url"
+            value={thumbnailUrl}
+            onChange={(e) => setThumbnailUrl(e.target.value)}
+            placeholder="https://..."
+          />
         </div>
         
         <Button 
-          onClick={handleAddVODs} 
+          onClick={handleAddVOD} 
           disabled={loading}
           className="w-full"
         >
