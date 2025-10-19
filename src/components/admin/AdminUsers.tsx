@@ -109,10 +109,9 @@ const AdminUsers = () => {
     setDeletingUserId(userId);
 
     try {
-      const { error } = await supabase
-        .from("profiles")
-        .delete()
-        .eq("id", userId);
+      const { error } = await supabase.functions.invoke("delete-admin-user", {
+        body: { userId },
+      });
 
       if (error) throw error;
 
@@ -125,7 +124,7 @@ const AdminUsers = () => {
     } catch (error: any) {
       toast({
         title: "Hata",
-        description: error.message,
+        description: error.message || "Kullanıcı silinemedi",
         variant: "destructive",
       });
     } finally {
