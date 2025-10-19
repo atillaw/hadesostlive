@@ -60,7 +60,6 @@ const Admin = () => {
       setUsername(profile?.username || "Admin");
       setLoading(false);
     } catch (error) {
-      console.error("Auth check error:", error);
       navigate("/auth");
     }
   };

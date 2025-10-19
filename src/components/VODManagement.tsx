@@ -11,8 +11,6 @@ const VODManagement = () => {
     setIsScrapingVods(true);
     
     try {
-      console.log("Triggering VOD scrape...");
-      
       const { data, error } = await supabase.functions.invoke("scrape-kick-vods");
 
       if (error) throw error;
@@ -25,7 +23,6 @@ const VODManagement = () => {
       // Reload the page to show new VODs
       window.location.reload();
     } catch (error) {
-      console.error("Error scraping VODs:", error);
       toast({
         title: "Scraping Failed",
         description: "Could not fetch VODs from Kick. Please try again.",

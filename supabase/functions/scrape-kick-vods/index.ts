@@ -17,10 +17,46 @@ serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    const supabase = createClient(
+    const authHeader = req.headers.get("authorization");
+    if (!authHeader) {
+      return new Response(JSON.stringify({ error: "Yetkilendirme gerekli" }), {
+        status: 401,
+        headers: { "Content-Type": "application/json", ...corsHeaders },
+      });
+    }
+
+    const supabaseAdmin = createClient(
       Deno.env.get("SUPABASE_URL")!,
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
     );
+
+    // Verify user authentication
+    const token = authHeader.replace("Bearer ", "");
+    const { data: { user }, error: authError } = await supabaseAdmin.auth.getUser(token);
+
+    if (authError || !user) {
+      return new Response(JSON.stringify({ error: "Geçersiz kimlik doğrulama" }), {
+        status: 401,
+        headers: { "Content-Type": "application/json", ...corsHeaders },
+      });
+    }
+
+    // Check if user has admin role
+    const { data: roles } = await supabaseAdmin
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", user.id)
+      .eq("role", "admin")
+      .maybeSingle();
+
+    if (!roles) {
+      return new Response(JSON.stringify({ error: "Admin yetkisi gerekli" }), {
+        status: 403,
+        headers: { "Content-Type": "application/json", ...corsHeaders },
+      });
+    }
+
+    const supabase = supabaseAdmin;
 
     const vods = [];
 
@@ -31,7 +67,6 @@ serve(async (req) => {
 
       const jsonMatch = html.match(/<script[^>]*id="__NEXT_DATA__"[^>]*>(.*?)<\/script>/);
       if (!jsonMatch) {
-        console.warn("Next data JSON bulunamadı:", url);
         continue;
       }
 
@@ -40,7 +75,6 @@ serve(async (req) => {
         json?.props?.pageProps?.video || json?.props?.pageProps?.videos?.[0];
 
       if (!videoData) {
-        console.warn("Video verisi yok:", url);
         continue;
       }
 
@@ -50,7 +84,6 @@ serve(async (req) => {
         video_url: url,
       };
 
-      console.log("Found VOD:", vod);
       vods.push(vod);
 
       // Supabase'e kaydet
@@ -61,8 +94,7 @@ serve(async (req) => {
         .maybeSingle();
 
       if (!existing) {
-        const { error } = await supabase.from("vods").insert(vod);
-        if (error) console.error("Insert error:", error);
+        await supabase.from("vods").insert(vod);
       }
     }
 
@@ -75,8 +107,8 @@ serve(async (req) => {
       { headers: { "Content-Type": "application/json", ...corsHeaders } }
     );
   } catch (err: any) {
-    console.error("Error:", err);
-    return new Response(JSON.stringify({ error: err.message }), {
+    console.error("[Server Error] VOD scrape:", err);
+    return new Response(JSON.stringify({ error: "VOD tarama başarısız oldu" }), {
       status: 500,
       headers: { "Content-Type": "application/json", ...corsHeaders },
     });
