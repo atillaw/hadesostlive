@@ -1,5 +1,6 @@
 import VODManagement from "@/components/VODManagement";
 import AdminManualVODs from "./AdminManualVODs";
+import AdminVODList from "./AdminVODList";
 
 const AdminVODs = () => {
   return (
@@ -15,6 +16,8 @@ const AdminVODs = () => {
         <VODManagement />
         <AdminManualVODs />
       </div>
+
+      <AdminVODList />
     </div>
   );
 };
