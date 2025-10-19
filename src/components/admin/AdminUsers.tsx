@@ -37,7 +37,11 @@ const AdminUsers = () => {
       .order("created_at", { ascending: false });
 
     if (error) {
-      console.error("Error loading users:", error);
+      toast({
+        title: "Hata",
+        description: "Kullanıcılar yüklenemedi.",
+        variant: "destructive",
+      });
     } else {
       setUsers(data || []);
     }
@@ -93,7 +97,7 @@ const AdminUsers = () => {
     } catch (error: any) {
       toast({
         title: "Hata",
-        description: error.message,
+        description: "Kullanıcı oluşturulamadı.",
         variant: "destructive",
       });
     } finally {
@@ -124,7 +128,7 @@ const AdminUsers = () => {
     } catch (error: any) {
       toast({
         title: "Hata",
-        description: error.message || "Kullanıcı silinemedi",
+        description: "Kullanıcı silinemedi.",
         variant: "destructive",
       });
     } finally {

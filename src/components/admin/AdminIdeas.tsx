@@ -29,7 +29,6 @@ const AdminIdeas = () => {
       .order("likes", { ascending: false });
 
     if (error) {
-      console.error("Error loading ideas:", error);
       toast({
         title: "Hata",
         description: "Fikirler yüklenemedi.",

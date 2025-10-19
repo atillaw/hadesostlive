@@ -72,7 +72,7 @@ const Auth = () => {
     } catch (error: any) {
       toast({
         title: "Hata",
-        description: error.message,
+        description: "Giriş yapılamadı. Lütfen bilgilerinizi kontrol edin.",
         variant: "destructive",
       });
     } finally {

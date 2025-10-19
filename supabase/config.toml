@@ -7,7 +7,10 @@ verify_jwt = false
 verify_jwt = false
 
 [functions.send-broadcast-email]
-verify_jwt = false
+verify_jwt = true
 
 [functions.create-admin-user]
-verify_jwt = false
+verify_jwt = true
+
+[functions.delete-admin-user]
+verify_jwt = true

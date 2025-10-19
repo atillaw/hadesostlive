@@ -79,7 +79,7 @@ serve(async (req) => {
   } catch (error: any) {
     console.error("[Server Error] Delete user:", error);
     return new Response(
-      JSON.stringify({ error: error.message || "Kullanıcı silme başarısız oldu" }),
+      JSON.stringify({ error: "Kullanıcı silme başarısız oldu" }),
       { 
         headers: { "Content-Type": "application/json", ...corsHeaders },
         status: 500,

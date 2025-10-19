@@ -166,8 +166,7 @@ serve(async (req) => {
     console.error("[Server Error] Broadcast:", error);
     return new Response(
       JSON.stringify({ 
-        error: error.message || "E-posta gönderimi başarısız oldu",
-        details: error.toString()
+        error: "E-posta gönderimi başarısız oldu"
       }),
       { 
         headers: { "Content-Type": "application/json", ...corsHeaders },

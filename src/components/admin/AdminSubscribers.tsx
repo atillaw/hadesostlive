@@ -34,7 +34,6 @@ const AdminSubscribers = () => {
       .order("created_at", { ascending: false });
 
     if (error) {
-      console.error("Error loading subscribers:", error);
       toast({
         title: "Hata",
         description: "Aboneler yüklenemedi.",
@@ -82,12 +81,7 @@ const AdminSubscribers = () => {
         },
       });
 
-      if (error) {
-        console.error("Broadcast error:", error);
-        throw error;
-      }
-
-      console.log("Broadcast response:", data);
+      if (error) throw error;
 
       // Check if there were any errors in the response
       if (data?.errors && data.errors.length > 0) {
@@ -106,10 +100,9 @@ const AdminSubscribers = () => {
       setSubject("");
       setMessage("");
     } catch (error: any) {
-      console.error("Send broadcast failed:", error);
       toast({
         title: "Hata",
-        description: error.message || "E-posta gönderilemedi. Lütfen tekrar deneyin.",
+        description: "E-posta gönderilemedi. Lütfen tekrar deneyin.",
         variant: "destructive",
       });
     } finally {
