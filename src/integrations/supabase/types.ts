@@ -155,6 +155,74 @@ export type Database = {
         }
         Relationships: []
       }
+      support_chats: {
+        Row: {
+          admin_id: string | null
+          created_at: string
+          id: string
+          mode: string
+          status: Database["public"]["Enums"]["chat_status"]
+          updated_at: string
+          user_identifier: string
+          user_name: string | null
+        }
+        Insert: {
+          admin_id?: string | null
+          created_at?: string
+          id?: string
+          mode: string
+          status?: Database["public"]["Enums"]["chat_status"]
+          updated_at?: string
+          user_identifier: string
+          user_name?: string | null
+        }
+        Update: {
+          admin_id?: string | null
+          created_at?: string
+          id?: string
+          mode?: string
+          status?: Database["public"]["Enums"]["chat_status"]
+          updated_at?: string
+          user_identifier?: string
+          user_name?: string | null
+        }
+        Relationships: []
+      }
+      support_messages: {
+        Row: {
+          chat_id: string
+          content: string
+          created_at: string
+          id: string
+          sender_name: string | null
+          sender_type: Database["public"]["Enums"]["message_sender"]
+        }
+        Insert: {
+          chat_id: string
+          content: string
+          created_at?: string
+          id?: string
+          sender_name?: string | null
+          sender_type: Database["public"]["Enums"]["message_sender"]
+        }
+        Update: {
+          chat_id?: string
+          content?: string
+          created_at?: string
+          id?: string
+          sender_name?: string | null
+          sender_type?: Database["public"]["Enums"]["message_sender"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "support_messages_chat_id_fkey"
+            columns: ["chat_id"]
+            isOneToOne: false
+            referencedRelation: "support_chats"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -269,6 +337,8 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "editor" | "developer"
+      chat_status: "waiting" | "active" | "closed"
+      message_sender: "user" | "admin" | "ai"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -397,6 +467,8 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "editor", "developer"],
+      chat_status: ["waiting", "active", "closed"],
+      message_sender: ["user", "admin", "ai"],
     },
   },
 } as const

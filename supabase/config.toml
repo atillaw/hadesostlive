@@ -20,3 +20,9 @@ verify_jwt = true
 
 [functions.kick-subscriber-listener]
 verify_jwt = false
+
+[functions.ai-support-chat]
+verify_jwt = false
+
+[functions.send-chat-notification]
+verify_jwt = false
