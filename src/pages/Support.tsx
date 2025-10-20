@@ -49,16 +49,8 @@ const SupportPage = () => {
             </Alert>
 
             <div className="mt-6 p-6 border-2 border-dashed border-border rounded-lg bg-muted/50 min-h-[300px] flex items-center justify-center">
-              {/* =================================================================== */}
-              {/* == REKLAM BİRİMİ KODUNUZU (INS TAGI) BURAYA YAPIŞTIRIN == */}
-              {/* =================================================================== */}
-              
-              {/* Google AdSense'ten aldığınız <ins> ile başlayan reklam birimi kodunu 
-                  aşağıdaki yorum satırının yerine yapıştırın. JSX formatında olması için 
-                  style özelliğini {{ display: 'block' }} şeklinde düzenlemeyi unutmayın.
-              */}
-
-              {/* Örnek Reklam Birimi Kodu: */}
+             <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3351860625616672"
+     crossorigin="anonymous"></script>
               <ins className="adsbygoogle"
                    style={{ display: 'block' }}
                    data-ad-client="ca-pub-3351860625616672"
