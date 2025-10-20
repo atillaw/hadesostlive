@@ -25,22 +25,8 @@ const SupportPage = () => {
             </Alert>
 
             <div className="mt-6 p-6 border-2 border-dashed border-border rounded-lg bg-muted/50 min-h-[300px] flex items-center justify-center">
-              {/* =================================================================== */}
-              {/* == GOOGLE ADSENSE VEYA DİĞER REKLAM KODUNUZU BURAYA YAPIŞTIRIN == */}
-              {/* =================================================================== */}
-              
-              {/* Örnek AdSense Kodu:
-              <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX"
-                   crossorigin="anonymous"></script>
-              <ins class="adsbygoogle"
-                   style="display:block"
-                   data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
-                   data-ad-slot="XXXXXXXXXX"
-                   data-ad-format="auto"
-                   data-full-width-responsive="true"></ins>
-              <script>
-                   (adsbygoogle = window.adsbygoogle || []).push({});
-              </script>
+             <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3351860625616672"
+     crossorigin="anonymous"></script>
               */}
               
               <span className="text-muted-foreground">Reklam Alanı</span>
