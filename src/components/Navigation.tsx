@@ -11,7 +11,7 @@ const Navigation = () => {
         </Link>
         
         <div className="flex items-center gap-2">
-          <Link to="Support.tsx">
+          <Link to="/destek">
             <Button variant="outline" size="sm">
               <DollarSign className="mr-2 h-4 w-4" />
               Destek
