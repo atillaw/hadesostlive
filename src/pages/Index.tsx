@@ -10,7 +10,6 @@ import ContentIdeasSection from "@/components/ContentIdeasSection";
 import EmailSubscribeSection from "@/components/EmailSubscribeSection";
 import KickSubscribersSection from "@/components/KickSubscribersSection";
 import KickLiveListener from "@/components/KickLiveListener";
-import SupportChat from "@/components/SupportChat";
 import Footer from "@/components/Footer";
 import AIChatWidget from "@/components/AIChatWidget";
 
@@ -30,7 +29,6 @@ const Index = () => {
       <SocialSection />
       <Footer />
       <KickLiveListener />
-      <SupportChat />
       <AIChatWidget />
     </div>
   );
