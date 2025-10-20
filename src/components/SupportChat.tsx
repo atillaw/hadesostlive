@@ -61,7 +61,16 @@ const SupportChat = () => {
         (payload) => {
           const newMessage = payload.new as Message;
           if (newMessage.sender_type !== "user") {
-            setMessages((prev) => [...prev, newMessage]);
+            setMessages((prev) => {
+              const isStreaming = prev.some(m => m.id === 'streaming');
+              if (isStreaming && newMessage.sender_type === 'ai') {
+                return prev.map(m => m.id === 'streaming' ? newMessage : m);
+              }
+              if (!prev.some(m => m.id === newMessage.id)) {
+                  return [...prev, newMessage];
+              }
+              return prev;
+            });
             setIsTyping(false);
           }
         }
@@ -241,19 +250,11 @@ const SupportChat = () => {
       }
 
       if (aiResponse && chatId) {
-        const { error } = await supabase.from("support_messages").insert({
+        await supabase.from("support_messages").insert({
           chat_id: chatId,
           sender_type: "ai",
           content: aiResponse,
         });
-
-        if (!error) {
-          setMessages((prev) =>
-            prev.map((m) =>
-              m.id === "streaming" ? { ...m, id: Date.now().toString() } : m
-            )
-          );
-        }
       }
     } catch (error) {
       console.error("AI streaming error:", error);
