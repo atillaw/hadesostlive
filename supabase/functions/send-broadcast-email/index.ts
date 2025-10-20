@@ -107,19 +107,29 @@ serve(async (req) => {
             "Authorization": `Bearer ${RESEND_API_KEY}`,
           },
           body: JSON.stringify({
-            from: "HadesOST <onboarding@resend.dev>",
+            from: "HadesOST <noreply@hadesost.uk>",
             to: [email],
             subject: escapeHtml(subject),
             html: `
               <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-                <h2 style="color: #7C3AED;">${escapeHtml(subject)}</h2>
-                <div style="margin: 20px 0;">
-                  ${escapeHtml(message).replace(/\n/g, "<br>")}
+                <div style="background: linear-gradient(135deg, #7C3AED 0%, #9333EA 100%); padding: 30px; text-align: center;">
+                  <h1 style="color: white; margin: 0;">HadesOST</h1>
+                  <p style="color: rgba(255,255,255,0.9); margin: 10px 0 0 0;">hadesost.uk</p>
                 </div>
-                <hr style="margin: 30px 0; border: none; border-top: 1px solid #eee;">
-                <p style="color: #666; font-size: 12px;">
-                  Bu e-postayı HadesOST'dan güncellemeler almak için abone olduğunuz için aldınız.
-                </p>
+                <div style="padding: 30px; background: #ffffff;">
+                  <h2 style="color: #7C3AED; margin-top: 0;">${escapeHtml(subject)}</h2>
+                  <div style="margin: 20px 0; color: #333; line-height: 1.6;">
+                    ${escapeHtml(message).replace(/\n/g, "<br>")}
+                  </div>
+                </div>
+                <div style="background: #f9fafb; padding: 20px; text-align: center; border-top: 1px solid #e5e7eb;">
+                  <p style="color: #6b7280; font-size: 12px; margin: 0;">
+                    Bu e-postayı HadesOST'dan güncellemeler almak için abone olduğunuz için aldınız.
+                  </p>
+                  <p style="color: #6b7280; font-size: 12px; margin: 10px 0 0 0;">
+                    <a href="https://hadesost.uk" style="color: #7C3AED; text-decoration: none;">hadesost.uk</a>
+                  </p>
+                </div>
               </div>
             `,
           }),

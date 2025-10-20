@@ -1,19 +1,11 @@
-import { useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Info } from "lucide-react";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
+import AdSenseUnit from "@/components/AdSenseUnit";
 
 const SupportPage = () => {
-  // Bu useEffect, sayfadaki reklam biriminin yüklenmesini tetikler.
-  useEffect(() => {
-    try {
-      ((window as any).adsbygoogle = (window as any).adsbygoogle || []).push({});
-    } catch (e) {
-      console.error("AdSense reklamı yüklenemedi:", e);
-    }
-  }, []);
 
   return (
     <div className="min-h-screen flex flex-col bg-background text-foreground">
@@ -35,13 +27,10 @@ const SupportPage = () => {
             </Alert>
 
             <div className="mt-6 p-6 border-2 border-dashed border-border rounded-lg bg-muted/50 min-h-[300px] flex items-center justify-center">
-              {/* Sizin verdiğiniz AdSense Reklam Birimi Kodu */}
-              <ins className="adsbygoogle"
-                   style={{ display: 'block' }}
-                   data-ad-client="ca-pub-5625219626095075"
-                   data-ad-slot="4718266407"
-                   data-ad-format="auto"
-                   data-full-width-responsive="true"></ins>
+              <AdSenseUnit
+                client="ca-pub-5625219626095075"
+                slot="4718266407"
+              />
             </div>
           </CardContent>
         </Card>
