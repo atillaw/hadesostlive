@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Settings, DollarSign } from "lucide-react";
+import { Settings, DollarSign, ImageIcon } from "lucide-react";
 
 const Navigation = () => {
   return (
@@ -11,6 +11,12 @@ const Navigation = () => {
         </Link>
         
         <div className="flex items-center gap-2">
+          <Link to="/memeler">
+            <Button variant="outline" size="sm">
+              <ImageIcon className="mr-2 h-4 w-4" />
+              Memeler
+            </Button>
+          </Link>
           <Link to="/destek">
             <Button variant="outline" size="sm">
               <DollarSign className="mr-2 h-4 w-4" />

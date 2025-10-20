@@ -166,6 +166,39 @@ export type Database = {
         }
         Relationships: []
       }
+      meme_uploads: {
+        Row: {
+          approved_at: string | null
+          approved_by: string | null
+          created_at: string | null
+          id: string
+          image_path: string
+          status: string
+          title: string
+          user_identifier: string
+        }
+        Insert: {
+          approved_at?: string | null
+          approved_by?: string | null
+          created_at?: string | null
+          id?: string
+          image_path: string
+          status?: string
+          title: string
+          user_identifier: string
+        }
+        Update: {
+          approved_at?: string | null
+          approved_by?: string | null
+          created_at?: string | null
+          id?: string
+          image_path?: string
+          status?: string
+          title?: string
+          user_identifier?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string

@@ -7,7 +7,9 @@ import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Admin from "./pages/Admin";
 import NotFound from "./pages/NotFound";
-import SupportPage from "./pages/Support"; // Yeni sayfayı import edin
+import SupportPage from "./pages/Support";
+import Memes from "./pages/Memes";
+import UploadMeme from "./pages/UploadMeme";
 
 const queryClient = new QueryClient();
 
@@ -21,7 +23,9 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/auth" element={<Auth />} />
           <Route path="/admin" element={<Admin />} />
-          <Route path="/destek" element={<SupportPage />} /> {/* Yeni rotayı ekleyin */}
+          <Route path="/destek" element={<SupportPage />} />
+          <Route path="/memeler" element={<Memes />} />
+          <Route path="/yukle" element={<UploadMeme />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
