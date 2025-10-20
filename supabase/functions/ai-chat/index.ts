@@ -1,5 +1,4 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import "https://deno.land/x/xhr@0.1.0/mod.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -12,7 +11,12 @@ serve(async (req) => {
   }
 
   try {
-    const { messages, conversationId } = await req.json();
+    const { messages } = await req.json();
+    const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
+
+    if (!LOVABLE_API_KEY) {
+      throw new Error('LOVABLE_API_KEY is not configured');
+    }
 
     // System prompt with information about Atakan/Hadesost
     const systemPrompt = {
@@ -28,13 +32,12 @@ Always respond in Turkish in a professional, polite, and helpful tone. Keep resp
     // Prepare messages with system prompt
     const allMessages = [systemPrompt, ...messages];
 
-    // Call Lovable AI using OpenRouter
-    const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+    // Call Lovable AI Gateway
+    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
       headers: {
+        "Authorization": `Bearer ${LOVABLE_API_KEY}`,
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${Deno.env.get('OPENROUTER_API_KEY')}`,
-        "HTTP-Referer": Deno.env.get('VITE_SUPABASE_URL') || '',
       },
       body: JSON.stringify({
         model: "google/gemini-2.5-flash",
@@ -43,6 +46,20 @@ Always respond in Turkish in a professional, polite, and helpful tone. Keep resp
     });
 
     if (!response.ok) {
+      if (response.status === 429) {
+        return new Response(
+          JSON.stringify({ error: "Rate limits exceeded, please try again later." }),
+          { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+      if (response.status === 402) {
+        return new Response(
+          JSON.stringify({ error: "Payment required, please add funds to your workspace." }),
+          { status: 402, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+      const errorText = await response.text();
+      console.error('AI Gateway error:', response.status, errorText);
       throw new Error(`AI API error: ${response.status}`);
     }
 
