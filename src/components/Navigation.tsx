@@ -14,13 +14,13 @@ const Navigation = () => {
           <Link to="/memeler">
             <Button variant="outline" size="sm">
               <ImageIcon className="mr-2 h-4 w-4" />
-              Memeler
+              Meme's
             </Button>
           </Link>
           <Link to="/destek">
             <Button variant="outline" size="sm">
               <DollarSign className="mr-2 h-4 w-4" />
-              Destek
+              Destek(Bedonli adamdır)
             </Button>
           </Link>
           <Link to="/admin" target="_blank">
