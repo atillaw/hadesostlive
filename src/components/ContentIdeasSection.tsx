@@ -172,7 +172,7 @@ const ContentIdeasSection = () => {
           </p>
         </div>
 
-        <Card className="p-6 md:p-8 mb-10 bg-card/50 backdrop-blur-sm border-primary/30 card-glow animate-slide-up" style={{ animationDelay: '0.1s' }}>
+        <Card className="snow-accent p-6 md:p-8 mb-10 bg-card/50 backdrop-blur-sm border-primary/30 card-glow animate-slide-up" style={{ animationDelay: '0.1s' }}>
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="space-y-2">
               <Label htmlFor="email" className="text-base">E-posta Adresiniz</Label>
