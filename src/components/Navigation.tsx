@@ -1,10 +1,10 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Settings, DollarSign, ImageIcon, Video, MessageCircle, Menu, X } from "lucide-react";
-import { useState } from "react";
+import { Settings, DollarSign, ImageIcon, Video, MessageCircle, Menu, X, Snowflake } from "lucide-react";
+import { useState, useEffect } from "react";
 import { useIsMobile } from "@/hooks/use-mobile";
 
-const Navigation = () => {
+const Navigation = ({ onSnowToggle, snowEnabled }: { onSnowToggle?: () => void; snowEnabled?: boolean }) => {
   const [isOpen, setIsOpen] = useState(false);
   const isMobile = useIsMobile();
 
@@ -31,6 +31,17 @@ const Navigation = () => {
           {/* Desktop Navigation */}
           {!isMobile && (
             <div className="flex items-center gap-2">
+              {onSnowToggle && (
+                <Button
+                  variant={snowEnabled ? "default" : "outline"}
+                  size="sm"
+                  onClick={onSnowToggle}
+                  className="hover:scale-105 transition-transform"
+                  title={snowEnabled ? "Karı Kapat" : "Karı Aç"}
+                >
+                  <Snowflake className={`h-4 w-4 ${snowEnabled ? 'animate-spin' : ''}`} style={{ animationDuration: '3s' }} />
+                </Button>
+              )}
               {navLinks.map((link) => (
                 <Link key={link.to} to={link.to} target={link.target}>
                   <Button 
