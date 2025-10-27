@@ -14,6 +14,36 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_logs: {
+        Row: {
+          action: string
+          created_at: string
+          details: Json | null
+          id: string
+          record_id: string | null
+          table_name: string
+          user_id: string
+        }
+        Insert: {
+          action: string
+          created_at?: string
+          details?: Json | null
+          id?: string
+          record_id?: string | null
+          table_name: string
+          user_id: string
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          details?: Json | null
+          id?: string
+          record_id?: string | null
+          table_name?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       ai_chat_conversations: {
         Row: {
           created_at: string
@@ -66,6 +96,42 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      clips: {
+        Row: {
+          approved_at: string | null
+          approved_by: string | null
+          category: Database["public"]["Enums"]["clip_category"]
+          created_at: string
+          file_path: string
+          id: string
+          status: string
+          title: string
+          user_identifier: string
+        }
+        Insert: {
+          approved_at?: string | null
+          approved_by?: string | null
+          category?: Database["public"]["Enums"]["clip_category"]
+          created_at?: string
+          file_path: string
+          id?: string
+          status?: string
+          title: string
+          user_identifier: string
+        }
+        Update: {
+          approved_at?: string | null
+          approved_by?: string | null
+          category?: Database["public"]["Enums"]["clip_category"]
+          created_at?: string
+          file_path?: string
+          id?: string
+          status?: string
+          title?: string
+          user_identifier?: string
+        }
+        Relationships: []
       }
       content_ideas: {
         Row: {
@@ -416,14 +482,12 @@ export type Database = {
         }
         Returns: boolean
       }
-      increment_idea_likes: {
-        Args: { _idea_id: string }
-        Returns: undefined
-      }
+      increment_idea_likes: { Args: { _idea_id: string }; Returns: undefined }
     }
     Enums: {
       app_role: "admin" | "editor" | "developer"
       chat_status: "waiting" | "active" | "closed"
+      clip_category: "gameplay" | "funny" | "music" | "other"
       message_sender: "user" | "admin" | "ai"
     }
     CompositeTypes: {
@@ -554,6 +618,7 @@ export const Constants = {
     Enums: {
       app_role: ["admin", "editor", "developer"],
       chat_status: ["waiting", "active", "closed"],
+      clip_category: ["gameplay", "funny", "music", "other"],
       message_sender: ["user", "admin", "ai"],
     },
   },

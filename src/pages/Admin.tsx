@@ -10,7 +10,7 @@ import { toast } from "@/hooks/use-toast";
 
 import { supabase } from "@/integrations/supabase/client";
 
-import { LogOut, Settings, Mail, Heart, Clock, Video, Users, Timer, TrendingUp, MessageCircle, Megaphone, ImageIcon } from "lucide-react";
+import { LogOut, Settings, Mail, Heart, Clock, Video, Users, Timer, TrendingUp, MessageCircle, Megaphone, ImageIcon, Film, ScrollText } from "lucide-react";
 
 import AdminIdeas from "@/components/admin/AdminIdeas";
 
@@ -31,6 +31,8 @@ import AdminSupportChats from "@/components/admin/AdminSupportChats";
 import AdminAdSense from "@/components/admin/AdminAdSense";
 
 import AdminMemes from "@/components/admin/AdminMemes";
+import AdminClips from "@/components/admin/AdminClips";
+import AdminLogs from "@/components/admin/AdminLogs";
 
 
 
@@ -210,7 +212,7 @@ const Admin = () => {
 
         <Tabs defaultValue="ideas" className="space-y-6">
 
-          <TabsList className="grid grid-cols-2 md:grid-cols-10 gap-2">
+          <TabsList className="grid grid-cols-2 md:grid-cols-11 gap-2">
 
             <TabsTrigger value="ideas">
 
@@ -281,6 +283,22 @@ const Admin = () => {
               <ImageIcon className="mr-2 h-4 w-4" />
 
               Memeler
+
+            </TabsTrigger>
+
+            <TabsTrigger value="clips">
+
+              <Film className="mr-2 h-4 w-4" />
+
+              Klipler
+
+            </TabsTrigger>
+
+            <TabsTrigger value="logs">
+
+              <ScrollText className="mr-2 h-4 w-4" />
+
+              Loglar
 
             </TabsTrigger>
 
@@ -367,6 +385,22 @@ const Admin = () => {
           <TabsContent value="memes">
 
             <AdminMemes />
+
+          </TabsContent>
+
+
+
+          <TabsContent value="clips">
+
+            <AdminClips />
+
+          </TabsContent>
+
+
+
+          <TabsContent value="logs">
+
+            <AdminLogs />
 
           </TabsContent>
 

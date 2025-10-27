@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Settings, DollarSign, ImageIcon } from "lucide-react";
+import { Settings, DollarSign, ImageIcon, Video } from "lucide-react";
 
 const Navigation = () => {
   return (
@@ -15,6 +15,12 @@ const Navigation = () => {
             <Button variant="outline" size="sm">
               <ImageIcon className="mr-2 h-4 w-4" />
               Meme's
+            </Button>
+          </Link>
+          <Link to="/klipler">
+            <Button variant="outline" size="sm">
+              <Video className="mr-2 h-4 w-4" />
+              Klipler
             </Button>
           </Link>
           <Link to="/destek">

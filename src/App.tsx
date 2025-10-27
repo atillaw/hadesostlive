@@ -10,6 +10,8 @@ import NotFound from "./pages/NotFound";
 import SupportPage from "./pages/Support";
 import Memes from "./pages/Memes";
 import UploadMeme from "./pages/UploadMeme";
+import Clips from "./pages/Clips";
+import UploadClip from "./pages/UploadClip";
 
 const queryClient = new QueryClient();
 
@@ -26,6 +28,8 @@ const App = () => (
           <Route path="/destek" element={<SupportPage />} />
           <Route path="/memeler" element={<Memes />} />
           <Route path="/yukle" element={<UploadMeme />} />
+          <Route path="/klipler" element={<Clips />} />
+          <Route path="/klip-yukle" element={<UploadClip />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
