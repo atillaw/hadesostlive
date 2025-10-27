@@ -12,6 +12,7 @@ import Memes from "./pages/Memes";
 import UploadMeme from "./pages/UploadMeme";
 import Clips from "./pages/Clips";
 import UploadClip from "./pages/UploadClip";
+import Chat from "./pages/Chat";
 
 const queryClient = new QueryClient();
 
@@ -28,6 +29,7 @@ const App = () => (
           <Route path="/destek" element={<SupportPage />} />
           <Route path="/memeler" element={<Memes />} />
           <Route path="/yukle" element={<UploadMeme />} />
+          <Route path="/sohbet" element={<Chat />} />
           <Route path="/klipler" element={<Clips />} />
           <Route path="/klip-yukle" element={<UploadClip />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

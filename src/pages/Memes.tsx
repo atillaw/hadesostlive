@@ -6,7 +6,6 @@ import { useNavigate } from "react-router-dom";
 import { Upload, ArrowLeft } from "lucide-react";
 import Navigation from "@/components/Navigation";
 import { toast } from "sonner";
-import MemeChatRoom from "@/components/MemeChatRoom";
 
 interface Meme {
   id: string;
@@ -74,11 +73,6 @@ const Memes = () => {
           <p className="text-muted-foreground">
             Topluluk tarafından paylaşılan komik anlar
           </p>
-        </div>
-
-        {/* Chat Room */}
-        <div className="mb-12">
-          <MemeChatRoom />
         </div>
 
         {loading ? (
