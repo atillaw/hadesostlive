@@ -232,6 +232,30 @@ export type Database = {
         }
         Relationships: []
       }
+      meme_chat_messages: {
+        Row: {
+          created_at: string
+          guest_username: string | null
+          id: string
+          message: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          guest_username?: string | null
+          id?: string
+          message: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          guest_username?: string | null
+          id?: string
+          message?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       meme_uploads: {
         Row: {
           approved_at: string | null
