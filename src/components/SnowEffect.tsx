@@ -44,22 +44,6 @@ const SnowEffect = ({ enabled }: SnowEffectProps) => {
           </div>
         ))}
       </div>
-
-      {/* Snowmen on sides */}
-      <div className="fixed left-4 bottom-4 z-40 pointer-events-none hidden lg:block animate-fade-in">
-        <div className="text-6xl filter drop-shadow-lg">☃️</div>
-      </div>
-      <div className="fixed right-4 bottom-4 z-40 pointer-events-none hidden lg:block animate-fade-in">
-        <div className="text-6xl filter drop-shadow-lg">☃️</div>
-      </div>
-
-      {/* Additional decorative snowmen */}
-      <div className="fixed left-4 top-32 z-40 pointer-events-none hidden xl:block animate-fade-in" style={{ animationDelay: '0.5s' }}>
-        <div className="text-5xl filter drop-shadow-lg">⛄</div>
-      </div>
-      <div className="fixed right-4 top-32 z-40 pointer-events-none hidden xl:block animate-fade-in" style={{ animationDelay: '0.5s' }}>
-        <div className="text-5xl filter drop-shadow-lg">⛄</div>
-      </div>
     </>
   );
 };
