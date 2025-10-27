@@ -74,20 +74,20 @@ const EmailSubscribeSection = () => {
   };
 
   return (
-    <section className="py-20 px-4 bg-gradient-to-b from-background to-primary/5">
+    <section className="py-16 md:py-24 px-4 bg-gradient-to-b from-background to-primary/5 animate-fade-in">
       <div className="container mx-auto max-w-2xl">
-        <Card className="p-8 bg-card/50 backdrop-blur border-border card-glow text-center">
-          <div className="flex justify-center mb-4">
-            <div className="p-4 rounded-full bg-primary/10">
-              <Mail className="h-8 w-8 text-primary" />
+        <Card className="p-8 md:p-10 bg-card/50 backdrop-blur-sm border-primary/30 card-glow text-center animate-slide-up">
+          <div className="flex justify-center mb-6 animate-scale-in">
+            <div className="p-5 rounded-full bg-gradient-to-br from-primary/20 to-secondary/20 border border-primary/30">
+              <Mail className="h-10 w-10 text-primary" />
             </div>
           </div>
 
-          <h2 className="text-3xl font-bold mb-4 glow-text">
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 glow-text">
             Haberdar Ol!
           </h2>
-          <p className="text-muted-foreground mb-6">
-            Yeni yayınlar, özel etkinlikler ve haberler için e-posta listesine katıl
+          <p className="text-muted-foreground text-base md:text-lg mb-8">
+            Yeni yayınlar, özel etkinlikler ve haberler için e-posta listesine katıl 📧
           </p>
 
           <form onSubmit={handleSubscribe} className="space-y-4">
@@ -100,16 +100,34 @@ const EmailSubscribeSection = () => {
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="E-posta adresiniz"
                 required
-                className="text-center"
+                className="text-center text-base h-12"
               />
             </div>
 
-            <Button type="submit" disabled={loading} className="w-full">
-              {loading ? "Kaydediliyor..." : "Abone Ol"}
+            <Button 
+              type="submit" 
+              disabled={loading} 
+              className="w-full h-12 text-base hover:scale-105 transition-transform"
+              size="lg"
+            >
+              {loading ? (
+                <span className="flex items-center gap-2">
+                  <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                  </svg>
+                  Kaydediliyor...
+                </span>
+              ) : (
+                "Abone Ol"
+              )}
             </Button>
           </form>
 
-          <p className="text-xs text-muted-foreground mt-4">
+          <p className="text-xs text-muted-foreground mt-6 flex items-center justify-center gap-2">
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+            </svg>
             E-posta adresiniz güvende. Spam göndermiyoruz.
           </p>
         </Card>

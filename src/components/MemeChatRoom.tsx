@@ -184,29 +184,35 @@ const MemeChatRoom = () => {
 
   if (isGuest && !hasSetUsername) {
     return (
-      <Card className="w-full max-w-2xl mx-auto">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <MessageCircle className="h-5 w-5" />
+      <Card className="w-full max-w-2xl mx-auto card-glow bg-card/50 backdrop-blur-sm animate-scale-in">
+        <CardHeader className="space-y-2">
+          <CardTitle className="flex items-center gap-2 text-2xl">
+            <MessageCircle className="h-6 w-6 text-primary" />
             Sohbete Katıl
           </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
           <p className="text-muted-foreground">
             Sohbete katılmak için bir kullanıcı adı seç veya giriş yap
           </p>
+        </CardHeader>
+        <CardContent className="space-y-4">
           <div className="flex gap-2">
             <Input
               placeholder="Kullanıcı adı..."
               value={guestUsername}
               onChange={(e) => setGuestUsername(e.target.value)}
               onKeyPress={(e) => e.key === 'Enter' && handleSetUsername()}
+              className="text-base"
             />
-            <Button onClick={handleSetUsername}>Devam Et</Button>
+            <Button 
+              onClick={handleSetUsername}
+              className="hover:scale-105 transition-transform"
+            >
+              Devam Et
+            </Button>
           </div>
           <Button 
             variant="outline" 
-            className="w-full"
+            className="w-full hover:scale-105 transition-transform"
             onClick={() => navigate("/auth")}
           >
             Veya Giriş Yap
@@ -217,63 +223,100 @@ const MemeChatRoom = () => {
   }
 
   return (
-    <Card className="w-full max-w-2xl mx-auto">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <MessageCircle className="h-5 w-5" />
-          Meme Sohbet Odası
-        </CardTitle>
-        {isGuest && (
-          <p className="text-sm text-muted-foreground">
-            Misafir olarak katıldın: {guestUsername}
-          </p>
-        )}
+    <Card className="w-full max-w-4xl mx-auto card-glow bg-card/50 backdrop-blur-sm animate-fade-in">
+      <CardHeader className="border-b border-border/50 bg-card/80 backdrop-blur">
+        <div className="flex items-center justify-between">
+          <div>
+            <CardTitle className="flex items-center gap-2 text-2xl mb-2">
+              <MessageCircle className="h-6 w-6 text-primary animate-pulse" />
+              Sohbet Odası
+            </CardTitle>
+            {isGuest && (
+              <p className="text-sm text-muted-foreground flex items-center gap-2">
+                <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+                Misafir: <span className="font-medium text-foreground">{guestUsername}</span>
+              </p>
+            )}
+          </div>
+          <div className="text-sm text-muted-foreground">
+            {messages.length} mesaj
+          </div>
+        </div>
       </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="h-[400px] overflow-y-auto space-y-3 p-4 bg-muted/30 rounded-lg">
-          {messages.map((msg) => (
-            <div
-              key={msg.id}
-              className="flex items-start gap-2 p-2 rounded bg-background"
-            >
-              <div className="flex-1">
-                <div className="flex items-center gap-2 mb-1">
-                  <span className="font-semibold text-sm">
-                    {getDisplayName(msg)}
-                  </span>
-                  <span className="text-xs text-muted-foreground">
-                    {new Date(msg.created_at).toLocaleTimeString('tr-TR', {
-                      hour: '2-digit',
-                      minute: '2-digit'
-                    })}
+      <CardContent className="p-0">
+        <div className="h-[500px] overflow-y-auto space-y-2 p-4 bg-gradient-to-b from-muted/20 to-transparent">
+          {messages.length === 0 ? (
+            <div className="flex items-center justify-center h-full text-muted-foreground">
+              <div className="text-center">
+                <MessageCircle className="w-12 h-12 mx-auto mb-3 opacity-50" />
+                <p>Henüz mesaj yok. İlk mesajı sen gönder! 💬</p>
+              </div>
+            </div>
+          ) : (
+            messages.map((msg, index) => (
+              <div
+                key={msg.id}
+                className="flex items-start gap-3 p-3 rounded-lg bg-card/80 backdrop-blur-sm border border-border/50 hover:border-primary/30 transition-all animate-slide-up"
+                style={{ animationDelay: `${index * 0.01}s` }}
+              >
+                <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center">
+                  <span className="text-sm font-bold text-primary">
+                    {getDisplayName(msg).charAt(0).toUpperCase()}
                   </span>
                 </div>
-                <p className="text-sm">{msg.message}</p>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="font-semibold text-sm text-foreground">
+                      {getDisplayName(msg)}
+                    </span>
+                    <span className="text-xs text-muted-foreground flex items-center gap-1">
+                      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      {new Date(msg.created_at).toLocaleTimeString('tr-TR', {
+                        hour: '2-digit',
+                        minute: '2-digit'
+                      })}
+                    </span>
+                  </div>
+                  <p className="text-sm break-words">{msg.message}</p>
+                </div>
+                {canDeleteMessage(msg) && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => handleDeleteMessage(msg.id)}
+                    className="flex-shrink-0 h-8 w-8 p-0 hover:bg-destructive/20 hover:text-destructive"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                )}
               </div>
-              {canDeleteMessage(msg) && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => handleDeleteMessage(msg.id)}
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              )}
-            </div>
-          ))}
+            ))
+          )}
           <div ref={messagesEndRef} />
         </div>
 
-        <div className="flex gap-2">
-          <Input
-            placeholder="Mesajını yaz..."
-            value={newMessage}
-            onChange={(e) => setNewMessage(e.target.value)}
-            onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
-          />
-          <Button onClick={handleSendMessage}>
-            <Send className="h-4 w-4" />
-          </Button>
+        <div className="p-4 border-t border-border/50 bg-card/80 backdrop-blur">
+          <div className="flex gap-2">
+            <Input
+              placeholder="Mesajını yaz..."
+              value={newMessage}
+              onChange={(e) => setNewMessage(e.target.value)}
+              onKeyPress={(e) => e.key === 'Enter' && !e.shiftKey && handleSendMessage()}
+              className="text-base"
+            />
+            <Button 
+              onClick={handleSendMessage}
+              disabled={!newMessage.trim()}
+              className="hover:scale-105 transition-transform"
+            >
+              <Send className="h-4 w-4" />
+            </Button>
+          </div>
+          <p className="text-xs text-muted-foreground mt-2">
+            ℹ️ Küfür ve hakaret otomatik olarak filtrelenir
+          </p>
         </div>
       </CardContent>
     </Card>
