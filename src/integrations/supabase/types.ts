@@ -97,6 +97,73 @@ export type Database = {
           },
         ]
       }
+      clip_comments: {
+        Row: {
+          clip_id: string
+          comment: string
+          created_at: string
+          id: string
+          user_id: string | null
+          user_identifier: string | null
+        }
+        Insert: {
+          clip_id: string
+          comment: string
+          created_at?: string
+          id?: string
+          user_id?: string | null
+          user_identifier?: string | null
+        }
+        Update: {
+          clip_id?: string
+          comment?: string
+          created_at?: string
+          id?: string
+          user_id?: string | null
+          user_identifier?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "clip_comments_clip_id_fkey"
+            columns: ["clip_id"]
+            isOneToOne: false
+            referencedRelation: "clips"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      clip_likes: {
+        Row: {
+          clip_id: string
+          created_at: string
+          id: string
+          user_id: string | null
+          user_identifier: string | null
+        }
+        Insert: {
+          clip_id: string
+          created_at?: string
+          id?: string
+          user_id?: string | null
+          user_identifier?: string | null
+        }
+        Update: {
+          clip_id?: string
+          created_at?: string
+          id?: string
+          user_id?: string | null
+          user_identifier?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "clip_likes_clip_id_fkey"
+            columns: ["clip_id"]
+            isOneToOne: false
+            referencedRelation: "clips"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       clips: {
         Row: {
           approved_at: string | null
