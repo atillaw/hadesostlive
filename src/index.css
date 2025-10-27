@@ -148,38 +148,4 @@ All colors MUST be HSL.
   .animate-snow-fall {
     animation: snow-fall linear infinite;
   }
-  
-  /* Winter snow accent on boxes */
-  .snow-accent::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 80px;
-    height: 80px;
-    background: radial-gradient(ellipse at top left, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.7) 30%, transparent 70%);
-    border-radius: 0 0 100% 0;
-    pointer-events: none;
-    z-index: 1;
-  }
-  
-  .snow-accent::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 60px;
-    height: 60px;
-    background: radial-gradient(ellipse at top left, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.8) 40%, transparent 75%);
-    border-radius: 0 0 80% 0;
-    pointer-events: none;
-    z-index: 2;
-    filter: blur(0.5px);
-  }
-  
-  /* Ensure content stays above snow */
-  .snow-accent > * {
-    position: relative;
-    z-index: 3;
-  }
 }

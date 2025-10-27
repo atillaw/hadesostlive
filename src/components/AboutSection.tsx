@@ -14,7 +14,7 @@ const AboutSection = () => {
           </p>
         </div>
         
-        <Card className="snow-accent p-6 md:p-8 lg:p-10 mb-8 border-primary/30 card-glow bg-card/50 backdrop-blur-sm animate-slide-up" style={{ animationDelay: '0.1s' }}>
+        <Card className="p-6 md:p-8 lg:p-10 mb-8 border-primary/30 card-glow bg-card/50 backdrop-blur-sm animate-slide-up" style={{ animationDelay: '0.1s' }}>
           <p className="text-base md:text-lg text-muted-foreground leading-relaxed">
             Yeraltı dünyasına hoş geldiniz! Ben HadesOST, size kalbinizi hızlandıracak yüksek enerjili oyun yayınları sunuyorum. 
             İster roguelike oyunlarda grind yapıyor olun, ister yeni dünyaları keşfediyor olun ya da sadece harika müziklerle takılıyor olun, 
@@ -23,7 +23,7 @@ const AboutSection = () => {
         </Card>
         
         <div className="grid md:grid-cols-3 gap-6">
-          <Card className="snow-accent group p-6 text-center border-primary/30 hover:border-primary/60 transition-all duration-300 card-glow bg-card/50 backdrop-blur-sm animate-slide-up" style={{ animationDelay: '0.2s' }}>
+          <Card className="group p-6 text-center border-primary/30 hover:border-primary/60 transition-all duration-300 card-glow bg-card/50 backdrop-blur-sm animate-slide-up" style={{ animationDelay: '0.2s' }}>
             <Gamepad2 className="w-12 h-12 mx-auto mb-4 text-primary group-hover:scale-110 transition-transform" />
             <h3 className="text-xl font-bold mb-2">Oyun</h3>
             <p className="text-muted-foreground">
@@ -31,7 +31,7 @@ const AboutSection = () => {
             </p>
           </Card>
 
-          <Card className="snow-accent group p-6 text-center border-primary/30 hover:border-primary/60 transition-all duration-300 card-glow bg-card/50 backdrop-blur-sm animate-slide-up" style={{ animationDelay: '0.3s' }}>
+          <Card className="group p-6 text-center border-primary/30 hover:border-primary/60 transition-all duration-300 card-glow bg-card/50 backdrop-blur-sm animate-slide-up" style={{ animationDelay: '0.3s' }}>
             <Radio className="w-12 h-12 mx-auto mb-4 text-primary group-hover:scale-110 transition-transform" />
             <h3 className="text-xl font-bold mb-4">İşbirliği</h3>
             <div className="bg-primary/10 border border-primary/30 rounded-lg p-4 hover:bg-primary/15 transition-colors">
@@ -50,7 +50,7 @@ const AboutSection = () => {
             </div>
           </Card>
 
-          <Card className="snow-accent group p-6 text-center border-primary/30 hover:border-primary/60 transition-all duration-300 card-glow bg-card/50 backdrop-blur-sm animate-slide-up" style={{ animationDelay: '0.4s' }}>
+          <Card className="group p-6 text-center border-primary/30 hover:border-primary/60 transition-all duration-300 card-glow bg-card/50 backdrop-blur-sm animate-slide-up" style={{ animationDelay: '0.4s' }}>
             <Users className="w-12 h-12 mx-auto mb-4 text-primary group-hover:scale-110 transition-transform" />
             <h3 className="text-xl font-bold mb-2">Topluluk</h3>
             <p className="text-muted-foreground">

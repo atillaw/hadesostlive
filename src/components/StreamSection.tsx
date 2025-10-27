@@ -15,7 +15,7 @@ const StreamSection = () => {
         
         <div className="grid lg:grid-cols-[1fr,400px] gap-6 animate-slide-up">
           {/* Stream Player */}
-          <Card className="snow-accent overflow-hidden border-primary/30 card-glow bg-card/50 backdrop-blur-sm">
+          <Card className="overflow-hidden border-primary/30 card-glow bg-card/50 backdrop-blur-sm">
             <div className="aspect-video bg-muted/50 relative group">
               <iframe
                 src="https://player.kick.com/hadesost"
@@ -49,7 +49,7 @@ const StreamSection = () => {
           </Card>
           
           {/* Chat */}
-          <Card className="snow-accent overflow-hidden border-primary/30 card-glow bg-card/50 backdrop-blur-sm lg:h-[720px] h-[500px] flex flex-col">
+          <Card className="overflow-hidden border-primary/30 card-glow bg-card/50 backdrop-blur-sm lg:h-[720px] h-[500px] flex flex-col">
             <div className="p-4 bg-card/80 backdrop-blur border-b border-border/50">
               <h3 className="font-bold text-lg flex items-center gap-2">
                 <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
