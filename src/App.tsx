@@ -13,6 +13,7 @@ import UploadMeme from "./pages/UploadMeme";
 import Clips from "./pages/Clips";
 import UploadClip from "./pages/UploadClip";
 import Chat from "./pages/Chat";
+import StreamerRoom from "./pages/StreamerRoom";
 
 const queryClient = new QueryClient();
 
@@ -32,6 +33,7 @@ const App = () => (
           <Route path="/sohbet" element={<Chat />} />
           <Route path="/klipler" element={<Clips />} />
           <Route path="/klip-yukle" element={<UploadClip />} />
+          <Route path="/streamer-oda" element={<StreamerRoom />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

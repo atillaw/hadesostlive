@@ -1,10 +1,17 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Settings, DollarSign, ImageIcon, Video, MessageCircle, Menu, X, Snowflake } from "lucide-react";
+import { Settings, DollarSign, ImageIcon, Video, MessageCircle, Menu, X, Snowflake, Volume2, VolumeX } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useIsMobile } from "@/hooks/use-mobile";
 
-const Navigation = ({ onSnowToggle, snowEnabled }: { onSnowToggle?: () => void; snowEnabled?: boolean }) => {
+interface NavigationProps {
+  onSnowToggle?: () => void;
+  snowEnabled?: boolean;
+  soundEnabled?: boolean;
+  onSoundToggle?: () => void;
+}
+
+const Navigation = ({ onSnowToggle, snowEnabled, soundEnabled, onSoundToggle }: NavigationProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const isMobile = useIsMobile();
 
@@ -37,9 +44,20 @@ const Navigation = ({ onSnowToggle, snowEnabled }: { onSnowToggle?: () => void; 
                   size="sm"
                   onClick={onSnowToggle}
                   className="hover:scale-105 transition-transform"
-                  title={snowEnabled ? "Karı Kapat" : "Karı Aç"}
+                  title={snowEnabled ? "Efekti Kapat" : "Efekti Aç"}
                 >
                   <Snowflake className={`h-4 w-4 ${snowEnabled ? 'animate-spin' : ''}`} style={{ animationDuration: '3s' }} />
+                </Button>
+              )}
+              {onSoundToggle && (
+                <Button
+                  variant={soundEnabled ? "default" : "outline"}
+                  size="sm"
+                  onClick={onSoundToggle}
+                  className="hover:scale-105 transition-transform"
+                  title={soundEnabled ? "Sesi Kapat" : "Sesi Aç"}
+                >
+                  {soundEnabled ? <Volume2 className="h-4 w-4" /> : <VolumeX className="h-4 w-4" />}
                 </Button>
               )}
               {navLinks.map((link) => (
