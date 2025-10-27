@@ -21,74 +21,85 @@ const SocialSection = () => {
       icon: Radio,
       url: "https://kick.com/hadesost",
       description: "Canlı Yayınları İzle",
-      color: "text-green-500"
+      color: "text-green-500",
+      hoverColor: "hover:bg-green-500/10"
     },
     {
       name: "Discord",
       icon: MessageCircle,
       url: "https://discord.gg/FK48T8D77Y",
       description: "Discord Toplulugu",
-      color: "text-indigo-500"
+      color: "text-indigo-500",
+      hoverColor: "hover:bg-indigo-500/10"
     },
     {
       name: "YouTube",
       icon: Youtube,
       url: "https://www.youtube.com/@hadesost",
       description: "Yayın Tekrarları",
-      color: "text-red-500"
+      color: "text-red-500",
+      hoverColor: "hover:bg-red-500/10"
     },
     {
       name: "Ganare Kopek",
       icon: Instagram,
       url: "https://www.instagram.com/ganarekopek/",
       description: "Skeç Komedi İçerigi",
-      color: "text-pink-500"
+      color: "text-pink-500",
+      hoverColor: "hover:bg-pink-500/10"
     },
     {
       name: "Hadesdenost",
       icon: Instagram,
       url: "https://www.instagram.com/hadesdenost/",
       description: "Yayın Enleri, Klipler",
-      color: "text-pink-500"
+      color: "text-pink-500",
+      hoverColor: "hover:bg-pink-500/10"
     },
     {
       name: "Reddit",
       icon: RedditIcon,
       url: "https://www.reddit.com/r/HadesostveMelekleri/",
       description: "Reddit Toplulugu",
-      color: "text-orange-500"
+      color: "text-orange-500",
+      hoverColor: "hover:bg-orange-500/10"
     },
   ];
 
   return (
-    <section className="py-20 container mx-auto px-4">
-      <div className="max-w-4xl mx-auto text-centered">
-        <h2 className="text-4xl md:text-5xl font-bold mb-4">
-          Topluluklarımıza Katılın
-        </h2>
-        <p className="text-muted-foreground mb-12 text-lg">
-          Tüm platformlarda takip et, abone ol ve topluluğa katıl.
-        </p>
+    <section className="py-16 md:py-24 container mx-auto px-4 animate-fade-in">
+      <div className="max-w-6xl mx-auto">
+        <div className="text-center mb-12 animate-slide-up">
+          <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4 glow-text">
+            Topluluklarımıza Katılın
+          </h2>
+          <p className="text-muted-foreground text-base md:text-lg max-w-2xl mx-auto">
+            Tüm platformlarda takip et, abone ol ve topluluğa katıl.
+          </p>
+        </div>
         
-        <div className="grid md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {socials.map((social) => (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+          {socials.map((social, index) => (
             <a 
               key={social.name}
               href={social.url}
               target="_blank"
               rel="noopener noreferrer"
+              className="group animate-slide-up"
+              style={{ animationDelay: `${index * 0.1}s` }}
             >
-              <Button 
-                variant="social" 
-                size="lg"
-                className="w-full h-auto py-6 flex-col gap-3"
-              >
-                <social.icon className={`w-8 h-8 ${social.color}`} />
-                <div>
-                  <div className="font-bold text-lg">{social.name}</div>
-                  <div className="text-sm text-muted-foreground">{social.description}</div>
+              <div className={`h-full p-6 rounded-xl border border-border bg-card/50 backdrop-blur-sm ${social.hoverColor} transition-all duration-300 hover:border-primary/50 hover:shadow-lg card-glow`}>
+                <div className="flex flex-col items-center text-center gap-3">
+                  <social.icon className={`w-10 h-10 ${social.color} group-hover:scale-110 transition-transform duration-300`} />
+                  <div>
+                    <div className="font-bold text-lg mb-1">{social.name}</div>
+                    <div className="text-sm text-muted-foreground">{social.description}</div>
+                  </div>
+                  <svg className="w-5 h-5 text-primary opacity-0 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                  </svg>
                 </div>
-              </Button>
+              </div>
             </a>
           ))}
         </div>

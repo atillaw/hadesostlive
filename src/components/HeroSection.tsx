@@ -57,63 +57,83 @@ const HeroSection = () => {
   ];
 
   return (
-    <section className="relative min-h-[80vh] flex items-center justify-center overflow-hidden">
-      {/* Background Image */}
+    <section className="relative min-h-[85vh] lg:min-h-[90vh] flex items-center justify-center overflow-hidden">
+      {/* Background Image with parallax effect */}
       <div 
-        className="absolute inset-0 bg-cover bg-center opacity-30"
+        className="absolute inset-0 bg-cover bg-center opacity-30 scale-105 transition-transform duration-1000"
         style={{ backgroundImage: `url(${heroBanner})` }}
       />
       
-      {/* Gradient Overlay */}
-      <div className="absolute inset-0 bg-gradient-to-b from-background/50 via-background/80 to-background" />
+      {/* Enhanced Gradient Overlay */}
+      <div className="absolute inset-0 bg-gradient-to-b from-background/30 via-background/70 to-background" />
+      <div className="absolute inset-0 bg-gradient-radial from-primary/5 via-transparent to-transparent" />
       
       {/* Content */}
-      <div className="relative z-10 container mx-auto px-4 text-center">
-        <CountdownTimer />
+      <div className="relative z-10 container mx-auto px-4 text-center animate-fade-in">
+        <div className="animate-slide-up">
+          <CountdownTimer />
+        </div>
         
-        <div className="flex items-center justify-center gap-3 mb-6">
-          <div className="w-3 h-3 bg-secondary rounded-full animate-pulse" />
-          <span className="text-secondary font-semibold uppercase tracking-wider text-sm">
+        <div className="flex items-center justify-center gap-3 mb-8 animate-slide-up" style={{ animationDelay: '0.1s' }}>
+          <div className="w-3 h-3 bg-secondary rounded-full animate-pulse shadow-lg shadow-secondary/50" />
+          <span className="text-secondary font-bold uppercase tracking-wider text-sm md:text-base">
             LİVE NOW
           </span>
         </div>
         
-        {/* Social Links */}
-        <div className="flex flex-wrap items-center justify-center gap-3 mb-8 max-w-2xl mx-auto">
-          <span className="text-muted-foreground text-sm w-full mb-2">Topluluklarımıza Katılın</span>
-          {socials.map((social) => (
+        {/* Social Links - Enhanced */}
+        <div className="flex flex-wrap items-center justify-center gap-2 md:gap-3 mb-10 max-w-3xl mx-auto animate-slide-up" style={{ animationDelay: '0.2s' }}>
+          <span className="text-muted-foreground text-xs md:text-sm w-full mb-3 font-medium">Topluluklarımıza Katılın</span>
+          {socials.map((social, index) => (
             <a
               key={social.name}
               href={social.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-2 px-3 py-2 rounded-lg bg-card/50 hover:bg-card border border-border/50 hover:border-primary/50 transition-all"
+              className="group flex items-center gap-2 px-4 py-2.5 rounded-xl bg-card/60 hover:bg-card/80 backdrop-blur-sm border border-border/50 hover:border-primary/50 transition-all hover:scale-105 hover:shadow-lg"
+              style={{ animationDelay: `${0.3 + index * 0.05}s` }}
             >
-              <social.icon className={`w-4 h-4 ${social.color}`} />
-              <span className="text-sm font-medium">{social.name}</span>
+              <social.icon className={`w-4 h-4 ${social.color} group-hover:scale-110 transition-transform`} />
+              <span className="text-xs md:text-sm font-medium">{social.name}</span>
             </a>
           ))}
         </div>
         
-        <h1 className="text-6xl md:text-8xl font-bold mb-6 glow-text">
+        <h1 className="text-5xl md:text-7xl lg:text-8xl xl:text-9xl font-bold mb-8 glow-text animate-scale-in leading-tight" style={{ animationDelay: '0.4s' }}>
           Hadesost
         </h1>
         
-        <p className="text-xl md:text-2xl text-muted-foreground mb-8 max-w-2xl mx-auto">
+        <p className="text-lg md:text-xl lg:text-2xl text-muted-foreground mb-10 max-w-3xl mx-auto leading-relaxed animate-slide-up" style={{ animationDelay: '0.5s' }}>
          Oyun yayınları, destansı müzikler ve efsanevi atmosfer. Yeraltı dünyasının en özel topluluğuna katıl!
         </p>
         
-        <div className="flex flex-wrap gap-4 justify-center">
-          <Button size="lg" className="text-lg px-8">
-            <Radio className="w-5 h-5" />
-            Kick'te İzle
+        <div className="flex flex-col sm:flex-row gap-4 justify-center items-center animate-slide-up" style={{ animationDelay: '0.6s' }}>
+          <Button 
+            size="lg" 
+            className="text-base md:text-lg px-8 py-6 shadow-lg hover:shadow-xl transition-all hover:scale-105"
+            asChild
+          >
+            <a href="https://kick.com/hadesost" target="_blank" rel="noopener noreferrer">
+              <Radio className="w-5 h-5 mr-2" />
+              Kick'te İzle
+            </a>
           </Button>
-          <Button size="lg" variant="outline" className="text-lg px-8">
-            <Radio className="w-5 h-5" />
-           Discord linki
+          <Button 
+            size="lg" 
+            variant="outline" 
+            className="text-base md:text-lg px-8 py-6 border-2 hover:bg-card/50 transition-all hover:scale-105"
+            asChild
+          >
+            <a href="https://discord.gg/FK48T8D77Y" target="_blank" rel="noopener noreferrer">
+              <MessageCircle className="w-5 h-5 mr-2" />
+              Discord'a Katıl
+            </a>
           </Button>
         </div>
       </div>
+      
+      {/* Decorative elements */}
+      <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-background to-transparent pointer-events-none" />
     </section>
   );
 };
