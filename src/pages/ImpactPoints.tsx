@@ -24,12 +24,12 @@ const ImpactPoints = () => {
   ];
 
   const benefits = [
-    "Increase chat visibility and priority",
-    "Exclusive badges and profile customization",
-    "Vote power in community decisions",
-    "Early access to new features",
-    "Priority support responses",
-    "Special emotes and reactions",
+    "Sohbette görünürlük ve öncelik artışı",
+    "Özel rozetler ve profil özelleştirme",
+    "Topluluk kararlarında oy gücü",
+    "Yeni özelliklere erken erişim",
+    "Öncelikli destek yanıtları",
+    "Özel emote'lar ve reaksiyonlar",
   ];
 
   return (
@@ -40,18 +40,18 @@ const ImpactPoints = () => {
           {/* Header */}
           <div className="text-center space-y-4">
             <h1 className="text-4xl md:text-5xl font-bold glow-text">
-              Impact Points System
+              Impact Points Sistemi
             </h1>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Support the stream with Impact Points. Earn points, climb the leaderboard, and unlock exclusive benefits!
+              Yayını Impact Points ile destekle. Puan kazan, sıralamada yüksel ve özel avantajların kilidini aç!
             </p>
           </div>
 
           <Tabs defaultValue="contribute" className="space-y-8">
             <TabsList className="grid w-full grid-cols-3 max-w-md mx-auto">
-              <TabsTrigger value="contribute">Contribute</TabsTrigger>
-              <TabsTrigger value="leaderboard">Leaderboard</TabsTrigger>
-              <TabsTrigger value="benefits">Benefits</TabsTrigger>
+              <TabsTrigger value="contribute">Katkıda Bulun</TabsTrigger>
+              <TabsTrigger value="leaderboard">Sıralama</TabsTrigger>
+              <TabsTrigger value="benefits">Avantajlar</TabsTrigger>
             </TabsList>
 
             {/* Contribute Tab */}
@@ -60,33 +60,33 @@ const ImpactPoints = () => {
                 <div className="space-y-6">
                   <div className="flex items-center gap-3">
                     <Trophy className="h-8 w-8 text-primary" />
-                    <h2 className="text-2xl font-bold">Get Impact Points</h2>
+                    <h2 className="text-2xl font-bold">Impact Points Al</h2>
                   </div>
                   
                   <div className="space-y-4">
                     <div>
-                      <label className="text-sm font-medium mb-2 block">Amount (TL)</label>
+                      <label className="text-sm font-medium mb-2 block">Miktar (TL)</label>
                       <Input
                         type="number"
                         value={amount}
                         onChange={(e) => setAmount(e.target.value)}
-                        placeholder="Enter amount"
+                        placeholder="Miktar girin"
                         className="text-lg"
                       />
                     </div>
                     
                     <div className="p-4 rounded-lg bg-primary/10 border border-primary/30">
                       <div className="flex justify-between items-center">
-                        <span className="text-muted-foreground">You'll receive:</span>
+                        <span className="text-muted-foreground">Alacağınız:</span>
                         <span className="text-2xl font-bold text-primary">
-                          {parseInt(amount) || 0} Points
+                          {parseInt(amount) || 0} Puan
                         </span>
                       </div>
                     </div>
 
                     <Button className="w-full h-12 text-lg" size="lg">
                       <Zap className="mr-2 h-5 w-5" />
-                      Purchase Impact Points
+                      Impact Points Satın Al
                     </Button>
                   </div>
                 </div>
@@ -102,7 +102,7 @@ const ImpactPoints = () => {
                         <Icon className={`h-10 w-10 mx-auto ${tier.color}`} />
                         <h3 className="text-xl font-bold">{tier.name}</h3>
                         <p className="text-2xl font-bold text-primary">{tier.points.toLocaleString()}+</p>
-                        <p className="text-sm text-muted-foreground">Points Required</p>
+                        <p className="text-sm text-muted-foreground">Gereken Puan</p>
                       </div>
                     </Card>
                   );
@@ -115,7 +115,7 @@ const ImpactPoints = () => {
               <Card className="p-8 glass border-primary/30">
                 <div className="flex items-center gap-3 mb-6">
                   <TrendingUp className="h-8 w-8 text-primary" />
-                  <h2 className="text-2xl font-bold">Weekly Leaderboard</h2>
+                  <h2 className="text-2xl font-bold">Haftalık Sıralama</h2>
                 </div>
                 
                 <div className="space-y-3">
@@ -126,9 +126,9 @@ const ImpactPoints = () => {
                           #{i + 1}
                         </span>
                         <div>
-                          <p className="font-medium">User {i + 1}</p>
+                          <p className="font-medium">Kullanıcı {i + 1}</p>
                           <p className="text-sm text-muted-foreground">
-                            {(Math.random() * 10000).toFixed(0)} points
+                            {(Math.random() * 10000).toFixed(0)} puan
                           </p>
                         </div>
                       </div>
@@ -138,7 +138,7 @@ const ImpactPoints = () => {
                 </div>
                 
                 <p className="text-center text-sm text-muted-foreground mt-6">
-                  Leaderboard resets every Monday at 00:00
+                  Sıralama her Pazartesi 00:00'da sıfırlanır
                 </p>
               </Card>
             </TabsContent>
@@ -148,7 +148,7 @@ const ImpactPoints = () => {
               <Card className="p-8 glass border-primary/30">
                 <div className="flex items-center gap-3 mb-6">
                   <Star className="h-8 w-8 text-primary" />
-                  <h2 className="text-2xl font-bold">Impact Points Benefits</h2>
+                  <h2 className="text-2xl font-bold">Impact Points Avantajları</h2>
                 </div>
                 
                 <div className="grid md:grid-cols-2 gap-4">
@@ -161,13 +161,13 @@ const ImpactPoints = () => {
                 </div>
 
                 <div className="mt-8 p-6 rounded-lg bg-primary/10 border border-primary/30">
-                  <h3 className="text-xl font-bold mb-3">How It Works</h3>
+                  <h3 className="text-xl font-bold mb-3">Nasıl Çalışır?</h3>
                   <ul className="space-y-2 text-muted-foreground">
                     <li>• 1 TL = 1 Impact Point</li>
-                    <li>• Points never expire (except weekly leaderboard resets)</li>
-                    <li>• Higher points = Higher visibility in chat and votes</li>
-                    <li>• Unlock new tiers by accumulating points</li>
-                    <li>• Support the creator while gaining exclusive perks</li>
+                    <li>• Puanlar asla sona ermez (haftalık sıralama hariç)</li>
+                    <li>• Daha fazla puan = Sohbette ve oylamalarda daha fazla görünürlük</li>
+                    <li>• Puan biriktirerek yeni seviyelerin kilidini aç</li>
+                    <li>• İçerik üreticisini desteklerken özel avantajlar kazan</li>
                   </ul>
                 </div>
               </Card>

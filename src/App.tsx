@@ -22,6 +22,7 @@ import Team from "./pages/Team";
 import Social from "./pages/Social";
 import Aboneler from "./pages/Aboneler";
 import ImpactPoints from "./pages/ImpactPoints";
+import Community from "./pages/Community";
 
 
 const AppContent = () => {
@@ -45,6 +46,7 @@ const AppContent = () => {
       <Route path="/takima-katil" element={<Team />} />
       <Route path="/topluluklar" element={<Social />} />
       <Route path="/impact-points" element={<ImpactPoints />} />
+      <Route path="/topluluk" element={<Community />} />
       <Route path="*" element={<NotFound />} />
     </Routes>
   );

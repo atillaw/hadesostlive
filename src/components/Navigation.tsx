@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Settings, DollarSign, ImageIcon, Video, MessageCircle, Menu, X, Snowflake, Heart, Home, Calendar, Bell, Users, Trophy } from "lucide-react";
+import { Settings, DollarSign, ImageIcon, Video, MessageCircle, Menu, X, Snowflake, Heart, Home, Calendar, Bell, Users, Trophy, Sparkles } from "lucide-react";
 import { useState } from "react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 
@@ -13,12 +13,14 @@ const Navigation = ({ onSnowToggle, snowEnabled }: { onSnowToggle?: () => void; 
     { to: "/vodlar", icon: Video, label: "VODs & Highlights" },
     { to: "/haberdar-ol", icon: Bell, label: "Haberdar Ol!" },
     { to: "/takima-katil", icon: Users, label: "Takıma Katıl" },
-    { to: "/topluluklar", icon: Users, label: "Topluluklar" },
+    { to: "/topluluklar", icon: Users, label: "Sosyal" },
+    { to: "/topluluk", icon: Sparkles, label: "AI & Klipler" },
     { to: "/aboneler", icon: Heart, label: "Aboneler" },
     { to: "/memeler", icon: ImageIcon, label: "Meme's" },
     { to: "/sohbet", icon: MessageCircle, label: "Sohbet" },
     { to: "/klipler", icon: Video, label: "Klipler" },
-    { to: "/destek", icon: Trophy, label: "Impact Points" },
+    { to: "/impact-points", icon: Trophy, label: "Impact Points" },
+    { to: "/destek", icon: DollarSign, label: "Destek" },
     { to: "/admin", icon: Settings, label: "Admin" },
   ];
 
