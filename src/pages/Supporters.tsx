@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Heart, Calendar, Award } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
-import { tr } from "date-fns/locale/tr";
+import { tr } from "date-fns/locale";
 
 interface Supporter {
   id: string;
