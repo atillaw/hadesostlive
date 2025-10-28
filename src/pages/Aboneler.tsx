@@ -13,6 +13,7 @@ interface Subscriber {
   subscription_type: string | null;
   subscribed_at: string;
   created_at: string;
+  follower_since: string | null;
 }
 
 const Aboneler = () => {
@@ -151,9 +152,17 @@ const Aboneler = () => {
                     <div className="flex items-center gap-2 text-sm">
                       <Heart className="h-4 w-4 text-destructive" />
                       <span className="font-semibold">
-                        {monthsSince} ay abone
+                        {monthsSince} aylık abone
                       </span>
                     </div>
+                    {subscriber.follower_since && (
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                        <Award className="h-4 w-4" />
+                        <span>
+                          {getMonthsSinceSubscription(subscriber.follower_since)} aylık takipçi
+                        </span>
+                      </div>
+                    )}
                     {subscriber.subscription_type && (
                       <div className="text-xs text-muted-foreground">
                         Tip: {subscriber.subscription_type}
