@@ -17,11 +17,11 @@ const Navigation = ({ onSnowToggle, snowEnabled }: { onSnowToggle?: () => void; 
   ];
 
   const homeNavLinks = [
-    { to: "/#schedule", label: "Yayın Akışı" },
-    { to: "/#vods", label: "VODs & Highlights" },
-    { to: "/#subscribe", label: "Haberdar Ol!" },
-    { to: "/#team", label: "Takıma Katıl" },
-    { to: "/#social", label: "Topluluklar" },
+    { to: "/yayin-akisi", label: "Yayın Akışı" },
+    { to: "/vodlar", label: "VODs & Highlights" },
+    { to: "/haberdar-ol", label: "Haberdar Ol!" },
+    { to: "/takima-katil", label: "Takıma Katıl" },
+    { to: "/topluluklar", label: "Topluluklar" },
   ];
 
   return (
@@ -51,7 +51,7 @@ const Navigation = ({ onSnowToggle, snowEnabled }: { onSnowToggle?: () => void; 
                 </Button>
               )}
               {homeNavLinks.map((link) => (
-                <a key={link.to} href={link.to}>
+                <Link key={link.to} to={link.to}>
                   <Button 
                     variant="ghost" 
                     size="sm"
@@ -59,7 +59,7 @@ const Navigation = ({ onSnowToggle, snowEnabled }: { onSnowToggle?: () => void; 
                   >
                     {link.label}
                   </Button>
-                </a>
+                </Link>
               ))}
               {navLinks.map((link) => (
                 <Link key={link.to} to={link.to} target={link.target}>
@@ -93,9 +93,9 @@ const Navigation = ({ onSnowToggle, snowEnabled }: { onSnowToggle?: () => void; 
         {isMobile && isOpen && (
           <div className="mt-4 pb-4 space-y-2 animate-slide-up">
             {homeNavLinks.map((link) => (
-              <a 
+              <Link 
                 key={link.to} 
-                href={link.to}
+                to={link.to}
                 onClick={() => setIsOpen(false)}
                 className="block"
               >
@@ -105,7 +105,7 @@ const Navigation = ({ onSnowToggle, snowEnabled }: { onSnowToggle?: () => void; 
                 >
                   {link.label}
                 </Button>
-              </a>
+              </Link>
             ))}
             {navLinks.map((link) => (
               <Link 

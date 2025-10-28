@@ -14,6 +14,11 @@ import UploadMeme from "./pages/UploadMeme";
 import Clips from "./pages/Clips";
 import UploadClip from "./pages/UploadClip";
 import Chat from "./pages/Chat";
+import Schedule from "./pages/Schedule";
+import VODs from "./pages/VODs";
+import Subscribe from "./pages/Subscribe";
+import Team from "./pages/Team";
+import Social from "./pages/Social";
 
 const AppContent = () => {
   usePageTracking();
@@ -29,6 +34,11 @@ const AppContent = () => {
       <Route path="/sohbet" element={<Chat />} />
       <Route path="/klipler" element={<Clips />} />
       <Route path="/klip-yukle" element={<UploadClip />} />
+      <Route path="/yayin-akisi" element={<Schedule />} />
+      <Route path="/vodlar" element={<VODs />} />
+      <Route path="/haberdar-ol" element={<Subscribe />} />
+      <Route path="/takima-katil" element={<Team />} />
+      <Route path="/topluluklar" element={<Social />} />
       <Route path="*" element={<NotFound />} />
     </Routes>
   );
