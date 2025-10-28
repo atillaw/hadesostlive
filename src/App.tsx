@@ -31,6 +31,7 @@ const AppContent = () => {
       <Route path="/admin" element={<Admin />} />
       <Route path="/destek" element={<SupportPage />} />
       <Route path="/destekçiler" element={<Supporters />} />
+      <Route path="/destekciler" element={<Supporters />} />
       <Route path="/memeler" element={<Memes />} />
       <Route path="/yukle" element={<UploadMeme />} />
       <Route path="/sohbet" element={<Chat />} />

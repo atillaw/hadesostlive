@@ -22,6 +22,18 @@ const Supporters = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    const title = "Destekçiler - Kick Aboneleri";
+    document.title = title;
+    const desc = "Destekçiler: Kick aboneleri, katılım süresi ve tarihleri.";
+    let meta = document.querySelector('meta[name="description"]') as HTMLMetaElement | null;
+    if (!meta) { meta = document.createElement('meta'); meta.name = 'description'; document.head.appendChild(meta); }
+    meta.content = desc;
+    let canonical = document.querySelector('link[rel="canonical"]') as HTMLLinkElement | null;
+    if (!canonical) { canonical = document.createElement('link'); canonical.rel = 'canonical'; document.head.appendChild(canonical); }
+    canonical.href = `${window.location.origin}/destekciler`;
+  }, []);
+
+  useEffect(() => {
     fetchSupporters();
   }, []);
 
@@ -44,11 +56,11 @@ const Supporters = () => {
   const getTierBadge = (tier: string) => {
     switch (tier.toLowerCase()) {
       case "tier 1":
-        return <Badge className="bg-blue-500">⭐ Tier 1</Badge>;
+        return <Badge className="bg-primary text-primary-foreground">⭐ Tier 1</Badge>;
       case "tier 2":
-        return <Badge className="bg-purple-500">⭐⭐ Tier 2</Badge>;
+        return <Badge className="bg-secondary text-secondary-foreground">⭐⭐ Tier 2</Badge>;
       case "tier 3":
-        return <Badge className="bg-amber-500">⭐⭐⭐ Tier 3</Badge>;
+        return <Badge className="bg-accent text-accent-foreground">⭐⭐⭐ Tier 3</Badge>;
       default:
         return <Badge>{tier}</Badge>;
     }
@@ -128,7 +140,7 @@ const Supporters = () => {
                       </span>
                     </div>
                     <div className="flex items-center gap-2 text-sm">
-                      <Heart className="h-4 w-4 text-red-500" />
+                      <Heart className="h-4 w-4 text-destructive" />
                       <span className="font-semibold">
                         {monthsSince} ay{monthsSince > 1 ? "" : ""} destekçi
                       </span>

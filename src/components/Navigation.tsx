@@ -9,7 +9,7 @@ const Navigation = ({ onSnowToggle, snowEnabled }: { onSnowToggle?: () => void; 
   const isMobile = useIsMobile();
 
   const navLinks = [
-    { to: "/destekçiler", icon: Heart, label: "Destekçiler" },
+    { to: "/destekciler", icon: Heart, label: "Destekçiler" },
     { to: "/memeler", icon: ImageIcon, label: "Meme's" },
     { to: "/sohbet", icon: MessageCircle, label: "Sohbet" },
     { to: "/klipler", icon: Video, label: "Klipler" },
