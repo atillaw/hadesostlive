@@ -22,15 +22,15 @@ const Supporters = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const title = "Destekçiler - Kick Aboneleri";
+    const title = "Aboneler - Kick Aboneleri";
     document.title = title;
-    const desc = "Destekçiler: Kick aboneleri, katılım süresi ve tarihleri.";
+    const desc = "Kick kanalımıza abone olan tüm aboneler, katılım süreleri ve tarihleri.";
     let meta = document.querySelector('meta[name="description"]') as HTMLMetaElement | null;
     if (!meta) { meta = document.createElement('meta'); meta.name = 'description'; document.head.appendChild(meta); }
     meta.content = desc;
     let canonical = document.querySelector('link[rel="canonical"]') as HTMLLinkElement | null;
     if (!canonical) { canonical = document.createElement('link'); canonical.rel = 'canonical'; document.head.appendChild(canonical); }
-    canonical.href = `${window.location.origin}/destekciler`;
+    canonical.href = `${window.location.origin}/aboneler`;
   }, []);
 
   useEffect(() => {
@@ -94,13 +94,13 @@ const Supporters = () => {
         <div className="text-center mb-12">
           <h1 className="text-4xl md:text-5xl font-bold mb-4 glow-text">
             <Heart className="inline-block mr-2 h-10 w-10" />
-            Destekçilerimiz
+            Aboneler
           </h1>
           <p className="text-xl text-muted-foreground">
-            Kick kanalımıza abone olan tüm destekçilerimiz
+            Kick kanalımıza abone olan tüm aboneler
           </p>
           <p className="text-lg text-primary mt-2">
-            Toplam: {supporters.length} Destekçi 🎉
+            Toplam: {supporters.length} Abone 🎉
           </p>
         </div>
 
@@ -109,7 +109,7 @@ const Supporters = () => {
             <CardContent>
               <Heart className="h-16 w-16 mx-auto mb-4 text-muted-foreground" />
               <p className="text-xl text-muted-foreground">
-                Henüz destekçi bulunmuyor
+                Henüz abone bulunmuyor
               </p>
             </CardContent>
           </Card>
@@ -142,7 +142,7 @@ const Supporters = () => {
                     <div className="flex items-center gap-2 text-sm">
                       <Heart className="h-4 w-4 text-destructive" />
                       <span className="font-semibold">
-                        {monthsSince} ay{monthsSince > 1 ? "" : ""} destekçi
+                        {monthsSince} ay{monthsSince > 1 ? "" : ""} abone
                       </span>
                     </div>
                     {supporter.subscription_type && (
