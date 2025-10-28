@@ -8,40 +8,59 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    --background: 240 10% 3.9%;
-    --foreground: 0 0% 98%;
+    /* 2030 Ultra-Modern Color Palette */
+    --background: 240 15% 5%;
+    --foreground: 0 0% 100%;
 
-    --card: 240 10% 7%;
+    --card: 240 10% 10%;
     --card-foreground: 0 0% 98%;
 
-    --popover: 240 10% 7%;
+    --popover: 240 10% 10%;
     --popover-foreground: 0 0% 98%;
 
-    --primary: 271 91% 65%;
+    /* Vibrant neon purple gradient */
+    --primary: 280 100% 70%;
     --primary-foreground: 0 0% 100%;
-    --primary-glow: 271 91% 75%;
+    --primary-glow: 280 100% 80%;
+    --primary-soft: 280 80% 60%;
 
-    --secondary: 348 83% 47%;
+    /* Cyber pink accent */
+    --secondary: 330 100% 60%;
     --secondary-foreground: 0 0% 100%;
+    --secondary-glow: 330 100% 70%;
 
-    --muted: 240 5% 15%;
-    --muted-foreground: 240 5% 64.9%;
+    /* Modern muted tones */
+    --muted: 240 8% 18%;
+    --muted-foreground: 240 5% 70%;
 
-    --accent: 271 91% 65%;
+    --accent: 200 100% 60%;
     --accent-foreground: 0 0% 100%;
+    --accent-glow: 200 100% 70%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
+    --destructive: 0 100% 65%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 240 10% 15%;
+    --border: 240 10% 20%;
     --input: 240 10% 15%;
-    --ring: 271 91% 65%;
+    --ring: 280 100% 70%;
 
-    --radius: 0.75rem;
+    --radius: 1rem;
     
-    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    --shadow-elegant: 0 10px 30px -10px hsl(var(--primary) / 0.3);
-    --shadow-glow: 0 0 40px hsl(var(--primary-glow) / 0.4);
+    /* Ultra-smooth transitions */
+    --transition-smooth: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    --transition-bounce: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    
+    /* Advanced shadow system */
+    --shadow-sm: 0 2px 8px hsl(var(--primary) / 0.1);
+    --shadow-md: 0 8px 24px hsl(var(--primary) / 0.15);
+    --shadow-lg: 0 16px 48px hsl(var(--primary) / 0.2);
+    --shadow-glow: 0 0 60px hsl(var(--primary-glow) / 0.6);
+    --shadow-glow-strong: 0 0 80px hsl(var(--primary-glow) / 0.8);
+    
+    /* Glassmorphism */
+    --glass-bg: hsl(240 10% 10% / 0.4);
+    --glass-border: hsl(240 10% 30% / 0.2);
+    --glass-glow: hsl(var(--primary) / 0.1);
   }
 }
 
@@ -52,42 +71,114 @@ All colors MUST be HSL.
 
   body {
     @apply bg-background text-foreground;
-    background: linear-gradient(135deg, hsl(240 10% 3.9%) 0%, hsl(271 50% 8%) 50%, hsl(240 10% 3.9%) 100%);
+    /* Ultra-modern gradient with depth */
+    background: radial-gradient(ellipse at top, hsl(280 80% 15%) 0%, hsl(240 15% 5%) 50%, hsl(280 60% 8%) 100%);
     background-attachment: fixed;
+    /* Subtle noise texture for depth */
+    background-image: 
+      radial-gradient(ellipse at top, hsl(280 80% 15%) 0%, transparent 50%),
+      radial-gradient(ellipse at bottom right, hsl(330 80% 12%) 0%, transparent 50%),
+      radial-gradient(ellipse at bottom left, hsl(200 80% 12%) 0%, transparent 50%);
+  }
+  
+  /* Smooth scrolling for modern feel */
+  html {
+    scroll-behavior: smooth;
   }
 }
 
 @layer utilities {
+  /* 2030 Glassmorphism Effects */
+  .glass {
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid var(--glass-border);
+  }
+  
+  .glass-strong {
+    background: hsl(240 10% 12% / 0.6);
+    backdrop-filter: blur(30px) saturate(200%);
+    -webkit-backdrop-filter: blur(30px) saturate(200%);
+    border: 1px solid hsl(240 10% 30% / 0.3);
+  }
+  
+  /* Advanced Glow Effects */
   .glow-text {
-    text-shadow: 0 0 20px hsl(var(--primary) / 0.5);
+    text-shadow: 
+      0 0 20px hsl(var(--primary) / 0.6),
+      0 0 40px hsl(var(--primary) / 0.4),
+      0 0 60px hsl(var(--primary) / 0.2);
+  }
+  
+  .glow-text-subtle {
+    text-shadow: 0 0 30px hsl(var(--primary) / 0.3);
   }
   
   .glow-border {
-    box-shadow: 0 0 20px hsl(var(--primary) / 0.3);
+    box-shadow: 
+      0 0 20px hsl(var(--primary) / 0.4),
+      inset 0 0 20px hsl(var(--primary) / 0.1);
   }
   
+  .glow-border-strong {
+    box-shadow: 
+      0 0 40px hsl(var(--primary) / 0.6),
+      0 0 60px hsl(var(--primary) / 0.3),
+      inset 0 0 30px hsl(var(--primary) / 0.15);
+  }
+  
+  /* Modern Card Effects */
   .card-glow {
-    box-shadow: 0 4px 24px hsl(var(--primary) / 0.15);
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--shadow-md);
     transition: var(--transition-smooth);
   }
   
   .card-glow:hover {
     box-shadow: var(--shadow-glow);
-    transform: translateY(-2px);
+    border-color: hsl(var(--primary) / 0.3);
+    transform: translateY(-4px) scale(1.01);
   }
   
+  .card-glow-strong {
+    background: hsl(240 10% 12% / 0.7);
+    backdrop-filter: blur(30px) saturate(200%);
+    border: 1px solid hsl(var(--primary) / 0.2);
+    box-shadow: var(--shadow-lg);
+    transition: var(--transition-smooth);
+  }
+  
+  .card-glow-strong:hover {
+    box-shadow: var(--shadow-glow-strong);
+    border-color: hsl(var(--primary) / 0.5);
+    transform: translateY(-6px) scale(1.02);
+  }
+  
+  /* Ultra-smooth Animations */
   .animate-fade-in {
-    animation: fadeIn 0.6s ease-out;
+    animation: fadeIn 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   }
   
   .animate-slide-up {
-    animation: slideUp 0.6s ease-out;
+    animation: slideUp 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   }
   
   .animate-scale-in {
-    animation: scaleIn 0.4s ease-out;
+    animation: scaleIn 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   }
   
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+  
+  .animate-glow-pulse {
+    animation: glowPulse 3s ease-in-out infinite;
+  }
+  
+  /* Keyframes */
   @keyframes fadeIn {
     from {
       opacity: 0;
@@ -100,7 +191,7 @@ All colors MUST be HSL.
   @keyframes slideUp {
     from {
       opacity: 0;
-      transform: translateY(20px);
+      transform: translateY(30px);
     }
     to {
       opacity: 1;
@@ -111,7 +202,7 @@ All colors MUST be HSL.
   @keyframes scaleIn {
     from {
       opacity: 0;
-      transform: scale(0.95);
+      transform: scale(0.9);
     }
     to {
       opacity: 1;
@@ -119,10 +210,38 @@ All colors MUST be HSL.
     }
   }
   
+  @keyframes float {
+    0%, 100% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(-20px);
+    }
+  }
+  
+  @keyframes glowPulse {
+    0%, 100% {
+      box-shadow: 
+        0 0 20px hsl(var(--primary) / 0.4),
+        0 0 40px hsl(var(--primary) / 0.2);
+    }
+    50% {
+      box-shadow: 
+        0 0 40px hsl(var(--primary) / 0.6),
+        0 0 60px hsl(var(--primary) / 0.3),
+        0 0 80px hsl(var(--primary) / 0.1);
+    }
+  }
+  
   .skeleton {
-    background: linear-gradient(90deg, hsl(var(--muted)) 25%, hsl(var(--muted) / 0.5) 50%, hsl(var(--muted)) 75%);
+    background: linear-gradient(
+      90deg,
+      hsl(var(--muted)) 25%,
+      hsl(var(--primary) / 0.1) 50%,
+      hsl(var(--muted)) 75%
+    );
     background-size: 200% 100%;
-    animation: shimmer 1.5s infinite;
+    animation: shimmer 2s infinite;
   }
   
   @keyframes shimmer {
@@ -147,5 +266,37 @@ All colors MUST be HSL.
   
   .animate-snow-fall {
     animation: snow-fall linear infinite;
+  }
+  
+  /* Modern gradient borders */
+  .gradient-border {
+    position: relative;
+    background: var(--glass-bg);
+    border: 1px solid transparent;
+  }
+  
+  .gradient-border::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--secondary)), hsl(var(--accent)));
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+  }
+  
+  /* Neon hover effect */
+  .hover-neon {
+    transition: var(--transition-smooth);
+  }
+  
+  .hover-neon:hover {
+    text-shadow: 
+      0 0 10px hsl(var(--primary) / 0.8),
+      0 0 20px hsl(var(--primary) / 0.6),
+      0 0 30px hsl(var(--primary) / 0.4);
+    transform: scale(1.05);
   }
 }
