@@ -24,12 +24,12 @@ const ImpactPoints = () => {
   ];
 
   const benefits = [
-    "Sohbette görünürlük ve öncelik artışı",
-    "Özel rozetler ve profil özelleştirme",
-    "Topluluk kararlarında oy gücü",
-    "Yeni özelliklere erken erişim",
+    "Site içi sohbette görünürlük ve öncelik artışı",
+    "Özel rozetler ve site profil özelleştirme",
+    "Topluluk kararlarında daha fazla oy gücü",
+    "Yeni özelliklere erken erişim (sadece site içi)",
     "Öncelikli destek yanıtları",
-    "Özel emote'lar ve reaksiyonlar",
+    "Site içi özel emote'lar ve reaksiyonlar",
   ];
 
   return (
@@ -45,6 +45,12 @@ const ImpactPoints = () => {
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
               Yayını Impact Points ile destekle. Puan kazan, sıralamada yüksel ve özel avantajların kilidini aç!
             </p>
+            <div className="max-w-3xl mx-auto p-4 rounded-lg bg-yellow-500/10 border border-yellow-500/30">
+              <p className="text-sm text-yellow-200">
+                ⚠️ <strong>Önemli:</strong> Impact Points sadece bu site içinde geçerlidir. Kick platformundaki abone durumunuz veya rozetleriniz etkilenmez. 
+                Puanlarınız sadece bu sitedeki sohbet, oylama ve diğer topluluk özelliklerinde avantaj sağlar.
+              </p>
+            </div>
           </div>
 
           <Tabs defaultValue="contribute" className="space-y-8">
@@ -160,15 +166,28 @@ const ImpactPoints = () => {
                   ))}
                 </div>
 
-                <div className="mt-8 p-6 rounded-lg bg-primary/10 border border-primary/30">
-                  <h3 className="text-xl font-bold mb-3">Nasıl Çalışır?</h3>
-                  <ul className="space-y-2 text-muted-foreground">
-                    <li>• 1 TL = 1 Impact Point</li>
-                    <li>• Puanlar asla sona ermez (haftalık sıralama hariç)</li>
-                    <li>• Daha fazla puan = Sohbette ve oylamalarda daha fazla görünürlük</li>
-                    <li>• Puan biriktirerek yeni seviyelerin kilidini aç</li>
-                    <li>• İçerik üreticisini desteklerken özel avantajlar kazan</li>
-                  </ul>
+                <div className="mt-8 space-y-4">
+                  <div className="p-6 rounded-lg bg-primary/10 border border-primary/30">
+                    <h3 className="text-xl font-bold mb-3">Nasıl Çalışır?</h3>
+                    <ul className="space-y-2 text-muted-foreground">
+                      <li>• 1 TL = 1 Impact Point</li>
+                      <li>• Puanlar asla sona ermez (haftalık sıralama hariç)</li>
+                      <li>• Daha fazla puan = Site içi sohbet ve oylamalarda daha fazla görünürlük</li>
+                      <li>• Puan biriktirerek yeni seviyelerin kilidini aç</li>
+                      <li>• İçerik üreticisini desteklerken özel avantajlar kazan</li>
+                    </ul>
+                  </div>
+
+                  <div className="p-6 rounded-lg bg-red-500/10 border border-red-500/30">
+                    <h3 className="text-xl font-bold mb-3 text-red-400">⚠️ Kick Platformu Hakkında</h3>
+                    <ul className="space-y-2 text-red-200/90">
+                      <li>• Impact Points <strong>sadece bu sitede</strong> geçerlidir</li>
+                      <li>• Kick.com'daki abone durumunuzu <strong>etkilemez</strong></li>
+                      <li>• Kick rozetleriniz veya ayrıcalıklarınız <strong>değişmez</strong></li>
+                      <li>• Bu, Kick'ten bağımsız bir topluluk özellikleridir</li>
+                      <li>• Resmi Kick aboneliğinizi desteklemek için lütfen Kick platformunu kullanın</li>
+                    </ul>
+                  </div>
                 </div>
               </Card>
             </TabsContent>
