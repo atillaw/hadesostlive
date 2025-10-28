@@ -105,10 +105,11 @@ serve(async (req) => {
 
     // Filter VODs longer than 1 hour
     const longVods = videos.filter((video: any) => {
-      const duration = parseInt(video.duration) || 0;
-      const durationMinutes = Math.floor(duration / 60);
-      console.log(`Video: ${video.session_title || video.title}, Duration: ${durationMinutes} minutes`);
-      return duration >= MIN_DURATION;
+      const durationMs = parseInt(video.duration) || 0;
+      const durationSeconds = Math.floor(durationMs / 1000); // Convert milliseconds to seconds
+      const durationMinutes = Math.floor(durationSeconds / 60);
+      console.log(`Video: ${video.session_title || video.title}, Duration: ${durationMinutes} minutes (${durationSeconds}s)`);
+      return durationSeconds >= MIN_DURATION;
     });
 
     console.log(`Found ${longVods.length} VODs longer than 1 hour`);
@@ -127,22 +128,36 @@ serve(async (req) => {
     const processedVods = [];
 
     for (const video of topVods) {
-      // Extract thumbnail URL
+      // Extract thumbnail URL - Kick API uses different formats
       let thumbnailUrl = null;
-      if (video.thumbnail?.url) {
-        thumbnailUrl = video.thumbnail.url;
-      } else if (typeof video.thumbnail === 'string') {
-        thumbnailUrl = video.thumbnail;
+      if (video.thumbnail) {
+        if (video.thumbnail.src) {
+          // New API format: thumbnail object with src
+          thumbnailUrl = video.thumbnail.src;
+        } else if (video.thumbnail.url) {
+          // Alternative format: thumbnail object with url
+          thumbnailUrl = video.thumbnail.url;
+        } else if (typeof video.thumbnail === 'string') {
+          // String format: direct URL
+          thumbnailUrl = video.thumbnail;
+        }
       } else if (video.thumbnail_url) {
+        // Fallback: separate thumbnail_url field
         thumbnailUrl = video.thumbnail_url;
       }
+      
+      const videoUuid = video.video?.uuid || video.uuid || video.id;
       
       const vod = {
         title: video.session_title || video.title || "Untitled Stream",
         thumbnail_url: thumbnailUrl,
-        video_url: `https://kick.com/${KICK_CHANNEL}/videos/${video.uuid || video.id}`,
+        video_url: `https://kick.com/${KICK_CHANNEL}/videos/${videoUuid}`,
       };
 
+      console.log(`Processing VOD: ${vod.title}`);
+      console.log(`  - Thumbnail: ${thumbnailUrl ? 'Found' : 'Missing'}`);
+      console.log(`  - URL: ${vod.video_url}`);
+      
       processedVods.push(vod);
 
       // Check if VOD already exists
@@ -153,13 +168,15 @@ serve(async (req) => {
         .maybeSingle();
 
       if (!existing) {
-        console.log(`Inserting new VOD: ${vod.title}`);
+        console.log(`  - Status: Inserting new VOD`);
         const { error: insertError } = await supabaseAdmin.from("vods").insert(vod);
         if (insertError) {
-          console.error(`Error inserting VOD: ${insertError.message}`);
+          console.error(`  - Error: ${insertError.message}`);
+        } else {
+          console.log(`  - Success: VOD inserted`);
         }
       } else {
-        console.log(`VOD already exists: ${vod.title}`);
+        console.log(`  - Status: Already exists, skipping`);
       }
     }
 
