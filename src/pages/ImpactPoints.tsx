@@ -5,7 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Trophy, Star, Crown, Zap, TrendingUp } from "lucide-react";
+import { Trophy, Star, Crown, Zap, TrendingUp, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
 
@@ -14,6 +14,7 @@ const ImpactPoints = () => {
   const [amount, setAmount] = useState("100");
   const [leaderboard, setLeaderboard] = useState<any[]>([]);
   const [userPoints, setUserPoints] = useState(0);
+  const [isProcessing, setIsProcessing] = useState(false);
 
   const pointTiers = [
     { name: "Bronze", points: 100, icon: Star, color: "text-orange-400" },
@@ -31,6 +32,116 @@ const ImpactPoints = () => {
     "Öncelikli destek yanıtları",
     "Site içi özel emote'lar ve reaksiyonlar",
   ];
+
+  const handlePurchase = async () => {
+    if (!amount || parseFloat(amount) < 10) {
+      toast({
+        title: "Geçersiz Miktar",
+        description: "Minimum 10 TL giriş yapmalısınız.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsProcessing(true);
+
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) {
+        toast({
+          title: "Giriş Gerekli",
+          description: "Satın alma yapmak için giriş yapmalısınız.",
+          variant: "destructive",
+        });
+        setIsProcessing(false);
+        return;
+      }
+
+      console.log('[PayTR] Initiating payment for amount:', amount);
+
+      const { data, error } = await supabase.functions.invoke('paytr-payment', {
+        body: {
+          amount: amount,
+          userEmail: user.email || 'user@example.com',
+          userName: user.email?.split('@')[0] || 'User',
+        },
+      });
+
+      if (error) {
+        console.error('[PayTR] Error:', error);
+        throw error;
+      }
+
+      if (data.error) {
+        throw new Error(data.error);
+      }
+
+      console.log('[PayTR] Token received:', data.token);
+
+      // PayTR iframe'ini aç
+      const iframe = document.createElement('iframe');
+      iframe.src = `https://www.paytr.com/odeme/guvenli/${data.token}`;
+      iframe.style.position = 'fixed';
+      iframe.style.top = '0';
+      iframe.style.left = '0';
+      iframe.style.width = '100%';
+      iframe.style.height = '100%';
+      iframe.style.zIndex = '9999';
+      iframe.style.border = 'none';
+      iframe.id = 'paytr-iframe';
+
+      // Overlay ekle
+      const overlay = document.createElement('div');
+      overlay.style.position = 'fixed';
+      overlay.style.top = '0';
+      overlay.style.left = '0';
+      overlay.style.width = '100%';
+      overlay.style.height = '100%';
+      overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
+      overlay.style.zIndex = '9998';
+      overlay.id = 'paytr-overlay';
+
+      // Kapat butonu
+      const closeBtn = document.createElement('button');
+      closeBtn.innerHTML = '✕ Kapat';
+      closeBtn.style.position = 'fixed';
+      closeBtn.style.top = '20px';
+      closeBtn.style.right = '20px';
+      closeBtn.style.zIndex = '10000';
+      closeBtn.style.padding = '10px 20px';
+      closeBtn.style.backgroundColor = '#ff4444';
+      closeBtn.style.color = 'white';
+      closeBtn.style.border = 'none';
+      closeBtn.style.borderRadius = '5px';
+      closeBtn.style.cursor = 'pointer';
+      closeBtn.style.fontSize = '16px';
+      closeBtn.onclick = () => {
+        document.getElementById('paytr-iframe')?.remove();
+        document.getElementById('paytr-overlay')?.remove();
+        closeBtn.remove();
+        setIsProcessing(false);
+      };
+
+      document.body.appendChild(overlay);
+      document.body.appendChild(iframe);
+      document.body.appendChild(closeBtn);
+
+      toast({
+        title: "Ödeme Sayfası Açılıyor",
+        description: "PayTR ödeme sayfasına yönlendiriliyorsunuz...",
+      });
+
+    } catch (error: any) {
+      console.error('[PayTR] Purchase error:', error);
+      toast({
+        title: "Hata",
+        description: error.message || "Ödeme işlemi başlatılamadı.",
+        variant: "destructive",
+      });
+      setIsProcessing(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -90,9 +201,23 @@ const ImpactPoints = () => {
                       </div>
                     </div>
 
-                    <Button className="w-full h-12 text-lg" size="lg">
-                      <Zap className="mr-2 h-5 w-5" />
-                      Impact Points Satın Al
+                    <Button 
+                      className="w-full h-12 text-lg" 
+                      size="lg"
+                      onClick={handlePurchase}
+                      disabled={isProcessing}
+                    >
+                      {isProcessing ? (
+                        <>
+                          <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                          İşleniyor...
+                        </>
+                      ) : (
+                        <>
+                          <Zap className="mr-2 h-5 w-5" />
+                          Impact Points Satın Al (PayTR)
+                        </>
+                      )}
                     </Button>
                   </div>
                 </div>

@@ -32,3 +32,9 @@ verify_jwt = false
 
 [functions.send-chat-notification]
 verify_jwt = false
+
+[functions.paytr-payment]
+verify_jwt = false
+
+[functions.paytr-callback]
+verify_jwt = false
