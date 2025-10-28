@@ -5,11 +5,6 @@ import SnowEffect from "@/components/SnowEffect";
 import StreamSection from "@/components/StreamSection";
 import AboutSection from "@/components/AboutSection";
 import YouTubeSection from "@/components/YouTubeSection";
-import ScheduleSection from "@/components/ScheduleSection";
-import TeamApplicationSection from "@/components/TeamApplicationSection";
-import VODSection from "@/components/VODSection";
-import SocialSection from "@/components/SocialSection";
-import EmailSubscribeSection from "@/components/EmailSubscribeSection";
 import KickLiveListener from "@/components/KickLiveListener";
 import Footer from "@/components/Footer";
 import AIChatWidget from "@/components/AIChatWidget";
@@ -32,11 +27,6 @@ const Index = () => {
       <StreamSection />
       <AboutSection />
       <YouTubeSection />
-      <ScheduleSection />
-      <VODSection />
-      <EmailSubscribeSection />
-      <TeamApplicationSection />
-      <SocialSection />
       <Footer />
       <KickLiveListener />
       <AIChatWidget />
