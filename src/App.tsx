@@ -19,6 +19,7 @@ import VODs from "./pages/VODs";
 import Subscribe from "./pages/Subscribe";
 import Team from "./pages/Team";
 import Social from "./pages/Social";
+import Supporters from "./pages/Supporters";
 
 const AppContent = () => {
   usePageTracking();
@@ -29,6 +30,7 @@ const AppContent = () => {
       <Route path="/auth" element={<Auth />} />
       <Route path="/admin" element={<Admin />} />
       <Route path="/destek" element={<SupportPage />} />
+      <Route path="/destekçiler" element={<Supporters />} />
       <Route path="/memeler" element={<Memes />} />
       <Route path="/yukle" element={<UploadMeme />} />
       <Route path="/sohbet" element={<Chat />} />

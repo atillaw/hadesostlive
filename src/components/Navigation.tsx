@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Settings, DollarSign, ImageIcon, Video, MessageCircle, Menu, X, Snowflake } from "lucide-react";
+import { Settings, DollarSign, ImageIcon, Video, MessageCircle, Menu, X, Snowflake, Heart } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useIsMobile } from "@/hooks/use-mobile";
 
@@ -9,6 +9,7 @@ const Navigation = ({ onSnowToggle, snowEnabled }: { onSnowToggle?: () => void; 
   const isMobile = useIsMobile();
 
   const navLinks = [
+    { to: "/destekçiler", icon: Heart, label: "Destekçiler" },
     { to: "/memeler", icon: ImageIcon, label: "Meme's" },
     { to: "/sohbet", icon: MessageCircle, label: "Sohbet" },
     { to: "/klipler", icon: Video, label: "Klipler" },
