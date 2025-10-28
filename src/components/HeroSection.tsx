@@ -110,7 +110,7 @@ const HeroSection = () => {
         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center animate-slide-up" style={{ animationDelay: '0.6s' }}>
           <Button 
             size="lg" 
-            className="text-base md:text-lg px-8 py-6 shadow-lg hover:shadow-xl transition-all hover:scale-105"
+            className="rounded-full text-base md:text-lg px-8 py-6 shadow-lg hover:shadow-xl transition-all hover:scale-105"
             asChild
           >
             <a href="https://kick.com/hadesost" target="_blank" rel="noopener noreferrer">
@@ -121,7 +121,7 @@ const HeroSection = () => {
           <Button 
             size="lg" 
             variant="outline" 
-            className="text-base md:text-lg px-8 py-6 border-2 hover:bg-card/50 transition-all hover:scale-105"
+            className="rounded-full text-base md:text-lg px-8 py-6 border-2 hover:bg-card/50 transition-all hover:scale-105"
             asChild
           >
             <a href="https://discord.gg/FK48T8D77Y" target="_blank" rel="noopener noreferrer">
