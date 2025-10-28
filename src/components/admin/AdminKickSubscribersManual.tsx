@@ -12,6 +12,7 @@ const AdminKickSubscribersManual = () => {
   const [username, setUsername] = useState("");
   const [tier, setTier] = useState<string>("Tier 1");
   const [subType, setSubType] = useState<string>("normal");
+  const [followerSince, setFollowerSince] = useState("");
   const [adding, setAdding] = useState(false);
 
   const handleAddSubscriber = async (e: React.FormEvent) => {
@@ -36,6 +37,7 @@ const AdminKickSubscribersManual = () => {
           subscription_tier: tier,
           subscription_type: subType,
           subscribed_at: new Date().toISOString(),
+          follower_since: followerSince ? new Date(followerSince).toISOString() : null,
         });
 
       if (error) throw error;
@@ -48,6 +50,7 @@ const AdminKickSubscribersManual = () => {
       setUsername("");
       setTier("Tier 1");
       setSubType("normal");
+      setFollowerSince("");
     } catch (error: any) {
       console.error("Error adding subscriber:", error);
       toast({
@@ -105,6 +108,16 @@ const AdminKickSubscribersManual = () => {
               <SelectItem value="renewed">Yenilenen</SelectItem>
             </SelectContent>
           </Select>
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="followerSince">Takibe Başlama Tarihi (Opsiyonel)</Label>
+          <Input
+            id="followerSince"
+            type="datetime-local"
+            value={followerSince}
+            onChange={(e) => setFollowerSince(e.target.value)}
+          />
         </div>
 
         <Button type="submit" disabled={adding} className="w-full">

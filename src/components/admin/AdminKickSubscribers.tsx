@@ -12,6 +12,7 @@ interface Subscriber {
   subscription_tier: string;
   subscription_type: string | null;
   subscribed_at: string;
+  follower_since: string | null;
 }
 
 const AdminKickSubscribers = () => {
@@ -94,35 +95,47 @@ const AdminKickSubscribers = () => {
           </div>
         ) : (
           <div className="space-y-2 max-h-[400px] overflow-y-auto">
-            {subscribers.map((sub) => (
-              <div
-                key={sub.id}
-                className="flex items-center justify-between p-3 rounded-lg border"
-              >
-                <div className="flex-1">
-                  <div className="flex items-center gap-2">
-                    <p className="font-medium">{sub.username}</p>
-                    <Badge variant="outline">{sub.subscription_tier}</Badge>
-                  </div>
-                  <p className="text-xs text-muted-foreground">
-                    {new Date(sub.subscribed_at).toLocaleDateString("tr-TR")}
-                    {sub.subscription_type && ` • ${sub.subscription_type}`}
-                  </p>
-                </div>
-                <Button
-                  variant="destructive"
-                  size="sm"
-                  onClick={() => handleDelete(sub.id, sub.username)}
-                  disabled={deletingId === sub.id}
+            {subscribers.map((sub) => {
+              const monthsSinceSubscription = Math.floor(
+                (new Date().getTime() - new Date(sub.subscribed_at).getTime()) / (1000 * 60 * 60 * 24 * 30)
+              );
+              
+              return (
+                <div
+                  key={sub.id}
+                  className="flex items-center justify-between p-3 rounded-lg border"
                 >
-                  {deletingId === sub.id ? (
-                    "Siliniyor..."
-                  ) : (
-                    <Trash2 className="h-4 w-4" />
-                  )}
-                </Button>
-              </div>
-            ))}
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2">
+                      <p className="font-medium">{sub.username}</p>
+                      <Badge variant="outline">{sub.subscription_tier}</Badge>
+                      <Badge variant="secondary">{monthsSinceSubscription} aylık</Badge>
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      Abone: {new Date(sub.subscribed_at).toLocaleDateString("tr-TR")}
+                      {sub.subscription_type && ` • ${sub.subscription_type}`}
+                    </p>
+                    {sub.follower_since && (
+                      <p className="text-xs text-muted-foreground">
+                        Takip: {new Date(sub.follower_since).toLocaleDateString("tr-TR")}
+                      </p>
+                    )}
+                  </div>
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    onClick={() => handleDelete(sub.id, sub.username)}
+                    disabled={deletingId === sub.id}
+                  >
+                    {deletingId === sub.id ? (
+                      "Siliniyor..."
+                    ) : (
+                      <Trash2 className="h-4 w-4" />
+                    )}
+                  </Button>
+                </div>
+              );
+            })}
           </div>
         )}
       </CardContent>

@@ -275,6 +275,7 @@ export type Database = {
       kick_subscribers: {
         Row: {
           created_at: string
+          follower_since: string | null
           id: string
           subscribed_at: string
           subscription_tier: string
@@ -283,6 +284,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          follower_since?: string | null
           id?: string
           subscribed_at?: string
           subscription_tier: string
@@ -291,6 +293,7 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          follower_since?: string | null
           id?: string
           subscribed_at?: string
           subscription_tier?: string
