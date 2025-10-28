@@ -67,7 +67,7 @@ const SocialSection = () => {
   ];
 
   return (
-    <section className="py-16 md:py-24 container mx-auto px-4 animate-fade-in">
+    <section id="social" className="py-16 md:py-24 container mx-auto px-4 animate-fade-in scroll-mt-20">
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-12 animate-slide-up">
           <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4 glow-text">

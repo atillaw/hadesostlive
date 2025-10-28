@@ -10,7 +10,7 @@ const ScheduleSection = () => {
   ];
 
   return (
-    <section className="py-16 md:py-24 container mx-auto px-4 animate-fade-in">
+    <section id="schedule" className="py-16 md:py-24 container mx-auto px-4 animate-fade-in scroll-mt-20">
       <div className="max-w-5xl mx-auto">
         <div className="text-center mb-12 animate-slide-up">
           <Calendar className="w-16 h-16 mx-auto mb-4 text-primary animate-pulse" />

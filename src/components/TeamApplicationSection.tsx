@@ -72,7 +72,7 @@ const TeamApplicationSection = () => {
   };
 
   return (
-    <section className="py-20 px-4">
+    <section id="team" className="py-20 px-4 scroll-mt-20">
       <div className="container mx-auto max-w-2xl">
         <h2 className="text-4xl font-bold mb-4 text-center glow-text">Takımımıza Katılmak İster misin?</h2>
         <p className="text-muted-foreground text-center mb-8">

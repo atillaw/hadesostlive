@@ -74,7 +74,7 @@ const EmailSubscribeSection = () => {
   };
 
   return (
-    <section className="py-16 md:py-24 px-4 bg-gradient-to-b from-background to-primary/5 animate-fade-in">
+    <section id="subscribe" className="py-16 md:py-24 px-4 bg-gradient-to-b from-background to-primary/5 animate-fade-in scroll-mt-20">
       <div className="container mx-auto max-w-2xl">
         <Card className="p-8 md:p-10 bg-card/50 backdrop-blur-sm border-primary/30 card-glow text-center animate-slide-up">
           <div className="flex justify-center mb-6 animate-scale-in">

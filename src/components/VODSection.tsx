@@ -167,7 +167,7 @@ const VODSection = () => {
   }
 
   return (
-    <section className="py-16 md:py-24 px-4 bg-gradient-to-b from-background to-background/50 animate-fade-in">
+    <section id="vods" className="py-16 md:py-24 px-4 bg-gradient-to-b from-background to-background/50 animate-fade-in scroll-mt-20">
       <div className="container mx-auto">
         <div className="text-center mb-12 animate-slide-up">
           <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4 glow-text">VODs & Highlights</h2>

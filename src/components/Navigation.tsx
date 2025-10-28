@@ -16,6 +16,14 @@ const Navigation = ({ onSnowToggle, snowEnabled }: { onSnowToggle?: () => void; 
     { to: "/admin", icon: Settings, label: "Admin", target: "_blank" },
   ];
 
+  const homeNavLinks = [
+    { to: "/#schedule", label: "Yayın Akışı" },
+    { to: "/#vods", label: "VODs & Highlights" },
+    { to: "/#subscribe", label: "Haberdar Ol!" },
+    { to: "/#team", label: "Takıma Katıl" },
+    { to: "/#social", label: "Topluluklar" },
+  ];
+
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-lg border-b border-border/50 shadow-lg">
       <div className="container mx-auto px-4 py-4">
@@ -42,6 +50,17 @@ const Navigation = ({ onSnowToggle, snowEnabled }: { onSnowToggle?: () => void; 
                   <Snowflake className={`h-4 w-4 ${snowEnabled ? 'animate-spin' : ''}`} style={{ animationDuration: '3s' }} />
                 </Button>
               )}
+              {homeNavLinks.map((link) => (
+                <a key={link.to} href={link.to}>
+                  <Button 
+                    variant="ghost" 
+                    size="sm"
+                    className="hover:bg-card/50 hover:text-primary transition-all hover:scale-105"
+                  >
+                    {link.label}
+                  </Button>
+                </a>
+              ))}
               {navLinks.map((link) => (
                 <Link key={link.to} to={link.to} target={link.target}>
                   <Button 
@@ -73,6 +92,21 @@ const Navigation = ({ onSnowToggle, snowEnabled }: { onSnowToggle?: () => void; 
         {/* Mobile Menu */}
         {isMobile && isOpen && (
           <div className="mt-4 pb-4 space-y-2 animate-slide-up">
+            {homeNavLinks.map((link) => (
+              <a 
+                key={link.to} 
+                href={link.to}
+                onClick={() => setIsOpen(false)}
+                className="block"
+              >
+                <Button 
+                  variant="ghost" 
+                  className="w-full justify-start hover:bg-card/50 hover:text-primary transition-all"
+                >
+                  {link.label}
+                </Button>
+              </a>
+            ))}
             {navLinks.map((link) => (
               <Link 
                 key={link.to} 
