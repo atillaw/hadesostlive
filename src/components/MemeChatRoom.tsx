@@ -25,20 +25,92 @@ const MemeChatRoom = () => {
   const [hasSetUsername, setHasSetUsername] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // Profanity filter - Turkish curse words
+  // Comprehensive profanity filter - Turkish and English
   const profanityList = [
-    'amk', 'amına', 'amq', 'aq', 'orospu', 'oç', 'piç', 'sik', 'yarrak', 
-    'göt', 'am', 'siktir', 'bok', 'kahpe', 'pezevenk', 'ibne', 'puşt',
-    'dalyarak', 'salak', 'aptal', 'gerizekalı', 'mal', 'manyak', 'dangalak',
-    'amcık', 'amcik', 'taşak', 'tasak', 'yarak', 'götveren', 'sikik'
+    // Turkish
+    'amk', 'amina', 'amına', 'amq', 'aq', 'amik', 'amık', 'amcik', 'amcık',
+    'orospu', 'orospucocugu', 'orospuçocuğu', 'oç', 'oc', 'pic', 'piç',
+    'sik', 'sikerim', 'siktir', 'sikik', 'sikiyim', 'sikim', 'sikiş', 'sikis',
+    'yarrak', 'yarak', 'yarrağım', 'yarragim',
+    'göt', 'got', 'götü', 'gotu', 'götveren', 'gotveren', 'götünü', 'gotunu',
+    'am', 'amın', 'amin',
+    'bok', 'boku', 'bokunu',
+    'kahpe', 'kaltak', 'sürtük', 'surtuk',
+    'pezevenk', 'pezeveng', 'pezo',
+    'ibne', 'ipne', 'puşt', 'pust', 'puşt', 'gay',
+    'dalyarak', 'dalyarrak', 'dalyarağ',
+    'salak', 'aptal', 'gerizekalı', 'gerizekalı', 'gerzek', 'mal', 'manyak', 'dangalak',
+    'taşak', 'tasak', 'taşşak', 'tassak',
+    'fuck', 'shit', 'bitch', 'asshole', 'bastard', 'damn', 'crap',
+    'dick', 'cock', 'pussy', 'cunt', 'whore', 'slut',
+    // Common variations
+    'amına koyim', 'amina koyim', 'aminakoyim', 'aminakoyim',
+    'sikeyim', 'siktir git', 'siktirgit',
+    'ananı', 'anani', 'anan', 'anasını', 'anasini',
+    'allahını', 'allahini', 'allah',
   ];
 
   const censorMessage = (text: string): string => {
+    // Normalize function to handle various obfuscation techniques
+    const normalize = (str: string): string => {
+      return str
+        .toLowerCase()
+        .replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, '') // Remove special chars
+        .replace(/\s+/g, '') // Remove spaces
+        .replace(/[4@]/g, 'a') // Common substitutions
+        .replace(/[1!i̇]/g, 'i')
+        .replace(/[0]/g, 'o')
+        .replace(/[3]/g, 'e')
+        .replace(/[5]/g, 's')
+        .replace(/[ğg]/g, 'g')
+        .replace(/[üu]/g, 'u')
+        .replace(/[şs]/g, 's')
+        .replace(/[çc]/g, 'c')
+        .replace(/[öo]/g, 'o')
+        .replace(/[ı]/g, 'i');
+    };
+
     let censored = text;
+    
+    // First pass: Check for exact and spaced variations
     profanityList.forEach(word => {
-      const regex = new RegExp(`\\b${word}\\b`, 'gi');
-      censored = censored.replace(regex, '***');
+      // Create pattern that matches word with optional spaces/chars between letters
+      const letters = word.split('');
+      const spacedPattern = letters.join('[\\s\\W]*');
+      const regex = new RegExp(spacedPattern, 'gi');
+      
+      // Replace matches
+      censored = censored.replace(regex, (match) => {
+        return '*'.repeat(Math.max(3, match.length));
+      });
     });
+
+    // Second pass: Check normalized version for heavily obfuscated words
+    const normalizedText = normalize(censored);
+    const normalizedWords = profanityList.map(w => normalize(w));
+    
+    normalizedWords.forEach((normalizedWord, index) => {
+      if (normalizedWord.length >= 2 && normalizedText.includes(normalizedWord)) {
+        // If normalized profanity found, censor the whole message to be safe
+        // This is aggressive but necessary for heavily obfuscated content
+        const originalWord = profanityList[index];
+        const pattern = originalWord.split('').join('[\\s\\W\\d]*');
+        const aggressiveRegex = new RegExp(pattern, 'gi');
+        censored = censored.replace(aggressiveRegex, (match) => {
+          return '*'.repeat(Math.max(3, match.length));
+        });
+      }
+    });
+
+    // Third pass: Check for repeated letters (e.g., "siiiik", "amkkk")
+    profanityList.forEach(word => {
+      const lettersWithRepeats = word.split('').map(letter => `${letter}+`).join('[\\s\\W]*');
+      const repeatRegex = new RegExp(lettersWithRepeats, 'gi');
+      censored = censored.replace(repeatRegex, (match) => {
+        return '*'.repeat(Math.max(3, match.length));
+      });
+    });
+
     return censored;
   };
 
