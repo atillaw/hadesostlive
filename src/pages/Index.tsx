@@ -8,6 +8,7 @@ import YouTubeSection from "@/components/YouTubeSection";
 import KickLiveListener from "@/components/KickLiveListener";
 import Footer from "@/components/Footer";
 import AIChatWidget from "@/components/AIChatWidget";
+import ErrorBoundary from "@/components/ErrorBoundary";
 
 const Index = () => {
   const [snowEnabled, setSnowEnabled] = useState(() => {
@@ -21,15 +22,21 @@ const Index = () => {
 
   return (
     <div className="min-h-screen">
-      <SnowEffect enabled={snowEnabled} />
+      <ErrorBoundary fallback={null}>
+        <SnowEffect enabled={snowEnabled} />
+      </ErrorBoundary>
       <Navigation onSnowToggle={() => setSnowEnabled(!snowEnabled)} snowEnabled={snowEnabled} />
       <HeroSection />
       <StreamSection />
       <AboutSection />
       <YouTubeSection />
       <Footer />
-      <KickLiveListener />
-      <AIChatWidget />
+      <ErrorBoundary fallback={null}>
+        <KickLiveListener />
+      </ErrorBoundary>
+      <ErrorBoundary fallback={null}>
+        <AIChatWidget />
+      </ErrorBoundary>
     </div>
   );
 };

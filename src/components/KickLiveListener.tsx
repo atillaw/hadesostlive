@@ -42,6 +42,10 @@ const KickLiveListener = () => {
 
   const connectWebSocket = () => {
     try {
+      // Temporarily disable WebSocket connection to prevent errors
+      console.log("[Kick Listener] WebSocket temporarily disabled");
+      return;
+      
       const projectId = "txinupgxlqagjyshvxty";
       const wsUrl = `wss://${projectId}.supabase.co/functions/v1/kick-subscriber-listener`;
       
