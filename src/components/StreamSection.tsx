@@ -15,8 +15,8 @@ const StreamSection = () => {
         
         <div className="grid lg:grid-cols-[1fr,400px] gap-6 animate-slide-up">
           {/* Stream Player */}
-          <Card className="overflow-hidden border-primary/30 card-glow bg-card/50 backdrop-blur-sm">
-            <div className="aspect-video bg-muted/50 relative group">
+          <Card className="overflow-hidden border-primary/30 card-glow bg-card/50 backdrop-blur-sm p-0">
+            <div className="aspect-video relative group">
               <iframe
                 src="https://player.kick.com/hadesost"
                 className="absolute inset-0 w-full h-full"
@@ -25,7 +25,6 @@ const StreamSection = () => {
                 allowFullScreen={true}
                 title="HadesOST Live Stream"
               />
-              <div className="absolute inset-0 border-2 border-primary/20 pointer-events-none group-hover:border-primary/40 transition-colors" />
             </div>
             <div className="p-4 bg-card/80 backdrop-blur">
               <div className="flex items-center justify-between">
