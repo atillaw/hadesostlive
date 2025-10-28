@@ -82,11 +82,19 @@ const AdminUsers = () => {
         },
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error("Edge function error:", error);
+        throw error;
+      }
+
+      const responseData = data as any;
+      if (responseData?.error) {
+        throw new Error(responseData.error);
+      }
 
       toast({
-        title: "Kullanıcı Oluşturuldu!",
-        description: `${newUsername} başarıyla oluşturuldu.`,
+        title: "Başarılı",
+        description: responseData?.message || `${newUsername} başarıyla oluşturuldu.`,
       });
 
       setNewEmail("");
@@ -95,9 +103,10 @@ const AdminUsers = () => {
       setNewRole("editor");
       loadUsers();
     } catch (error: any) {
+      console.error("User creation error:", error);
       toast({
         title: "Hata",
-        description: "Kullanıcı oluşturulamadı.",
+        description: error?.message || "Kullanıcı oluşturulamadı.",
         variant: "destructive",
       });
     } finally {

@@ -133,7 +133,8 @@ serve(async (req) => {
     return new Response(
       JSON.stringify({ 
         success: true,
-        user: authData.user,
+        message: "Kullanıcı rolü başarıyla atandı",
+        userId: targetUserId,
       }),
       { 
         headers: { "Content-Type": "application/json", ...corsHeaders },
@@ -143,7 +144,10 @@ serve(async (req) => {
   } catch (error: any) {
     console.error("[Server Error] Create user:", error);
     return new Response(
-      JSON.stringify({ error: "Kullanıcı oluşturma başarısız oldu" }),
+      JSON.stringify({ 
+        error: error.message || "Kullanıcı oluşturma başarısız oldu",
+        details: error
+      }),
       { 
         headers: { "Content-Type": "application/json", ...corsHeaders },
         status: 500,
