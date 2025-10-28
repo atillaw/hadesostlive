@@ -178,7 +178,7 @@ const TeamApplicationSection = () => {
             />
           </div>
 
-          <Button type="submit" disabled={isSubmitting} className="w-full">
+          <Button type="submit" disabled={isSubmitting} className="w-full rounded-full">
             {isSubmitting ? "Gönderiliyor..." : "Başvuruyu Gönder"}
           </Button>
         </form>

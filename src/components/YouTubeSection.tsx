@@ -65,7 +65,7 @@ const YouTubeSection = () => {
                 className="w-full max-w-md group/btn"
               >
                 <Button 
-                  className="w-full group/btn h-14 text-lg font-bold bg-gradient-to-r from-red-500 via-red-600 to-red-700 hover:from-red-600 hover:via-red-700 hover:to-red-800 shadow-lg shadow-red-500/30 hover:shadow-2xl hover:shadow-red-500/50 border-2 border-red-400/30 hover:border-red-400/50 transition-all duration-300"
+                  className="w-full rounded-full group/btn h-14 text-lg font-bold bg-gradient-to-r from-red-500 via-red-600 to-red-700 hover:from-red-600 hover:via-red-700 hover:to-red-800 shadow-lg shadow-red-500/30 hover:shadow-2xl hover:shadow-red-500/50 border-2 border-red-400/30 hover:border-red-400/50 transition-all duration-300"
                   size="lg"
                 >
                   <Youtube className="mr-2 h-6 w-6 group-hover/btn:scale-125 group-hover/btn:rotate-12 transition-transform duration-300" />

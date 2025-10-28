@@ -44,7 +44,7 @@ const Navigation = ({ onSnowToggle, snowEnabled }: { onSnowToggle?: () => void; 
                   variant={snowEnabled ? "default" : "outline"}
                   size="sm"
                   onClick={onSnowToggle}
-                  className="hover:scale-105 transition-transform"
+                  className="rounded-full hover:scale-105 transition-transform"
                   title={snowEnabled ? "Karı Kapat" : "Karı Aç"}
                 >
                   <Snowflake className={`h-4 w-4 ${snowEnabled ? 'animate-spin' : ''}`} style={{ animationDuration: '3s' }} />
@@ -55,7 +55,7 @@ const Navigation = ({ onSnowToggle, snowEnabled }: { onSnowToggle?: () => void; 
                   <Button 
                     variant="ghost" 
                     size="sm"
-                    className="hover:bg-card/50 hover:text-primary transition-all hover:scale-105"
+                    className="rounded-full hover:bg-card/50 hover:text-primary transition-all hover:scale-105"
                   >
                     {link.label}
                   </Button>
@@ -66,7 +66,7 @@ const Navigation = ({ onSnowToggle, snowEnabled }: { onSnowToggle?: () => void; 
                   <Button 
                     variant="outline" 
                     size="sm"
-                    className="hover:bg-card/50 hover:border-primary/50 transition-all hover:scale-105"
+                    className="rounded-full hover:bg-card/50 hover:border-primary/50 transition-all hover:scale-105"
                   >
                     <link.icon className="mr-2 h-4 w-4" />
                     {link.label}
@@ -101,7 +101,7 @@ const Navigation = ({ onSnowToggle, snowEnabled }: { onSnowToggle?: () => void; 
               >
                 <Button 
                   variant="ghost" 
-                  className="w-full justify-start hover:bg-card/50 hover:text-primary transition-all"
+                  className="w-full justify-start rounded-full hover:bg-card/50 hover:text-primary transition-all"
                 >
                   {link.label}
                 </Button>
@@ -117,7 +117,7 @@ const Navigation = ({ onSnowToggle, snowEnabled }: { onSnowToggle?: () => void; 
               >
                 <Button 
                   variant="outline" 
-                  className="w-full justify-start hover:bg-card/50 hover:border-primary/50 transition-all"
+                  className="w-full justify-start rounded-full hover:bg-card/50 hover:border-primary/50 transition-all"
                 >
                   <link.icon className="mr-2 h-4 w-4" />
                   {link.label}
