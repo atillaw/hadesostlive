@@ -5,12 +5,19 @@ import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Flame, Sparkles, Dog, Send } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
+import { supabase } from "@/integrations/supabase/client";
+import { z } from "zod";
 
 interface Message {
   role: "user" | "character";
   content: string;
   character?: string;
 }
+
+const messageSchema = z.string()
+  .trim()
+  .min(1, "Mesaj boş olamaz")
+  .max(500, "Mesaj çok uzun (max 500 karakter)");
 
 const characters = [
   {
@@ -55,47 +62,60 @@ const AICharacters = () => {
   const handleSendMessage = async () => {
     if (!input.trim()) return;
 
+    // Validate input
+    try {
+      messageSchema.parse(input);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        toast({
+          title: "Geçersiz Mesaj",
+          description: error.errors[0].message,
+          variant: "destructive",
+        });
+      }
+      return;
+    }
+
     const userMessage: Message = {
       role: "user",
       content: input,
     };
 
     setMessages((prev) => [...prev, userMessage]);
+    const currentInput = input;
     setInput("");
     setIsLoading(true);
 
-    // Simulated AI response - in real implementation, this would call an AI API
-    setTimeout(() => {
-      const responses = {
-        hades: [
-          "Hmm, ilginç bir soru. Yeraltı dünyasında bunun cevabını bulmak kolay değil...",
-          "Ölümlü, beni dinle. Bu konu hakkında sana önemli bir şey söyleyeceğim...",
-          "Şimşeklerin parlaması gibi bir cevap! Ama ben Hades'im, onlardan daha güçlüyüm.",
-        ],
-        persephone: [
-          "Ne güzel bir düşünce! İlkbaharda çiçekler gibi yeni fikirler açıyor...",
-          "Anladım, senin bakış açın çok değerli. Bazen en karanlık zamanlarda bile umut vardır.",
-          "Bu bana doğanın döngüsünü hatırlatıyor. Her şey bir sebepten değişir ve gelişir.",
-        ],
-        cerberus: [
-          "Hav hav! *kuyruk sallama* İyi bir soru! Ben korumayı severim!",
-          "Grrr... Yani, bu konuda dikkatli olmak gerek. Ben daima tetikte beklerim!",
-          "*koku alır* Hmm, bu konu ilginç! Üç kafam da aynı fikirde!",
-        ],
-      };
+    try {
+      const { data, error } = await supabase.functions.invoke('ai-character-chat', {
+        body: {
+          message: currentInput,
+          characterId: selectedCharacter.id,
+        },
+      });
 
-      const characterResponses = responses[selectedCharacter.id as keyof typeof responses];
-      const randomResponse = characterResponses[Math.floor(Math.random() * characterResponses.length)];
+      if (error) throw error;
 
       const aiMessage: Message = {
         role: "character",
-        content: randomResponse,
+        content: data.message,
         character: selectedCharacter.name,
       };
 
       setMessages((prev) => [...prev, aiMessage]);
+    } catch (error) {
+      console.error('AI Chat error:', error);
+      toast({
+        title: "Hata",
+        description: "AI yanıt veremedi. Lütfen tekrar deneyin.",
+        variant: "destructive",
+      });
+      
+      // Remove user message on error
+      setMessages((prev) => prev.slice(0, -1));
+    } finally {
       setIsLoading(false);
-    }, 1000);
+    }
   };
 
   const handleCharacterChange = (character: typeof characters[0]) => {
@@ -196,10 +216,11 @@ const AICharacters = () => {
           <div className="flex gap-2">
             <Input
               value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyPress={(e) => e.key === "Enter" && handleSendMessage()}
-              placeholder="Mesajını yaz..."
+              onChange={(e) => setInput(e.target.value.slice(0, 500))}
+              onKeyPress={(e) => e.key === "Enter" && !isLoading && handleSendMessage()}
+              placeholder="Mesajını yaz... (max 500 karakter)"
               disabled={isLoading}
+              maxLength={500}
             />
             <Button onClick={handleSendMessage} disabled={isLoading || !input.trim()}>
               <Send className="h-4 w-4" />

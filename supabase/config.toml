@@ -3,6 +3,9 @@ project_id = "txinupgxlqagjyshvxty"
 [functions.ai-chat]
 verify_jwt = false
 
+[functions.ai-character-chat]
+verify_jwt = false
+
 [functions.send-team-application]
 verify_jwt = false
 
