@@ -15,8 +15,8 @@ const StreamSection = () => {
         
         <div className="grid lg:grid-cols-[1fr,400px] gap-6 animate-slide-up">
           {/* Stream Player */}
-          <Card className="overflow-hidden border-primary/30 card-glow bg-card/50 backdrop-blur-sm p-0">
-            <div className="aspect-video relative group">
+          <div className="overflow-hidden rounded-lg border border-primary/30 card-glow bg-card/50 backdrop-blur-sm">
+            <div className="aspect-video relative">
               <iframe
                 src="https://player.kick.com/hadesost"
                 className="absolute inset-0 w-full h-full"
@@ -45,7 +45,7 @@ const StreamSection = () => {
                 </a>
               </div>
             </div>
-          </Card>
+          </div>
           
           {/* Chat */}
           <Card className="overflow-hidden border-primary/30 card-glow bg-card/50 backdrop-blur-sm lg:h-[720px] h-[500px] flex flex-col">
