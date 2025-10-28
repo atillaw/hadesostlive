@@ -13,6 +13,7 @@ const AdminKickSubscribersManual = () => {
   const [tier, setTier] = useState<string>("Tier 1");
   const [subType, setSubType] = useState<string>("normal");
   const [followerSince, setFollowerSince] = useState("");
+  const [monthsSubscribed, setMonthsSubscribed] = useState<string>("1");
   const [adding, setAdding] = useState(false);
 
   const handleAddSubscriber = async (e: React.FormEvent) => {
@@ -30,13 +31,19 @@ const AdminKickSubscribersManual = () => {
     setAdding(true);
 
     try {
+      // Calculate subscribed_at based on months
+      const now = new Date();
+      const months = parseInt(monthsSubscribed) || 1;
+      const subscribedDate = new Date(now);
+      subscribedDate.setMonth(subscribedDate.getMonth() - months);
+      
       const { error } = await supabase
         .from("kick_subscribers")
         .insert({
           username: username.trim(),
           subscription_tier: tier,
           subscription_type: subType,
-          subscribed_at: new Date().toISOString(),
+          subscribed_at: subscribedDate.toISOString(),
           follower_since: followerSince ? new Date(followerSince).toISOString() : null,
         });
 
@@ -51,6 +58,7 @@ const AdminKickSubscribersManual = () => {
       setTier("Tier 1");
       setSubType("normal");
       setFollowerSince("");
+      setMonthsSubscribed("1");
     } catch (error: any) {
       console.error("Error adding subscriber:", error);
       toast({
@@ -106,6 +114,32 @@ const AdminKickSubscribersManual = () => {
               <SelectItem value="normal">Normal</SelectItem>
               <SelectItem value="gifted">Hediye</SelectItem>
               <SelectItem value="renewed">Yenilenen</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="monthsSubscribed">Kaç Aylık Abone</Label>
+          <Select value={monthsSubscribed} onValueChange={setMonthsSubscribed}>
+            <SelectTrigger>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="1">1 Ay</SelectItem>
+              <SelectItem value="2">2 Ay</SelectItem>
+              <SelectItem value="3">3 Ay</SelectItem>
+              <SelectItem value="4">4 Ay</SelectItem>
+              <SelectItem value="5">5 Ay</SelectItem>
+              <SelectItem value="6">6 Ay</SelectItem>
+              <SelectItem value="7">7 Ay</SelectItem>
+              <SelectItem value="8">8 Ay</SelectItem>
+              <SelectItem value="9">9 Ay</SelectItem>
+              <SelectItem value="10">10 Ay</SelectItem>
+              <SelectItem value="11">11 Ay</SelectItem>
+              <SelectItem value="12">12 Ay</SelectItem>
+              <SelectItem value="18">18 Ay</SelectItem>
+              <SelectItem value="24">24 Ay</SelectItem>
+              <SelectItem value="36">36 Ay</SelectItem>
             </SelectContent>
           </Select>
         </div>
