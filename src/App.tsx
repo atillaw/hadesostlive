@@ -21,6 +21,7 @@ import Subscribe from "./pages/Subscribe";
 import Team from "./pages/Team";
 import Social from "./pages/Social";
 import Aboneler from "./pages/Aboneler";
+import ImpactPoints from "./pages/ImpactPoints";
 
 
 const AppContent = () => {
@@ -43,6 +44,7 @@ const AppContent = () => {
       <Route path="/haberdar-ol" element={<Subscribe />} />
       <Route path="/takima-katil" element={<Team />} />
       <Route path="/topluluklar" element={<Social />} />
+      <Route path="/impact-points" element={<ImpactPoints />} />
       <Route path="*" element={<NotFound />} />
     </Routes>
   );

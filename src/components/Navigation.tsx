@@ -1,33 +1,30 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Settings, DollarSign, ImageIcon, Video, MessageCircle, Menu, X, Snowflake, Heart } from "lucide-react";
-import { useState, useEffect } from "react";
-import { useIsMobile } from "@/hooks/use-mobile";
+import { Settings, DollarSign, ImageIcon, Video, MessageCircle, Menu, X, Snowflake, Heart, Home, Calendar, Bell, Users, Trophy } from "lucide-react";
+import { useState } from "react";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 
 const Navigation = ({ onSnowToggle, snowEnabled }: { onSnowToggle?: () => void; snowEnabled?: boolean }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const isMobile = useIsMobile();
 
-  const navLinks = [
+  const allNavLinks = [
+    { to: "/", icon: Home, label: "Ana Sayfa" },
+    { to: "/yayin-akisi", icon: Calendar, label: "Yayın Akışı" },
+    { to: "/vodlar", icon: Video, label: "VODs & Highlights" },
+    { to: "/haberdar-ol", icon: Bell, label: "Haberdar Ol!" },
+    { to: "/takima-katil", icon: Users, label: "Takıma Katıl" },
+    { to: "/topluluklar", icon: Users, label: "Topluluklar" },
     { to: "/aboneler", icon: Heart, label: "Aboneler" },
     { to: "/memeler", icon: ImageIcon, label: "Meme's" },
     { to: "/sohbet", icon: MessageCircle, label: "Sohbet" },
     { to: "/klipler", icon: Video, label: "Klipler" },
-    { to: "/destek", icon: DollarSign, label: "Destek" },
-    { to: "/admin", icon: Settings, label: "Admin", target: "_blank" },
-  ];
-
-  const homeNavLinks = [
-    { to: "/yayin-akisi", label: "Yayın Akışı" },
-    { to: "/vodlar", label: "VODs & Highlights" },
-    { to: "/haberdar-ol", label: "Haberdar Ol!" },
-    { to: "/takima-katil", label: "Takıma Katıl" },
-    { to: "/topluluklar", label: "Topluluklar" },
+    { to: "/destek", icon: Trophy, label: "Impact Points" },
+    { to: "/admin", icon: Settings, label: "Admin" },
   ];
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-lg border-b border-border/50 shadow-lg">
-      <div className="container mx-auto px-4 py-4">
+      <div className="container mx-auto px-4 py-3">
         <div className="flex items-center justify-between">
           {/* Logo */}
           <Link 
@@ -37,96 +34,53 @@ const Navigation = ({ onSnowToggle, snowEnabled }: { onSnowToggle?: () => void; 
             Hadesost
           </Link>
           
-          {/* Desktop Navigation */}
-          {!isMobile && (
-            <div className="flex items-center gap-2">
-              {onSnowToggle && (
-                <Button
-                  variant={snowEnabled ? "default" : "outline"}
-                  size="sm"
-                  onClick={onSnowToggle}
-                  className="rounded-full hover:scale-105 transition-transform"
-                  title={snowEnabled ? "Karı Kapat" : "Karı Aç"}
-                >
-                  <Snowflake className={`h-4 w-4 ${snowEnabled ? 'animate-spin' : ''}`} style={{ animationDuration: '3s' }} />
-                </Button>
-              )}
-              {homeNavLinks.map((link) => (
-                <Link key={link.to} to={link.to}>
-                  <Button 
-                    variant="ghost" 
+          {/* Hamburger Menu */}
+          <Sheet open={isOpen} onOpenChange={setIsOpen}>
+            <SheetTrigger asChild>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="hover:bg-card/50 hover:scale-105 transition-all"
+              >
+                <Menu className="h-6 w-6" />
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="right" className="w-[300px] sm:w-[400px] bg-background/98 backdrop-blur-xl border-l border-primary/30">
+              <SheetHeader>
+                <SheetTitle className="text-2xl font-bold glow-text">Menu</SheetTitle>
+              </SheetHeader>
+              <div className="mt-8 space-y-2">
+                {onSnowToggle && (
+                  <Button
+                    variant={snowEnabled ? "default" : "outline"}
                     size="sm"
-                    className="rounded-full hover:bg-card/50 hover:text-primary transition-all hover:scale-105"
+                    onClick={onSnowToggle}
+                    className="w-full justify-start rounded-full hover:scale-105 transition-transform mb-4"
                   >
-                    {link.label}
+                    <Snowflake className={`mr-2 h-4 w-4 ${snowEnabled ? 'animate-spin' : ''}`} style={{ animationDuration: '3s' }} />
+                    {snowEnabled ? "Karı Kapat" : "Karı Aç"}
                   </Button>
-                </Link>
-              ))}
-              {navLinks.map((link) => (
-                <Link key={link.to} to={link.to} target={link.target}>
-                  <Button 
-                    variant="outline" 
-                    size="sm"
-                    className="rounded-full hover:bg-card/50 hover:border-primary/50 transition-all hover:scale-105"
+                )}
+                {allNavLinks.map((link) => (
+                  <Link 
+                    key={link.to} 
+                    to={link.to}
+                    onClick={() => setIsOpen(false)}
+                    className="block"
                   >
-                    <link.icon className="mr-2 h-4 w-4" />
-                    {link.label}
-                  </Button>
-                </Link>
-              ))}
-            </div>
-          )}
-
-          {/* Mobile Menu Button */}
-          {isMobile && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setIsOpen(!isOpen)}
-              className="hover:bg-card/50"
-            >
-              {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-            </Button>
-          )}
+                    <Button 
+                      variant="ghost" 
+                      className="w-full justify-start rounded-full hover:bg-card/50 hover:text-primary transition-all hover:scale-105 hover:glow-border"
+                    >
+                      <link.icon className="mr-3 h-5 w-5" />
+                      <span className="text-base">{link.label}</span>
+                    </Button>
+                  </Link>
+                ))}
+              </div>
+            </SheetContent>
+          </Sheet>
         </div>
-
-        {/* Mobile Menu */}
-        {isMobile && isOpen && (
-          <div className="mt-4 pb-4 space-y-2 animate-slide-up">
-            {homeNavLinks.map((link) => (
-              <Link 
-                key={link.to} 
-                to={link.to}
-                onClick={() => setIsOpen(false)}
-                className="block"
-              >
-                <Button 
-                  variant="ghost" 
-                  className="w-full justify-start rounded-full hover:bg-card/50 hover:text-primary transition-all"
-                >
-                  {link.label}
-                </Button>
-              </Link>
-            ))}
-            {navLinks.map((link) => (
-              <Link 
-                key={link.to} 
-                to={link.to} 
-                target={link.target}
-                onClick={() => setIsOpen(false)}
-                className="block"
-              >
-                <Button 
-                  variant="outline" 
-                  className="w-full justify-start rounded-full hover:bg-card/50 hover:border-primary/50 transition-all"
-                >
-                  <link.icon className="mr-2 h-4 w-4" />
-                  {link.label}
-                </Button>
-              </Link>
-            ))}
-          </div>
-        )}
       </div>
     </nav>
   );
