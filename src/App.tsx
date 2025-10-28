@@ -20,6 +20,7 @@ import VODs from "./pages/VODs";
 import Subscribe from "./pages/Subscribe";
 import Team from "./pages/Team";
 import Social from "./pages/Social";
+import Aboneler from "./pages/Aboneler";
 
 
 const AppContent = () => {
@@ -31,6 +32,7 @@ const AppContent = () => {
       <Route path="/auth" element={<Auth />} />
       <Route path="/admin" element={<Admin />} />
       <Route path="/destek" element={<SupportPage />} />
+      <Route path="/aboneler" element={<Aboneler />} />
       <Route path="/memeler" element={<Memes />} />
       <Route path="/yukle" element={<UploadMeme />} />
       <Route path="/sohbet" element={<Chat />} />

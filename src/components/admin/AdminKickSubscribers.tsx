@@ -1,106 +1,130 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { Upload, Info } from "lucide-react";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Trash2, Users } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+
+interface Subscriber {
+  id: string;
+  username: string;
+  subscription_tier: string;
+  subscription_type: string | null;
+  subscribed_at: string;
+}
 
 const AdminKickSubscribers = () => {
-  const [isLoading, setIsLoading] = useState(false);
-  const [subscriberData, setSubscriberData] = useState("");
+  const [subscribers, setSubscribers] = useState<Subscriber[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
   const { toast } = useToast();
 
-  const handleSync = async () => {
-    if (!subscriberData.trim()) {
+  useEffect(() => {
+    loadSubscribers();
+  }, []);
+
+  const loadSubscribers = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("kick_subscribers")
+        .select("*")
+        .order("subscribed_at", { ascending: false });
+
+      if (error) throw error;
+      setSubscribers(data || []);
+    } catch (error: any) {
       toast({
-        title: "Validation Error",
-        description: "Please enter subscriber data",
+        title: "Hata",
+        description: "Aboneler yüklenemedi",
         variant: "destructive",
       });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDelete = async (id: string, username: string) => {
+    if (!confirm(`${username} kullanıcısını silmek istediğinizden emin misiniz?`)) {
       return;
     }
 
-    setIsLoading(true);
+    setDeletingId(id);
     try {
-      const subscribers = JSON.parse(subscriberData);
-
-      const { error } = await supabase.functions.invoke("sync-kick-subscribers", {
-        body: { subscribers },
-      });
+      const { error } = await supabase
+        .from("kick_subscribers")
+        .delete()
+        .eq("id", id);
 
       if (error) throw error;
 
       toast({
-        title: "Success",
-        description: "Kick subscribers synced successfully",
+        title: "Başarılı",
+        description: `${username} silindi`,
       });
-      setSubscriberData("");
+      loadSubscribers();
     } catch (error: any) {
       toast({
-        title: "Sync Failed",
-        description: error.message || "Failed to sync subscribers",
+        title: "Hata",
+        description: "Abone silinemedi",
         variant: "destructive",
       });
     } finally {
-      setIsLoading(false);
+      setDeletingId(null);
     }
   };
-
-  const exampleData = `[
-  {
-    "username": "example_user",
-    "subscription_tier": "Tier 1",
-    "subscription_type": "Monthly",
-    "subscribed_at": "2025-01-19T10:30:00Z"
-  }
-]`;
 
   return (
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <Upload className="w-5 h-5" />
-          Sync Kick Subscribers
+          <Users className="w-5 h-5" />
+          Tüm Aboneler ({subscribers.length})
         </CardTitle>
         <CardDescription>
-          Manually sync subscriber data from Kick. This will add new subscribers to the database.
+          Kick kanalına abone olan tüm kullanıcılar
         </CardDescription>
       </CardHeader>
-      <CardContent className="space-y-4">
-        <Alert>
-          <Info className="h-4 w-4" />
-          <AlertDescription>
-            <strong>Note:</strong> Kick doesn't provide a public API for subscriber events yet. 
-            You'll need to manually capture subscriber data from Kick's dashboard or use a third-party tool.
-            Enter subscriber data in JSON format below.
-          </AlertDescription>
-        </Alert>
-
-        <div className="space-y-2">
-          <Label htmlFor="subscriber-data">Subscriber Data (JSON)</Label>
-          <Textarea
-            id="subscriber-data"
-            placeholder={exampleData}
-            value={subscriberData}
-            onChange={(e) => setSubscriberData(e.target.value)}
-            className="font-mono text-sm min-h-[200px]"
-          />
-          <p className="text-xs text-muted-foreground">
-            Format: Array of objects with username, subscription_tier, subscription_type, and subscribed_at fields
-          </p>
-        </div>
-
-        <Button 
-          onClick={handleSync} 
-          disabled={isLoading}
-          className="w-full"
-        >
-          {isLoading ? "Syncing..." : "Sync Subscribers"}
-        </Button>
+      <CardContent>
+        {loading ? (
+          <div className="text-center py-8">Yükleniyor...</div>
+        ) : subscribers.length === 0 ? (
+          <div className="text-center py-8 text-muted-foreground">
+            Henüz abone yok
+          </div>
+        ) : (
+          <div className="space-y-2 max-h-[400px] overflow-y-auto">
+            {subscribers.map((sub) => (
+              <div
+                key={sub.id}
+                className="flex items-center justify-between p-3 rounded-lg border"
+              >
+                <div className="flex-1">
+                  <div className="flex items-center gap-2">
+                    <p className="font-medium">{sub.username}</p>
+                    <Badge variant="outline">{sub.subscription_tier}</Badge>
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    {new Date(sub.subscribed_at).toLocaleDateString("tr-TR")}
+                    {sub.subscription_type && ` • ${sub.subscription_type}`}
+                  </p>
+                </div>
+                <Button
+                  variant="destructive"
+                  size="sm"
+                  onClick={() => handleDelete(sub.id, sub.username)}
+                  disabled={deletingId === sub.id}
+                >
+                  {deletingId === sub.id ? (
+                    "Siliniyor..."
+                  ) : (
+                    <Trash2 className="h-4 w-4" />
+                  )}
+                </Button>
+              </div>
+            ))}
+          </div>
+        )}
       </CardContent>
     </Card>
   );

@@ -13,6 +13,7 @@ import AdminSubscribers from "@/components/admin/AdminSubscribers";
 import AdminVODs from "@/components/admin/AdminVODs";
 import AdminUsers from "@/components/admin/AdminUsers";
 import AdminKickSubscribers from "@/components/admin/AdminKickSubscribers";
+import AdminKickSubscribersManual from "@/components/admin/AdminKickSubscribersManual";
 import AdminSupportChats from "@/components/admin/AdminSupportChats";
 import AdminAdSense from "@/components/admin/AdminAdSense";
 import AdminMemes from "@/components/admin/AdminMemes";
@@ -176,7 +177,12 @@ const Admin = () => {
       case "vods":
         return <AdminVODs />;
       case "kick-subs":
-        return <AdminKickSubscribers />;
+        return (
+          <div className="space-y-6">
+            <AdminKickSubscribersManual />
+            <AdminKickSubscribers />
+          </div>
+        );
       case "support":
         return <AdminSupportChats />;
       case "adsense":
