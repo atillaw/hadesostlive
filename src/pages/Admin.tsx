@@ -19,6 +19,7 @@ import AdminMemes from "@/components/admin/AdminMemes";
 import AdminClips from "@/components/admin/AdminClips";
 import AdminLogs from "@/components/admin/AdminLogs";
 import AdminAnalytics from "@/components/admin/AdminAnalytics";
+import AdminCommunityVoting from "@/components/admin/AdminCommunityVoting";
 
 
 
@@ -190,6 +191,8 @@ const Admin = () => {
         return <AdminClips />;
       case "logs":
         return <AdminLogs />;
+      case "community-voting":
+        return <AdminCommunityVoting />;
       case "users":
         return userRole === "admin" ? <AdminUsers /> : null;
       default:

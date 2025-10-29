@@ -10,7 +10,8 @@ import {
   Film, 
   ScrollText, 
   Users,
-  BarChart3
+  BarChart3,
+  Vote
 } from "lucide-react";
 import { NavLink } from "react-router-dom";
 import {
@@ -42,6 +43,7 @@ const menuItems = [
   { id: "adsense", title: "AdSense", icon: Megaphone },
   { id: "memes", title: "Memeler", icon: ImageIcon },
   { id: "clips", title: "Klipler", icon: Film },
+  { id: "community-voting", title: "Topluluk Önerileri", icon: Vote },
   { id: "logs", title: "Loglar", icon: ScrollText },
 ];
 

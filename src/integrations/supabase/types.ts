@@ -200,6 +200,42 @@ export type Database = {
         }
         Relationships: []
       }
+      community_proposals: {
+        Row: {
+          author: string
+          created_at: string
+          description: string
+          id: string
+          scheduled_date: string | null
+          status: string
+          title: string
+          updated_at: string
+          votes: number
+        }
+        Insert: {
+          author: string
+          created_at?: string
+          description: string
+          id?: string
+          scheduled_date?: string | null
+          status?: string
+          title: string
+          updated_at?: string
+          votes?: number
+        }
+        Update: {
+          author?: string
+          created_at?: string
+          description?: string
+          id?: string
+          scheduled_date?: string | null
+          status?: string
+          title?: string
+          updated_at?: string
+          votes?: number
+        }
+        Relationships: []
+      }
       content_ideas: {
         Row: {
           created_at: string
@@ -269,6 +305,33 @@ export type Database = {
           email?: string
           id?: string
           is_active?: boolean
+        }
+        Relationships: []
+      }
+      impact_points: {
+        Row: {
+          created_at: string
+          id: string
+          total_points: number
+          updated_at: string
+          user_email: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          total_points?: number
+          updated_at?: string
+          user_email: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          total_points?: number
+          updated_at?: string
+          user_email?: string
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -380,6 +443,45 @@ export type Database = {
         }
         Relationships: []
       }
+      paytr_transactions: {
+        Row: {
+          amount: number
+          created_at: string
+          id: string
+          merchant_oid: string
+          payment_date: string | null
+          points: number
+          status: string
+          updated_at: string
+          user_email: string
+          user_id: string | null
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          id?: string
+          merchant_oid: string
+          payment_date?: string | null
+          points: number
+          status?: string
+          updated_at?: string
+          user_email: string
+          user_id?: string | null
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          id?: string
+          merchant_oid?: string
+          payment_date?: string | null
+          points?: number
+          status?: string
+          updated_at?: string
+          user_email?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
@@ -400,6 +502,35 @@ export type Database = {
           username?: string
         }
         Relationships: []
+      }
+      proposal_votes: {
+        Row: {
+          created_at: string
+          id: string
+          proposal_id: string
+          user_identifier: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          proposal_id: string
+          user_identifier: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          proposal_id?: string
+          user_identifier?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "proposal_votes_proposal_id_fkey"
+            columns: ["proposal_id"]
+            isOneToOne: false
+            referencedRelation: "community_proposals"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       site_settings: {
         Row: {

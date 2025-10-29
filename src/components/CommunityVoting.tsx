@@ -1,56 +1,92 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { ThumbsUp, Calendar, Clock, Users } from "lucide-react";
+import { ThumbsUp, Calendar, Users } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 interface Proposal {
-  id: number;
+  id: string;
   title: string;
   description: string;
   votes: number;
   author: string;
-  status: "voting" | "accepted" | "scheduled";
-  scheduledDate?: string;
+  status: "voting" | "accepted" | "scheduled" | "rejected";
+  scheduled_date?: string;
+  created_at: string;
 }
 
 const CommunityVoting = () => {
-  const [proposals, setProposals] = useState<Proposal[]>([
-    {
-      id: 1,
-      title: "Retro Oyun Haftası",
-      description: "Bir hafta boyunca sadece 90'lar ve 2000'lerin klasik oyunlarını oynayalım!",
-      votes: 234,
-      author: "retroFan42",
-      status: "voting",
-    },
-    {
-      id: 2,
-      title: "Türkçe Oyun Özel Bölümü",
-      description: "Türk yapımı indie oyunları keşfedelim ve destekleyelim.",
-      votes: 189,
-      author: "gameDev_TR",
-      status: "voting",
-    },
-    {
-      id: 3,
-      title: "24 Saat Maraton Yayını",
-      description: "Toplulukla birlikte 24 saat boyunca aralıksız yayın yapalım!",
-      votes: 312,
-      author: "streamLover",
-      status: "accepted",
-      scheduledDate: "2025-02-15",
-    },
-  ]);
-
+  const [proposals, setProposals] = useState<Proposal[]>([]);
   const [newProposal, setNewProposal] = useState({ title: "", description: "" });
-  const [votedProposals, setVotedProposals] = useState<Set<number>>(new Set());
+  const [votedProposals, setVotedProposals] = useState<Set<string>>(new Set());
+  const [userIdentifier, setUserIdentifier] = useState<string>("");
+  const [loading, setLoading] = useState(true);
   const { toast } = useToast();
 
-  const handleVote = (proposalId: number) => {
+  useEffect(() => {
+    // Get or create user identifier
+    const storedId = localStorage.getItem("voting_user_id");
+    if (storedId) {
+      setUserIdentifier(storedId);
+    } else {
+      const newId = `user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      localStorage.setItem("voting_user_id", newId);
+      setUserIdentifier(newId);
+    }
+
+    loadProposals();
+    setupRealtimeSubscription();
+  }, []);
+
+  useEffect(() => {
+    if (userIdentifier) {
+      loadUserVotes();
+    }
+  }, [userIdentifier]);
+
+  const setupRealtimeSubscription = () => {
+    const channel = supabase
+      .channel('community_proposals_changes')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'community_proposals' }, 
+        () => loadProposals()
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  };
+
+  const loadProposals = async () => {
+    const { data, error } = await supabase
+      .from('community_proposals')
+      .select('*')
+      .order('votes', { ascending: false });
+
+    if (error) {
+      console.error('Error loading proposals:', error);
+    } else {
+      setProposals((data || []) as Proposal[]);
+    }
+    setLoading(false);
+  };
+
+  const loadUserVotes = async () => {
+    const { data } = await supabase
+      .from('proposal_votes')
+      .select('proposal_id')
+      .eq('user_identifier', userIdentifier);
+
+    if (data) {
+      setVotedProposals(new Set(data.map(v => v.proposal_id)));
+    }
+  };
+
+  const handleVote = async (proposalId: string) => {
     if (votedProposals.has(proposalId)) {
       toast({
         title: "Zaten Oy Verdin",
@@ -60,18 +96,41 @@ const CommunityVoting = () => {
       return;
     }
 
-    setProposals((prev) =>
-      prev.map((p) => (p.id === proposalId ? { ...p, votes: p.votes + 1 } : p))
-    );
-    setVotedProposals((prev) => new Set([...prev, proposalId]));
+    try {
+      // Insert vote
+      const { error: voteError } = await supabase
+        .from('proposal_votes')
+        .insert({ proposal_id: proposalId, user_identifier: userIdentifier });
 
-    toast({
-      title: "Oy Kaydedildi!",
-      description: "Önerine destek verdin.",
-    });
+      if (voteError) throw voteError;
+
+      // Increment vote count
+      const proposal = proposals.find(p => p.id === proposalId);
+      if (proposal) {
+        const { error: updateError } = await supabase
+          .from('community_proposals')
+          .update({ votes: proposal.votes + 1 })
+          .eq('id', proposalId);
+
+        if (updateError) throw updateError;
+      }
+
+      setVotedProposals((prev) => new Set([...prev, proposalId]));
+      
+      toast({
+        title: "Oy Kaydedildi!",
+        description: "Önerine destek verdin.",
+      });
+    } catch (error: any) {
+      toast({
+        title: "Hata",
+        description: "Oy kaydedilemedi.",
+        variant: "destructive",
+      });
+    }
   };
 
-  const handleSubmitProposal = () => {
+  const handleSubmitProposal = async () => {
     if (!newProposal.title.trim() || !newProposal.description.trim()) {
       toast({
         title: "Eksik Bilgi",
@@ -81,25 +140,37 @@ const CommunityVoting = () => {
       return;
     }
 
-    const proposal: Proposal = {
-      id: Date.now(),
-      title: newProposal.title,
-      description: newProposal.description,
-      votes: 0,
-      author: "Siz",
-      status: "voting",
-    };
+    try {
+      const { error } = await supabase
+        .from('community_proposals')
+        .insert({
+          title: newProposal.title.trim(),
+          description: newProposal.description.trim(),
+          author: userIdentifier,
+          status: 'voting',
+          votes: 0
+        });
 
-    setProposals((prev) => [proposal, ...prev]);
-    setNewProposal({ title: "", description: "" });
+      if (error) throw error;
 
-    toast({
-      title: "Öneri Oluşturuldu!",
-      description: "Öneriniz topluluğun oylamasına sunuldu.",
-    });
+      setNewProposal({ title: "", description: "" });
+
+      toast({
+        title: "Öneri Oluşturuldu!",
+        description: "Öneriniz topluluğun oylamasına sunuldu.",
+      });
+    } catch (error: any) {
+      toast({
+        title: "Hata",
+        description: "Öneri oluşturulamadı.",
+        variant: "destructive",
+      });
+    }
   };
 
-  const sortedProposals = [...proposals].sort((a, b) => b.votes - a.votes);
+  if (loading) {
+    return <div className="text-center py-8">Yükleniyor...</div>;
+  }
 
   return (
     <div className="space-y-6">
@@ -145,7 +216,12 @@ const CommunityVoting = () => {
       {/* Active Proposals */}
       <div className="space-y-4">
         <h2 className="text-2xl font-bold">Aktif Öneriler</h2>
-        {sortedProposals.map((proposal) => (
+        {proposals.length === 0 ? (
+          <Card className="p-8 text-center">
+            <p className="text-muted-foreground">Henüz öneri yok. İlk öneriyi sen oluştur!</p>
+          </Card>
+        ) : (
+          proposals.map((proposal) => (
           <Card
             key={proposal.id}
             className="p-6 glass border-primary/20 hover:border-primary/50 transition-all"
@@ -171,12 +247,12 @@ const CommunityVoting = () => {
                   </div>
                   <p className="text-muted-foreground">{proposal.description}</p>
                   <p className="text-sm text-muted-foreground">
-                    Öneren: {proposal.author}
+                    {new Date(proposal.created_at).toLocaleDateString('tr-TR')}
                   </p>
-                  {proposal.scheduledDate && (
+                  {proposal.scheduled_date && (
                     <div className="flex items-center gap-2 text-sm text-primary">
                       <Calendar className="h-4 w-4" />
-                      Tarih: {new Date(proposal.scheduledDate).toLocaleDateString("tr-TR")}
+                      Tarih: {new Date(proposal.scheduled_date).toLocaleDateString("tr-TR")}
                     </div>
                   )}
                 </div>
@@ -200,9 +276,10 @@ const CommunityVoting = () => {
                   </Button>
                 </div>
               </div>
-            </div>
-          </Card>
-        ))}
+              </div>
+            </Card>
+          ))
+        )}
       </div>
     </div>
   );
