@@ -5,6 +5,8 @@ import SnowEffect from "@/components/SnowEffect";
 import StreamSection from "@/components/StreamSection";
 import AboutSection from "@/components/AboutSection";
 import YouTubeSection from "@/components/YouTubeSection";
+import EmailSubscribeSection from "@/components/EmailSubscribeSection";
+import VODSection from "@/components/VODSection";
 import KickLiveListener from "@/components/KickLiveListener";
 import Footer from "@/components/Footer";
 import AIChatWidget from "@/components/AIChatWidget";
@@ -29,6 +31,8 @@ const Index = () => {
       <HeroSection />
       <StreamSection />
       <AboutSection />
+      <VODSection />
+      <EmailSubscribeSection />
       <YouTubeSection />
       <Footer />
       <ErrorBoundary fallback={null}>

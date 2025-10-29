@@ -5,7 +5,7 @@ import { Users, Heart, Image, Film, TrendingUp, Mail, MessageCircle, Eye, Activi
 
 interface AnalyticsData {
   totalUsers: number;
-  totalIdeas: number;
+  totalProposals: number;
   totalMemes: number;
   totalClips: number;
   totalKickSubs: number;
@@ -14,6 +14,8 @@ interface AnalyticsData {
   totalPageViews: number;
   todayPageViews: number;
   uniqueVisitors: number;
+  totalImpactPoints: number;
+  totalTransactions: number;
 }
 
 interface PageViewStats {
@@ -24,7 +26,7 @@ interface PageViewStats {
 const AdminAnalytics = () => {
   const [analytics, setAnalytics] = useState<AnalyticsData>({
     totalUsers: 0,
-    totalIdeas: 0,
+    totalProposals: 0,
     totalMemes: 0,
     totalClips: 0,
     totalKickSubs: 0,
@@ -33,6 +35,8 @@ const AdminAnalytics = () => {
     totalPageViews: 0,
     todayPageViews: 0,
     uniqueVisitors: 0,
+    totalImpactPoints: 0,
+    totalTransactions: 0,
   });
   const [pageStats, setPageStats] = useState<PageViewStats[]>([]);
   const [loading, setLoading] = useState(true);
@@ -69,9 +73,9 @@ const AdminAnalytics = () => {
       const today = new Date();
       today.setHours(0, 0, 0, 0);
 
-      const [users, ideas, memes, clips, kickSubs, subscribers, supportChats, pageViews, todayViews, uniqueVisitors, topPages] = await Promise.all([
+      const [users, proposals, memes, clips, kickSubs, subscribers, supportChats, pageViews, todayViews, uniqueVisitors, topPages, impactPoints, paytrTransactions] = await Promise.all([
         supabase.from("profiles").select("*", { count: "exact", head: true }),
-        supabase.from("content_ideas").select("*", { count: "exact", head: true }),
+        supabase.from("community_proposals").select("*", { count: "exact", head: true }),
         supabase.from("meme_uploads").select("*", { count: "exact", head: true }),
         supabase.from("clips").select("*", { count: "exact", head: true }),
         supabase.from("kick_subscribers").select("*", { count: "exact", head: true }),
@@ -88,6 +92,8 @@ const AdminAnalytics = () => {
           .from("page_views")
           .select("page_path")
           .gte("created_at", today.toISOString()),
+        supabase.from("impact_points").select("*", { count: "exact", head: true }),
+        supabase.from("paytr_transactions").select("*", { count: "exact", head: true }),
       ]);
 
       // Calculate unique visitors
@@ -110,7 +116,7 @@ const AdminAnalytics = () => {
 
       setAnalytics({
         totalUsers: users.count || 0,
-        totalIdeas: ideas.count || 0,
+        totalProposals: proposals.count || 0,
         totalMemes: memes.count || 0,
         totalClips: clips.count || 0,
         totalKickSubs: kickSubs.count || 0,
@@ -119,6 +125,8 @@ const AdminAnalytics = () => {
         totalPageViews: pageViews.count || 0,
         todayPageViews: todayViews.count || 0,
         uniqueVisitors: uniqueVisitorsSet.size,
+        totalImpactPoints: impactPoints.count || 0,
+        totalTransactions: paytrTransactions.count || 0,
       });
     } catch (error) {
       console.error("Error fetching analytics:", error);
@@ -129,12 +137,14 @@ const AdminAnalytics = () => {
 
   const stats = [
     { title: "Toplam Kullanıcı", value: analytics.totalUsers, icon: Users, color: "text-blue-500" },
-    { title: "İçerik Fikirleri", value: analytics.totalIdeas, icon: Heart, color: "text-pink-500" },
+    { title: "Topluluk Önerileri", value: analytics.totalProposals, icon: Heart, color: "text-pink-500" },
     { title: "Memeler", value: analytics.totalMemes, icon: Image, color: "text-purple-500" },
     { title: "Klipler", value: analytics.totalClips, icon: Film, color: "text-green-500" },
     { title: "Kick Aboneleri", value: analytics.totalKickSubs, icon: TrendingUp, color: "text-orange-500" },
     { title: "Email Aboneleri", value: analytics.totalSubscribers, icon: Mail, color: "text-cyan-500" },
     { title: "Destek Sohbetleri", value: analytics.totalSupportChats, icon: MessageCircle, color: "text-yellow-500" },
+    { title: "Impact Points Kullanıcıları", value: analytics.totalImpactPoints, icon: Activity, color: "text-red-500" },
+    { title: "PayTR İşlemleri", value: analytics.totalTransactions, icon: Activity, color: "text-emerald-500" },
   ];
 
   const trafficStats = [

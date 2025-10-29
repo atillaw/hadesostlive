@@ -33,19 +33,95 @@ serve(async (req) => {
     if (status === 'success') {
       console.log('[PayTR Callback] Payment successful!');
       
-      // Burada kullanıcıya puan eklenecek
-      // Supabase'e impact_points tablosu oluşturulduktan sonra buraya eklenecek
-      
-      // Şimdilik sadece log
-      const points = Math.round(parseFloat(total_amount) / 100);
-      console.log(`[PayTR Callback] User should receive ${points} points`);
-      
+      // Supabase client oluştur
+      const supabaseAdmin = createClient(
+        Deno.env.get('SUPABASE_URL') || '',
+        Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || ''
+      );
+
+      try {
+        // Transaction'ı güncelle
+        const { data: transaction, error: transactionError } = await supabaseAdmin
+          .from('paytr_transactions')
+          .update({
+            status: 'success',
+            payment_date: new Date().toISOString()
+          })
+          .eq('merchant_oid', merchant_oid)
+          .select()
+          .single();
+
+        if (transactionError) {
+          console.error('[PayTR Callback] Transaction update error:', transactionError);
+        } else if (transaction) {
+          console.log('[PayTR Callback] Transaction updated:', transaction);
+
+          // Kullanıcının impact_points kaydını kontrol et ve güncelle
+          const { data: existingPoints, error: pointsCheckError } = await supabaseAdmin
+            .from('impact_points')
+            .select('*')
+            .eq('user_email', transaction.user_email)
+            .maybeSingle();
+
+          if (pointsCheckError) {
+            console.error('[PayTR Callback] Points check error:', pointsCheckError);
+          } else if (existingPoints) {
+            // Mevcut puana ekle
+            const { error: updateError } = await supabaseAdmin
+              .from('impact_points')
+              .update({
+                total_points: existingPoints.total_points + transaction.points,
+                updated_at: new Date().toISOString()
+              })
+              .eq('id', existingPoints.id);
+
+            if (updateError) {
+              console.error('[PayTR Callback] Points update error:', updateError);
+            } else {
+              console.log('[PayTR Callback] Points added successfully!');
+            }
+          } else {
+            // Yeni kayıt oluştur
+            const { error: insertError } = await supabaseAdmin
+              .from('impact_points')
+              .insert({
+                user_id: transaction.user_id,
+                user_email: transaction.user_email,
+                total_points: transaction.points
+              });
+
+            if (insertError) {
+              console.error('[PayTR Callback] Points insert error:', insertError);
+            } else {
+              console.log('[PayTR Callback] New points record created!');
+            }
+          }
+        }
+      } catch (error) {
+        console.error('[PayTR Callback] Database error:', error);
+      }
+
       return new Response('OK', { 
         status: 200,
         headers: corsHeaders 
       });
     } else {
       console.log('[PayTR Callback] Payment failed or cancelled');
+      
+      // Transaction'ı failed olarak güncelle
+      const supabaseAdmin = createClient(
+        Deno.env.get('SUPABASE_URL') || '',
+        Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || ''
+      );
+
+      await supabaseAdmin
+        .from('paytr_transactions')
+        .update({
+          status: 'failed',
+          payment_date: new Date().toISOString()
+        })
+        .eq('merchant_oid', merchant_oid);
+
       return new Response('OK', { 
         status: 200,
         headers: corsHeaders 
