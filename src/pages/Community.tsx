@@ -6,8 +6,10 @@ import ClipCreator from "@/components/ClipCreator";
 import StreamMiniGames from "@/components/StreamMiniGames";
 import CommunityVoting from "@/components/CommunityVoting";
 import AIHighlightEditor from "@/components/AIHighlightEditor";
+import MemeChatRoom from "@/components/MemeChatRoom";
+import SocialSection from "@/components/SocialSection";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Users, Scissors, Sparkles, Gamepad2, Vote, Wand2 } from "lucide-react";
+import { Users, Scissors, Sparkles, Gamepad2, Vote, Wand2, MessageCircle, Share2 } from "lucide-react";
 
 const Community = () => {
   return (
@@ -26,26 +28,41 @@ const Community = () => {
           </div>
 
           <Tabs defaultValue="characters" className="space-y-8">
-            <TabsList className="grid w-full grid-cols-5 max-w-4xl mx-auto">
+            <TabsList className="grid w-full grid-cols-3 lg:grid-cols-7 max-w-6xl mx-auto">
               <TabsTrigger value="characters">
                 <Sparkles className="mr-2 h-4 w-4" />
-                AI Karakterler
+                <span className="hidden sm:inline">AI Karakterler</span>
+                <span className="sm:hidden">AI</span>
               </TabsTrigger>
               <TabsTrigger value="clips">
                 <Scissors className="mr-2 h-4 w-4" />
-                Klip Oluştur
+                <span className="hidden sm:inline">Klip Oluştur</span>
+                <span className="sm:hidden">Klip</span>
               </TabsTrigger>
               <TabsTrigger value="games">
                 <Gamepad2 className="mr-2 h-4 w-4" />
-                Mini Oyunlar
+                <span className="hidden sm:inline">Mini Oyunlar</span>
+                <span className="sm:hidden">Oyun</span>
               </TabsTrigger>
               <TabsTrigger value="voting">
                 <Vote className="mr-2 h-4 w-4" />
-                Oylama
+                <span className="hidden sm:inline">Oylama</span>
+                <span className="sm:hidden">Oy</span>
               </TabsTrigger>
               <TabsTrigger value="highlights">
                 <Wand2 className="mr-2 h-4 w-4" />
-                AI Editör
+                <span className="hidden sm:inline">AI Editör</span>
+                <span className="sm:hidden">Edit</span>
+              </TabsTrigger>
+              <TabsTrigger value="chat">
+                <MessageCircle className="mr-2 h-4 w-4" />
+                <span className="hidden sm:inline">Sohbet</span>
+                <span className="sm:hidden">Chat</span>
+              </TabsTrigger>
+              <TabsTrigger value="social">
+                <Share2 className="mr-2 h-4 w-4" />
+                <span className="hidden sm:inline">Sosyal</span>
+                <span className="sm:hidden">Link</span>
               </TabsTrigger>
             </TabsList>
 
@@ -67,6 +84,14 @@ const Community = () => {
 
             <TabsContent value="highlights">
               <AIHighlightEditor />
+            </TabsContent>
+
+            <TabsContent value="chat">
+              <MemeChatRoom />
+            </TabsContent>
+
+            <TabsContent value="social">
+              <SocialSection />
             </TabsContent>
           </Tabs>
         </div>
