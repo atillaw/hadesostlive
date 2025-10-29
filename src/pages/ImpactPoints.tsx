@@ -33,6 +33,62 @@ const ImpactPoints = () => {
     "Site içi özel emote'lar ve reaksiyonlar",
   ];
 
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // Fetch leaderboard
+        const leaderboardResult = await (supabase as any)
+          .from('impact_points')
+          .select('user_email, total_points')
+          .order('total_points', { ascending: false })
+          .limit(10);
+
+        if (leaderboardResult.data) {
+          setLeaderboard(leaderboardResult.data);
+        }
+
+        // Fetch user points if logged in
+        const { data: { user } } = await supabase.auth.getUser();
+        
+        if (user) {
+          const userPointsResult = await (supabase as any)
+            .from('impact_points')
+            .select('total_points')
+            .eq('user_id', user.id)
+            .single();
+
+          if (userPointsResult.data) {
+            setUserPoints(userPointsResult.data.total_points);
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching impact points data:', error);
+      }
+    };
+
+    fetchData();
+
+    // Subscribe to realtime updates
+    const channel = (supabase as any)
+      .channel('impact_points_changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'impact_points'
+        },
+        () => {
+          fetchData();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
+
   const handlePurchase = async () => {
     if (!amount || parseFloat(amount) < 10) {
       toast({
@@ -246,31 +302,42 @@ const ImpactPoints = () => {
               <Card className="p-8 glass border-primary/30">
                 <div className="flex items-center gap-3 mb-6">
                   <TrendingUp className="h-8 w-8 text-primary" />
-                  <h2 className="text-2xl font-bold">Haftalık Sıralama</h2>
+                  <h2 className="text-2xl font-bold">En Çok Katkıda Bulunanlar</h2>
                 </div>
                 
                 <div className="space-y-3">
-                  {[...Array(10)].map((_, i) => (
-                    <div key={i} className="flex items-center justify-between p-4 rounded-lg bg-card/50 hover:bg-card/70 transition-colors">
-                      <div className="flex items-center gap-4">
-                        <span className={`text-2xl font-bold ${i < 3 ? 'text-primary' : 'text-muted-foreground'}`}>
-                          #{i + 1}
-                        </span>
-                        <div>
-                          <p className="font-medium">Kullanıcı {i + 1}</p>
-                          <p className="text-sm text-muted-foreground">
-                            {(Math.random() * 10000).toFixed(0)} puan
-                          </p>
+                  {leaderboard.length > 0 ? (
+                    leaderboard.map((entry, index) => (
+                      <div key={index} className="flex items-center justify-between p-4 rounded-lg bg-card/50 hover:bg-card/70 transition-colors">
+                        <div className="flex items-center gap-4">
+                          <span className={`text-2xl font-bold ${index < 3 ? 'text-primary' : 'text-muted-foreground'}`}>
+                            #{index + 1}
+                          </span>
+                          <div>
+                            <p className="font-medium">{entry.user_email}</p>
+                            <p className="text-sm text-muted-foreground">
+                              {entry.total_points.toLocaleString()} puan
+                            </p>
+                          </div>
                         </div>
+                        {index < 3 && <Crown className={`h-6 w-6 ${index === 0 ? 'text-yellow-400' : index === 1 ? 'text-gray-300' : 'text-orange-400'}`} />}
                       </div>
-                      {i < 3 && <Crown className={`h-6 w-6 ${i === 0 ? 'text-yellow-400' : i === 1 ? 'text-gray-300' : 'text-orange-400'}`} />}
-                    </div>
-                  ))}
+                    ))
+                  ) : (
+                    <p className="text-center text-muted-foreground py-8">
+                      Henüz katkıda bulunan kullanıcı yok
+                    </p>
+                  )}
                 </div>
                 
-                <p className="text-center text-sm text-muted-foreground mt-6">
-                  Sıralama her Pazartesi 00:00'da sıfırlanır
-                </p>
+                {userPoints > 0 && (
+                  <div className="mt-6 p-4 rounded-lg bg-primary/10 border border-primary/30">
+                    <p className="text-center">
+                      <span className="text-muted-foreground">Sizin puanınız: </span>
+                      <span className="text-xl font-bold text-primary">{userPoints.toLocaleString()}</span>
+                    </p>
+                  </div>
+                )}
               </Card>
             </TabsContent>
 
