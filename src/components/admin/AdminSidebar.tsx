@@ -1,5 +1,4 @@
 import { 
-  Heart, 
   Clock, 
   Timer, 
   Mail, 
@@ -34,7 +33,6 @@ interface AdminSidebarProps {
 
 const menuItems = [
   { id: "analytics", title: "Analytics", icon: BarChart3 },
-  { id: "ideas", title: "Fikirler", icon: Heart },
   { id: "clock", title: "Saat", icon: Clock },
   { id: "countdown", title: "Geri Sayım", icon: Timer },
   { id: "subscribers", title: "Aboneler", icon: Mail },

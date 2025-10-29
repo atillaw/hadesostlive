@@ -6,7 +6,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { LogOut, Menu } from "lucide-react";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AdminSidebar } from "@/components/admin/AdminSidebar";
-import AdminIdeas from "@/components/admin/AdminIdeas";
 import AdminClock from "@/components/admin/AdminClock";
 import AdminCountdown from "@/components/admin/AdminCountdown";
 import AdminSubscribers from "@/components/admin/AdminSubscribers";
@@ -166,8 +165,6 @@ const Admin = () => {
     switch (activeTab) {
       case "analytics":
         return <AdminAnalytics />;
-      case "ideas":
-        return <AdminIdeas />;
       case "clock":
         return <AdminClock />;
       case "countdown":
