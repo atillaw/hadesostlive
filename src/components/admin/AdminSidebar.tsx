@@ -11,7 +11,8 @@ import {
   ScrollText, 
   Users,
   BarChart3,
-  Vote
+  Vote,
+  Gamepad2
 } from "lucide-react";
 import { NavLink } from "react-router-dom";
 import {
@@ -44,6 +45,7 @@ const menuItems = [
   { id: "memes", title: "Memeler", icon: ImageIcon },
   { id: "clips", title: "Klipler", icon: Film },
   { id: "community-voting", title: "Topluluk Önerileri", icon: Vote },
+  { id: "mini-games", title: "Mini Oyunlar", icon: Gamepad2 },
   { id: "logs", title: "Loglar", icon: ScrollText },
 ];
 

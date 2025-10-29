@@ -287,6 +287,36 @@ export type Database = {
         }
         Relationships: []
       }
+      daily_trivia_questions: {
+        Row: {
+          active_date: string
+          correct_answer: number
+          created_at: string
+          id: string
+          options: Json
+          points: number
+          question: string
+        }
+        Insert: {
+          active_date: string
+          correct_answer: number
+          created_at?: string
+          id?: string
+          options?: Json
+          points?: number
+          question: string
+        }
+        Update: {
+          active_date?: string
+          correct_answer?: number
+          created_at?: string
+          id?: string
+          options?: Json
+          points?: number
+          question?: string
+        }
+        Relationships: []
+      }
       email_subscribers: {
         Row: {
           created_at: string
@@ -362,6 +392,33 @@ export type Database = {
           subscription_tier?: string
           subscription_type?: string | null
           username?: string
+        }
+        Relationships: []
+      }
+      live_polls: {
+        Row: {
+          active: boolean
+          created_at: string
+          id: string
+          options: Json
+          question: string
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          id?: string
+          options?: Json
+          question: string
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          id?: string
+          options?: Json
+          question?: string
+          updated_at?: string
         }
         Relationships: []
       }
@@ -481,6 +538,38 @@ export type Database = {
           user_id?: string | null
         }
         Relationships: []
+      }
+      poll_votes: {
+        Row: {
+          id: string
+          option_index: number
+          poll_id: string
+          user_identifier: string
+          voted_at: string
+        }
+        Insert: {
+          id?: string
+          option_index: number
+          poll_id: string
+          user_identifier: string
+          voted_at?: string
+        }
+        Update: {
+          id?: string
+          option_index?: number
+          poll_id?: string
+          user_identifier?: string
+          voted_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "poll_votes_poll_id_fkey"
+            columns: ["poll_id"]
+            isOneToOne: false
+            referencedRelation: "live_polls"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       profiles: {
         Row: {
@@ -617,6 +706,41 @@ export type Database = {
             columns: ["chat_id"]
             isOneToOne: false
             referencedRelation: "support_chats"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      trivia_answers: {
+        Row: {
+          answer_index: number
+          answered_at: string
+          id: string
+          is_correct: boolean
+          question_id: string
+          user_identifier: string
+        }
+        Insert: {
+          answer_index: number
+          answered_at?: string
+          id?: string
+          is_correct: boolean
+          question_id: string
+          user_identifier: string
+        }
+        Update: {
+          answer_index?: number
+          answered_at?: string
+          id?: string
+          is_correct?: boolean
+          question_id?: string
+          user_identifier?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "trivia_answers_question_id_fkey"
+            columns: ["question_id"]
+            isOneToOne: false
+            referencedRelation: "daily_trivia_questions"
             referencedColumns: ["id"]
           },
         ]

@@ -11,6 +11,7 @@ import KickLiveListener from "@/components/KickLiveListener";
 import Footer from "@/components/Footer";
 import AIChatWidget from "@/components/AIChatWidget";
 import ErrorBoundary from "@/components/ErrorBoundary";
+import StreamMiniGames from "@/components/StreamMiniGames";
 
 const Index = () => {
   const [snowEnabled, setSnowEnabled] = useState(() => {
@@ -30,6 +31,9 @@ const Index = () => {
       <Navigation onSnowToggle={() => setSnowEnabled(!snowEnabled)} snowEnabled={snowEnabled} />
       <HeroSection />
       <StreamSection />
+      <div className="container mx-auto px-4 py-12">
+        <StreamMiniGames />
+      </div>
       <AboutSection />
       <VODSection />
       <EmailSubscribeSection />

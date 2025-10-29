@@ -20,6 +20,7 @@ import AdminClips from "@/components/admin/AdminClips";
 import AdminLogs from "@/components/admin/AdminLogs";
 import AdminAnalytics from "@/components/admin/AdminAnalytics";
 import AdminCommunityVoting from "@/components/admin/AdminCommunityVoting";
+import AdminMiniGames from "@/components/admin/AdminMiniGames";
 
 
 
@@ -189,12 +190,14 @@ const Admin = () => {
         return <AdminMemes />;
       case "clips":
         return <AdminClips />;
-      case "logs":
-        return <AdminLogs />;
       case "community-voting":
         return <AdminCommunityVoting />;
+      case "mini-games":
+        return <AdminMiniGames />;
       case "users":
         return userRole === "admin" ? <AdminUsers /> : null;
+      case "logs":
+        return <AdminLogs />;
       default:
         return <AdminAnalytics />;
     }
