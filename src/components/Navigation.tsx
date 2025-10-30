@@ -41,7 +41,7 @@ const Navigation = ({ onSnowToggle, snowEnabled }: { onSnowToggle?: () => void; 
                 size="lg"
                 className="hover:bg-card/50 hover:scale-105 transition-all"
               >
-                <Menu className="h-9 w-9" />
+                <Menu className="h-12 w-12" />
               </Button>
             </SheetTrigger>
             <SheetContent side="right" className="w-[300px] sm:w-[400px] bg-background/98 backdrop-blur-xl border-l border-primary/30">
