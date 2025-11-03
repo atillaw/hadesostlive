@@ -27,7 +27,12 @@ const SupportPage = () => {
             </Alert>
 
             <div className="mt-6 p-6 border-2 border-dashed border-border rounded-lg bg-muted/50 min-h-[300px] flex items-center justify-center">
-              <AdSenseUnit />
+              <AdSenseUnit 
+                client="ca-pub-3351860625616672"
+                slot="4713366700"
+                format="auto"
+                fullWidthResponsive={true}
+              />
             </div>
           </CardContent>
         </Card>
