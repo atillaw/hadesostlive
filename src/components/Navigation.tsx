@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Settings, DollarSign, ImageIcon, Video, MessageCircle, Menu, X, Snowflake, Heart, Home, Calendar, Bell, Users, Trophy, Sparkles } from "lucide-react";
+import { Settings, DollarSign, ImageIcon, Video, MessageCircle, Menu, X, Snowflake, Heart, Home, Calendar, Bell, Users, Trophy, Sparkles, Award } from "lucide-react";
 import { useState } from "react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 
@@ -14,6 +14,7 @@ const Navigation = ({ onSnowToggle, snowEnabled }: { onSnowToggle?: () => void; 
     { to: "/takima-katil", icon: Users, label: "Takıma Katıl" },
     { to: "/topluluk", icon: Sparkles, label: "Topluluk" },
     { to: "/aboneler", icon: Heart, label: "Aboneler" },
+    { to: "/sponsorlar", icon: Award, label: "Sponsorlar" },
     { to: "/memeler", icon: ImageIcon, label: "Meme's" },
     { to: "/klipler", icon: Video, label: "Klipler" },
     { to: "/impact-points", icon: Trophy, label: "Impact Points" },

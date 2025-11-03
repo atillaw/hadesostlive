@@ -12,7 +12,8 @@ import {
   Users,
   BarChart3,
   Vote,
-  Gamepad2
+  Gamepad2,
+  Award
 } from "lucide-react";
 import { NavLink } from "react-router-dom";
 import {
@@ -46,6 +47,7 @@ const menuItems = [
   { id: "clips", title: "Klipler", icon: Film },
   { id: "community-voting", title: "Topluluk Önerileri", icon: Vote },
   { id: "mini-games", title: "Mini Oyunlar", icon: Gamepad2 },
+  { id: "sponsors", title: "Sponsorlar", icon: Award },
   { id: "logs", title: "Loglar", icon: ScrollText },
 ];
 
