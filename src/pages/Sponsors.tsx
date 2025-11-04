@@ -67,25 +67,23 @@ const Sponsors = () => {
               {sponsors.map((sponsor) => (
                 <Card
                   key={sponsor.id}
-                  className="bg-card/50 backdrop-blur border-border hover:border-primary/50 transition-all hover:scale-105 card-glow"
+                  className="bg-card/50 backdrop-blur border-border hover:border-primary/50 transition-all hover:scale-105 card-glow overflow-hidden"
                 >
+                  <div className="w-full aspect-video bg-background/50 flex items-center justify-center p-6">
+                    <img
+                      src={sponsor.logo_url}
+                      alt={sponsor.name}
+                      className="w-full h-full object-contain"
+                    />
+                  </div>
                   <CardContent className="p-6">
-                    <div className="flex flex-col items-center text-center space-y-4">
-                      <div className="w-full h-32 flex items-center justify-center bg-background/50 rounded-lg p-4">
-                        <img
-                          src={sponsor.logo_url}
-                          alt={sponsor.name}
-                          className="max-w-full max-h-full object-contain"
-                        />
-                      </div>
-                      <div>
-                        <h3 className="text-xl font-bold mb-2">{sponsor.name}</h3>
-                        {sponsor.description && (
-                          <p className="text-muted-foreground text-sm">
-                            {sponsor.description}
-                          </p>
-                        )}
-                      </div>
+                    <div className="text-center space-y-2">
+                      <h3 className="text-xl font-bold">{sponsor.name}</h3>
+                      {sponsor.description && (
+                        <p className="text-muted-foreground text-sm">
+                          {sponsor.description}
+                        </p>
+                      )}
                     </div>
                   </CardContent>
                 </Card>
