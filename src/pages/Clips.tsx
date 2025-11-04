@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import Navigation from "@/components/Navigation";
+import Footer from "@/components/Footer";
+import PageContentSection from "@/components/PageContentSection";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
-import { Upload, Heart, MessageSquare, Trash2, Video } from "lucide-react";
+import { Upload, Heart, MessageSquare, Trash2, Video, Zap, Shield, Film } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
@@ -440,7 +442,31 @@ const Clips = () => {
             })}
           </div>
         )}
+        
+        <PageContentSection
+          pageKey="clips"
+          title="Klipler Hakkında"
+          description="Topluluğun en iyi anlarını paylaşın ve keşfedin. Video ve ses kayıtlarınızı yükleyin, beğenin ve yorum yapın."
+          features={[
+            {
+              icon: <Film className="h-8 w-8 text-primary" />,
+              title: "Kolay Paylaşım",
+              description: "Video ve ses dosyalarınızı kolayca yükleyin ve paylaşın"
+            },
+            {
+              icon: <Zap className="h-8 w-8 text-primary" />,
+              title: "Anında Yayın",
+              description: "Onaylanan klipler hemen yayına girer"
+            },
+            {
+              icon: <Shield className="h-8 w-8 text-primary" />,
+              title: "Kalite Kontrol",
+              description: "Tüm içerikler moderasyon sürecinden geçer"
+            }
+          ]}
+        />
       </div>
+      <Footer />
     </div>
   );
 };

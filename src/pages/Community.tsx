@@ -8,8 +8,9 @@ import CommunityVoting from "@/components/CommunityVoting";
 import AIHighlightEditor from "@/components/AIHighlightEditor";
 import MemeChatRoom from "@/components/MemeChatRoom";
 import SocialSection from "@/components/SocialSection";
+import PageContentSection from "@/components/PageContentSection";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Users, Scissors, Sparkles, Gamepad2, Vote, Wand2, MessageCircle, Share2 } from "lucide-react";
+import { Users, Scissors, Sparkles, Gamepad2, Vote, Wand2, MessageCircle, Share2, Zap } from "lucide-react";
 
 const Community = () => {
   return (
@@ -94,6 +95,29 @@ const Community = () => {
               <SocialSection />
             </TabsContent>
           </Tabs>
+          
+          <PageContentSection
+            pageKey="community"
+            title="Topluluk Özellikleri Hakkında"
+            description="AI destekli araçlar, interaktif oyunlar ve sosyal özelliklerle topluluğun bir parçası olun."
+            features={[
+              {
+                icon: <Sparkles className="h-8 w-8 text-primary" />,
+                title: "AI Araçları",
+                description: "Yapay zeka destekli karakterler ve otomatik klip oluşturma"
+              },
+              {
+                icon: <Gamepad2 className="h-8 w-8 text-primary" />,
+                title: "İnteraktif Oyunlar",
+                description: "Trivia, anketler ve canlı mini oyunlar"
+              },
+              {
+                icon: <Zap className="h-8 w-8 text-primary" />,
+                title: "Canlı Etkileşim",
+                description: "Oylama, sohbet ve topluluk önerileri"
+              }
+            ]}
+          />
         </div>
       </main>
       <Footer />

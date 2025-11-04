@@ -13,7 +13,8 @@ import {
   BarChart3,
   Vote,
   Gamepad2,
-  Award
+  Award,
+  MapPin
 } from "lucide-react";
 import { NavLink } from "react-router-dom";
 import {
@@ -43,6 +44,7 @@ const menuItems = [
   { id: "kick-subs", title: "Kick Subs", icon: TrendingUp },
   { id: "support", title: "Destek", icon: MessageCircle },
   { id: "adsense", title: "AdSense", icon: Megaphone },
+  { id: "ad-placements", title: "Reklam Yerleri", icon: MapPin },
   { id: "memes", title: "Memeler", icon: ImageIcon },
   { id: "clips", title: "Klipler", icon: Film },
   { id: "community-voting", title: "Topluluk Önerileri", icon: Vote },

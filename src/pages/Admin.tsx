@@ -15,6 +15,7 @@ import AdminKickSubscribers from "@/components/admin/AdminKickSubscribers";
 import AdminKickSubscribersManual from "@/components/admin/AdminKickSubscribersManual";
 import AdminSupportChats from "@/components/admin/AdminSupportChats";
 import AdminAdSense from "@/components/admin/AdminAdSense";
+import AdminAdPlacements from "@/components/admin/AdminAdPlacements";
 import AdminMemes from "@/components/admin/AdminMemes";
 import AdminClips from "@/components/admin/AdminClips";
 import AdminLogs from "@/components/admin/AdminLogs";
@@ -187,6 +188,8 @@ const Admin = () => {
         return <AdminSupportChats />;
       case "adsense":
         return <AdminAdSense />;
+      case "ad-placements":
+        return <AdminAdPlacements />;
       case "memes":
         return <AdminMemes />;
       case "clips":
