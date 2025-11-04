@@ -12,6 +12,7 @@ import Footer from "@/components/Footer";
 import AIChatWidget from "@/components/AIChatWidget";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import StreamMiniGames from "@/components/StreamMiniGames";
+import SupportContentSection from "@/components/SupportContentSection";
 
 const Index = () => {
   const [snowEnabled, setSnowEnabled] = useState(() => {
@@ -38,6 +39,7 @@ const Index = () => {
       <VODSection />
       <EmailSubscribeSection />
       <YouTubeSection />
+      <SupportContentSection />
       <Footer />
       <ErrorBoundary fallback={null}>
         <KickLiveListener />
