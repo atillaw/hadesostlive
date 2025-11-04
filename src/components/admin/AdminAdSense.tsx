@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
 import { Loader2, Save, Info } from "lucide-react";
@@ -23,6 +24,8 @@ const AdminAdSense = () => {
   const [saving, setSaving] = useState(false);
   const [client, setClient] = useState("");
   const [slot, setSlot] = useState("");
+  const [customHtml, setCustomHtml] = useState("");
+  const [savingHtml, setSavingHtml] = useState(false);
   const [errors, setErrors] = useState<{ client?: string; slot?: string }>({});
   const { toast } = useToast();
 
@@ -32,25 +35,37 @@ const AdminAdSense = () => {
 
   const loadAdSenseSettings = async () => {
     try {
-      const { data, error } = await supabase
+      const { data: adSenseData, error: adSenseError } = await supabase
         .from("site_settings")
         .select("value")
         .eq("key", "adsense")
         .maybeSingle();
 
-      if (error) throw error;
+      if (adSenseError) throw adSenseError;
 
-      if (data?.value) {
-        const settings = data.value as { client: string; slot: string };
+      if (adSenseData?.value) {
+        const settings = adSenseData.value as { client: string; slot: string };
         setClient(settings.client || "");
         setSlot(settings.slot || "");
       }
+
+      const { data: htmlData, error: htmlError } = await supabase
+        .from("site_settings")
+        .select("value")
+        .eq("key", "custom_ad_html")
+        .maybeSingle();
+
+      if (htmlError) throw htmlError;
+
+      if (htmlData?.value) {
+        setCustomHtml((htmlData.value as { html: string }).html || "");
+      }
     } catch (error: any) {
-      console.error("AdSense ayarları yüklenemedi:", error);
+      console.error("Reklam ayarları yüklenemedi:", error);
       toast({
         variant: "destructive",
         title: "Hata",
-        description: "AdSense ayarları yüklenemedi",
+        description: "Reklam ayarları yüklenemedi",
       });
     } finally {
       setLoading(false);
@@ -100,6 +115,37 @@ const AdminAdSense = () => {
       });
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleSaveHtml = async () => {
+    setSavingHtml(true);
+    try {
+      const { error } = await supabase
+        .from("site_settings")
+        .upsert({
+          key: "custom_ad_html",
+          value: { html: customHtml },
+          updated_at: new Date().toISOString(),
+        }, {
+          onConflict: "key"
+        });
+
+      if (error) throw error;
+
+      toast({
+        title: "Başarılı",
+        description: "Özel reklam HTML kodu kaydedildi",
+      });
+    } catch (error: any) {
+      console.error("HTML kod kaydedilemedi:", error);
+      toast({
+        variant: "destructive",
+        title: "Hata",
+        description: "HTML kod kaydedilemedi",
+      });
+    } finally {
+      setSavingHtml(false);
     }
   };
 
@@ -194,6 +240,60 @@ const AdminAdSense = () => {
                 <>
                   <Save className="mr-2 h-4 w-4" />
                   Kaydet
+                </>
+              )}
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card className="bg-card/50 backdrop-blur border-border">
+        <CardHeader>
+          <CardTitle className="glow-text">Özel Reklam HTML Kodu</CardTitle>
+          <CardDescription>
+            Destek sayfasında görüntülenecek özel reklam HTML kodunu ekleyin
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <Alert>
+            <Info className="h-4 w-4" />
+            <AlertDescription>
+              Reklam ağlarından aldığınız HTML kodunu buraya yapıştırabilirsiniz.
+              <br />
+              Kod olduğu gibi sayfada görüntülenecektir.
+            </AlertDescription>
+          </Alert>
+
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="customHtml">HTML Reklam Kodu</Label>
+              <Textarea
+                id="customHtml"
+                placeholder='<div>Reklam HTML kodunuzu buraya yapıştırın...</div>'
+                value={customHtml}
+                onChange={(e) => setCustomHtml(e.target.value)}
+                className="font-mono text-sm min-h-[200px]"
+                maxLength={10000}
+              />
+              <p className="text-xs text-muted-foreground">
+                Maksimum 10,000 karakter
+              </p>
+            </div>
+
+            <Button
+              onClick={handleSaveHtml}
+              disabled={savingHtml}
+              className="w-full sm:w-auto"
+            >
+              {savingHtml ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Kaydediliyor...
+                </>
+              ) : (
+                <>
+                  <Save className="mr-2 h-4 w-4" />
+                  HTML Kodunu Kaydet
                 </>
               )}
             </Button>
