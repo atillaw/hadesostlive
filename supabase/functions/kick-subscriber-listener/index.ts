@@ -16,6 +16,18 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
+  // Validate webhook secret for security
+  const KICK_WEBHOOK_SECRET = Deno.env.get("KICK_WEBHOOK_SECRET");
+  const providedSecret = req.headers.get("x-webhook-secret");
+  
+  if (KICK_WEBHOOK_SECRET && providedSecret !== KICK_WEBHOOK_SECRET) {
+    console.error("[Kick Listener] Unauthorized access attempt");
+    return new Response(
+      JSON.stringify({ error: "Unauthorized" }), 
+      { status: 401, headers: corsHeaders }
+    );
+  }
+
   const upgradeHeader = req.headers.get("upgrade") || "";
   
   if (upgradeHeader.toLowerCase() !== "websocket") {
@@ -91,6 +103,12 @@ serve(async (req) => {
             subscription_type: eventData.gifter_username ? "Gifted" : "Monthly",
             subscribed_at: new Date().toISOString(),
           };
+
+          // Validate subscriber data before inserting
+          if (!subscriberData.username || subscriberData.username === "Unknown") {
+            console.error("[Kick Listener] Invalid subscriber data - missing username");
+            return;
+          }
 
           // Insert into database
           const { error } = await supabaseAdmin

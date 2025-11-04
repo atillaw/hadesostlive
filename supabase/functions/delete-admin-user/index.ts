@@ -66,6 +66,9 @@ serve(async (req) => {
 
     if (deleteAuthError) throw deleteAuthError;
 
+    // Audit log
+    console.log(`[Audit] Admin ${user.id} deleted user ${userId}`);
+
     return new Response(
       JSON.stringify({ 
         success: true,

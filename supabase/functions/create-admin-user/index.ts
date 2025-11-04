@@ -130,6 +130,9 @@ serve(async (req) => {
     // Ignore duplicate role assignment
     if (insertRoleError && (insertRoleError as any).code !== "23505") throw insertRoleError;
 
+    // Audit log
+    console.log(`[Audit] Admin ${user.id} created/assigned role ${role} to user ${targetUserId} (${email})`);
+
     return new Response(
       JSON.stringify({ 
         success: true,
