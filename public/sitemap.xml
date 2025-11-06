@@ -1,63 +1,87 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://yourdomain.com/</loc>
+    <loc>https://hadesost.com/</loc>
     <lastmod>2025-01-01</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://yourdomain.com/klipler</loc>
+    <loc>https://hadesost.com/vodlar</loc>
     <lastmod>2025-01-01</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://yourdomain.com/vodlar</loc>
+    <loc>https://hadesost.com/klipler</loc>
     <lastmod>2025-01-01</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://yourdomain.com/topluluk</loc>
-    <lastmod>2025-01-01</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://yourdomain.com/memes</loc>
+    <loc>https://hadesost.com/topluluk</loc>
     <lastmod>2025-01-01</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://yourdomain.com/destek</loc>
+    <loc>https://hadesost.com/memeler</loc>
     <lastmod>2025-01-01</lastmod>
-    <changefreq>monthly</changefreq>
+    <changefreq>daily</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://yourdomain.com/aboneler</loc>
+    <loc>https://hadesost.com/yayin-akisi</loc>
     <lastmod>2025-01-01</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://yourdomain.com/takvim</loc>
+    <loc>https://hadesost.com/takima-katil</loc>
+    <lastmod>2025-01-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://hadesost.com/aboneler</loc>
     <lastmod>2025-01-01</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://yourdomain.com/sponsorlar</loc>
-    <lastmod>2025-01-01</lastmod>
-    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://yourdomain.com/ekip</loc>
+    <loc>https://hadesost.com/destek</loc>
     <lastmod>2025-01-01</lastmod>
     <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://hadesost.com/sponsorlar</loc>
+    <lastmod>2025-01-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://hadesost.com/impact-points</loc>
+    <lastmod>2025-01-01</lastmod>
+    <changefreq>weekly</changefreq>
     <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://hadesost.com/gizlilik-politikasi</loc>
+    <lastmod>2025-01-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.4</priority>
+  </url>
+  <url>
+    <loc>https://hadesost.com/kullanim-kosullari</loc>
+    <lastmod>2025-01-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.4</priority>
+  </url>
+  <url>
+    <loc>https://hadesost.com/cerez-politikasi</loc>
+    <lastmod>2025-01-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.4</priority>
   </url>
 </urlset>

@@ -91,7 +91,20 @@ const Footer = () => {
         </div>
 
         {/* Copyright */}
-        <div className="pt-8 border-t border-border/50 text-center">
+        <div className="pt-8 border-t border-border/50 text-center space-y-4">
+          <div className="flex flex-wrap justify-center gap-4 text-sm">
+            <Link to="/gizlilik-politikasi" className="text-muted-foreground hover:text-primary transition-colors">
+              Gizlilik Politikası
+            </Link>
+            <span className="text-muted-foreground">•</span>
+            <Link to="/kullanim-kosullari" className="text-muted-foreground hover:text-primary transition-colors">
+              Kullanım Koşulları
+            </Link>
+            <span className="text-muted-foreground">•</span>
+            <Link to="/cerez-politikasi" className="text-muted-foreground hover:text-primary transition-colors">
+              Çerez Politikası
+            </Link>
+          </div>
           <p className="text-sm text-muted-foreground">
             © {new Date().getFullYear()} HadesOST. Tüm hakları saklıdır.
           </p>

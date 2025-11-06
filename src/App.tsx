@@ -21,6 +21,9 @@ import Aboneler from "./pages/Aboneler";
 import ImpactPoints from "./pages/ImpactPoints";
 import Community from "./pages/Community";
 import Sponsors from "./pages/Sponsors";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import TermsOfService from "./pages/TermsOfService";
+import CookiePolicy from "./pages/CookiePolicy";
 
 
 const AppContent = () => {
@@ -43,6 +46,9 @@ const AppContent = () => {
       <Route path="/impact-points" element={<ImpactPoints />} />
       <Route path="/topluluk" element={<Community />} />
       <Route path="/sponsorlar" element={<Sponsors />} />
+      <Route path="/gizlilik-politikasi" element={<PrivacyPolicy />} />
+      <Route path="/kullanim-kosullari" element={<TermsOfService />} />
+      <Route path="/cerez-politikasi" element={<CookiePolicy />} />
       <Route path="*" element={<NotFound />} />
     </Routes>
   );
