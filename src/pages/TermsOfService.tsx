@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { Helmet } from "react-helmet-async";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -10,6 +11,11 @@ const TermsOfService = () => {
 
   return (
     <div className="min-h-screen">
+      <Helmet>
+        <title>Kullanım Koşulları - HadesOST</title>
+        <meta name="description" content="HadesOST kullanım koşulları. Platformumuzu kullanırken uymanız gereken kurallar ve şartlar." />
+        <meta name="robots" content="index, follow" />
+      </Helmet>
       <Navigation />
       <main className="container mx-auto px-4 py-12 mt-20">
         <Card className="max-w-4xl mx-auto">

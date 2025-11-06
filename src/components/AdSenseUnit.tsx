@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
+import { useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Loader2 } from "lucide-react";
 
@@ -19,9 +20,32 @@ const AdSenseUnit = ({
   style = { display: 'block' },
   className = ""
 }: AdSenseUnitProps) => {
+  const location = useLocation();
   const [loading, setLoading] = useState(!propClient || !propSlot);
   const [client, setClient] = useState(propClient || "");
   const [slot, setSlot] = useState(propSlot || "");
+  const impressionTracked = useRef(false);
+
+  // Track ad impression
+  const trackImpression = async () => {
+    if (impressionTracked.current) return;
+    impressionTracked.current = true;
+    
+    try {
+      const userIdentifier = localStorage.getItem("user_identifier") || 
+        `user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      
+      await supabase.from("ad_performance").insert({
+        page_path: location.pathname,
+        ad_type: "adsense",
+        event_type: "impression",
+        user_identifier: userIdentifier,
+        ad_slot: slot
+      });
+    } catch (error) {
+      console.error("Error tracking ad impression:", error);
+    }
+  };
 
   useEffect(() => {
     if (!propClient || !propSlot) {
@@ -55,6 +79,7 @@ const AdSenseUnit = ({
     if (client && slot && !loading) {
       try {
         ((window as any).adsbygoogle = (window as any).adsbygoogle || []).push({});
+        trackImpression();
       } catch (e) {
         console.error("AdSense reklamı yüklenemedi:", e);
       }

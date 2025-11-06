@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Helmet } from "react-helmet-async";
 import Navigation from "@/components/Navigation";
 import HeroSection from "@/components/HeroSection";
 import SnowEffect from "@/components/SnowEffect";
@@ -26,6 +27,14 @@ const Index = () => {
 
   return (
     <div className="min-h-screen">
+      <Helmet>
+        <title>HadesOST - Canlı Yayın ve Gaming İçerikleri</title>
+        <meta name="description" content="HadesOST'un resmi web sitesi. Canlı yayınlar, VOD arşivi, klipler, topluluk özellikleri ve daha fazlası. En iyi gaming içeriklerini keşfedin." />
+        <meta property="og:title" content="HadesOST - Canlı Yayın ve Gaming İçerikleri" />
+        <meta property="og:description" content="HadesOST'un resmi web sitesi. Canlı yayınlar, VOD arşivi, klipler ve topluluk özellikleri." />
+        <meta name="twitter:title" content="HadesOST - Canlı Yayın ve Gaming İçerikleri" />
+        <meta name="twitter:description" content="HadesOST'un resmi web sitesi. Canlı yayınlar, VOD arşivi, klipler ve topluluk özellikleri." />
+      </Helmet>
       <ErrorBoundary fallback={null}>
         <SnowEffect enabled={snowEnabled} />
       </ErrorBoundary>

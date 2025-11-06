@@ -1,3 +1,4 @@
+import { Helmet } from "react-helmet-async";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Info, Heart, Users, Zap, Target, TrendingUp, Shield } from "lucide-react";
@@ -10,6 +11,14 @@ const SupportPage = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-background text-foreground">
+      <Helmet>
+        <title>Destek Ol - HadesOST | Projeyi Destekle</title>
+        <meta name="description" content="HadesOST projesini destekleyerek ücretsiz hizmetlerimizin devamına katkıda bulunun. Reklamlarla destekleyin." />
+        <meta property="og:title" content="Destek Ol - HadesOST" />
+        <meta property="og:description" content="Projeyi destekleyerek ücretsiz hizmetlerimizin devamına katkıda bulunun." />
+        <meta name="twitter:title" content="Destek Ol - HadesOST" />
+        <meta name="twitter:description" content="Projeyi destekleyerek ücretsiz hizmetlerimizin devamına katkıda bulunun." />
+      </Helmet>
       <Navigation />
       <main className="flex-grow container mx-auto px-4 pt-24 pb-8 space-y-8">
         {/* Hero Section */}

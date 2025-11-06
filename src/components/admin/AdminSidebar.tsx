@@ -45,6 +45,7 @@ const menuItems = [
   { id: "support", title: "Destek", icon: MessageCircle },
   { id: "adsense", title: "AdSense", icon: Megaphone },
   { id: "ad-placements", title: "Reklam Yerleri", icon: MapPin },
+  { id: "ad-performance", title: "Reklam Performansı", icon: TrendingUp },
   { id: "memes", title: "Memeler", icon: ImageIcon },
   { id: "clips", title: "Klipler", icon: Film },
   { id: "community-voting", title: "Topluluk Önerileri", icon: Vote },

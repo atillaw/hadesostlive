@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Helmet } from "react-helmet-async";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import { Card } from "@/components/ui/card";
@@ -201,6 +202,14 @@ const ImpactPoints = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <Helmet>
+        <title>Impact Points - HadesOST | Puan Sistemi</title>
+        <meta name="description" content="Impact Points ile yayını destekleyin, puan kazanın ve özel avantajların kilidini açın. Liderlik sıralamasında yükselişinizi görün." />
+        <meta property="og:title" content="Impact Points - HadesOST" />
+        <meta property="og:description" content="Puan kazanın, sıralamada yükselişinizi görün ve özel avantajların kilidini açın." />
+        <meta name="twitter:title" content="Impact Points - HadesOST" />
+        <meta name="twitter:description" content="Puan kazanın, sıralamada yükselişinizi görün ve özel avantajların kilidini açın." />
+      </Helmet>
       <Navigation />
       <main className="container mx-auto px-4 py-24">
         <div className="max-w-6xl mx-auto space-y-8 animate-fade-in">

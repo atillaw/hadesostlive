@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Helmet } from "react-helmet-async";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -50,6 +51,14 @@ const Memes = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <Helmet>
+        <title>Meme Galerisi - HadesOST | Komik Anlar</title>
+        <meta name="description" content="Topluluk tarafından paylaşılan en komik meme'ler ve fotoğraflar. Gülün, paylaşın ve siz de katkıda bulunun." />
+        <meta property="og:title" content="Meme Galerisi - HadesOST" />
+        <meta property="og:description" content="Topluluk tarafından paylaşılan komik anlar." />
+        <meta name="twitter:title" content="Meme Galerisi - HadesOST" />
+        <meta name="twitter:description" content="Topluluk tarafından paylaşılan komik anlar." />
+      </Helmet>
       <Navigation />
       
       <div className="container mx-auto px-4 pt-24 pb-12 animate-fade-in">

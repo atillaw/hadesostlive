@@ -1,3 +1,4 @@
+import { Helmet } from "react-helmet-async";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import VODSection from "@/components/VODSection";
@@ -7,6 +8,14 @@ import { Video, Clock, Star } from "lucide-react";
 const VODs = () => {
   return (
     <div className="min-h-screen bg-background">
+      <Helmet>
+        <title>VOD Arşivi - HadesOST | Yayın Kayıtları</title>
+        <meta name="description" content="HadesOST'un tüm canlı yayın kayıtları. Kaçırdığınız anları istediğiniz zaman izleyin, puanlayın ve favorilerinizi belirleyin." />
+        <meta property="og:title" content="VOD Arşivi - HadesOST" />
+        <meta property="og:description" content="Tüm canlı yayın kayıtlarını izleyin ve puanlayın." />
+        <meta name="twitter:title" content="VOD Arşivi - HadesOST" />
+        <meta name="twitter:description" content="Tüm canlı yayın kayıtlarını izleyin ve puanlayın." />
+      </Helmet>
       <Navigation />
       <main className="container mx-auto px-4 pt-24 pb-12">
         <VODSection />

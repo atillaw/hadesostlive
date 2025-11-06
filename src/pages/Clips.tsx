@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Helmet } from "react-helmet-async";
 import { supabase } from "@/integrations/supabase/client";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
@@ -269,6 +270,14 @@ const Clips = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <Helmet>
+        <title>Klipler - HadesOST | En İyi Oyun Anları</title>
+        <meta name="description" content="HadesOST kanalının en iyi klipleri. Gameplay, komik anlar, müzik ve daha fazlası. Favori anlarınızı keşfedin ve paylaşın." />
+        <meta property="og:title" content="Klipler - HadesOST" />
+        <meta property="og:description" content="En iyi oyun anları, komik videolar ve ses kayıtları." />
+        <meta name="twitter:title" content="Klipler - HadesOST" />
+        <meta name="twitter:description" content="En iyi oyun anları, komik videolar ve ses kayıtları." />
+      </Helmet>
       <Navigation />
       <div className="container mx-auto px-4 pt-24 pb-12 animate-fade-in">
         <div className="text-center mb-12 animate-slide-up">

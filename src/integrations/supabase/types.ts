@@ -14,6 +14,39 @@ export type Database = {
   }
   public: {
     Tables: {
+      ad_performance: {
+        Row: {
+          ad_id: string | null
+          ad_slot: string | null
+          ad_type: string
+          created_at: string
+          event_type: string
+          id: string
+          page_path: string
+          user_identifier: string | null
+        }
+        Insert: {
+          ad_id?: string | null
+          ad_slot?: string | null
+          ad_type: string
+          created_at?: string
+          event_type: string
+          id?: string
+          page_path: string
+          user_identifier?: string | null
+        }
+        Update: {
+          ad_id?: string | null
+          ad_slot?: string | null
+          ad_type?: string
+          created_at?: string
+          event_type?: string
+          id?: string
+          page_path?: string
+          user_identifier?: string | null
+        }
+        Relationships: []
+      }
       admin_logs: {
         Row: {
           action: string

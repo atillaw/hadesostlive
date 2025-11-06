@@ -16,6 +16,7 @@ import AdminKickSubscribersManual from "@/components/admin/AdminKickSubscribersM
 import AdminSupportChats from "@/components/admin/AdminSupportChats";
 import AdminAdSense from "@/components/admin/AdminAdSense";
 import AdminAdPlacements from "@/components/admin/AdminAdPlacements";
+import AdminAdPerformance from "@/components/admin/AdminAdPerformance";
 import AdminMemes from "@/components/admin/AdminMemes";
 import AdminClips from "@/components/admin/AdminClips";
 import AdminLogs from "@/components/admin/AdminLogs";

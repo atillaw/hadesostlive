@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
+import { useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Loader2 } from "lucide-react";
 
@@ -7,12 +8,40 @@ interface CustomAdUnitProps {
 }
 
 const CustomAdUnit = ({ className = "" }: CustomAdUnitProps) => {
+  const location = useLocation();
   const [loading, setLoading] = useState(true);
   const [htmlContent, setHtmlContent] = useState("");
+  const impressionTracked = useRef(false);
+
+  // Track ad impression
+  const trackImpression = async () => {
+    if (impressionTracked.current || !htmlContent) return;
+    impressionTracked.current = true;
+    
+    try {
+      const userIdentifier = localStorage.getItem("user_identifier") || 
+        `user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      
+      await supabase.from("ad_performance").insert({
+        page_path: location.pathname,
+        ad_type: "custom_html",
+        event_type: "impression",
+        user_identifier: userIdentifier
+      });
+    } catch (error) {
+      console.error("Error tracking ad impression:", error);
+    }
+  };
 
   useEffect(() => {
     loadCustomAdHtml();
   }, []);
+
+  useEffect(() => {
+    if (htmlContent) {
+      trackImpression();
+    }
+  }, [htmlContent]);
 
   const loadCustomAdHtml = async () => {
     try {

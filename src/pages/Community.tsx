@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Helmet } from "react-helmet-async";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import AICharacters from "@/components/AICharacters";
@@ -15,6 +16,14 @@ import { Users, Scissors, Sparkles, Gamepad2, Vote, Wand2, MessageCircle, Share2
 const Community = () => {
   return (
     <div className="min-h-screen bg-background">
+      <Helmet>
+        <title>Topluluk Özellikleri - HadesOST | AI, Oyunlar ve Daha Fazlası</title>
+        <meta name="description" content="AI karakterlerle sohbet edin, klip oluşturun, mini oyunlar oynayın ve topluluk oylamalarına katılın. Etkileşimli topluluk deneyimi." />
+        <meta property="og:title" content="Topluluk Özellikleri - HadesOST" />
+        <meta property="og:description" content="AI karakterler, klip oluşturucu, mini oyunlar ve topluluk oylamaları." />
+        <meta name="twitter:title" content="Topluluk Özellikleri - HadesOST" />
+        <meta name="twitter:description" content="AI karakterler, klip oluşturucu, mini oyunlar ve topluluk oylamaları." />
+      </Helmet>
       <Navigation />
       <main className="container mx-auto px-4 py-24">
         <div className="max-w-7xl mx-auto space-y-8 animate-fade-in">

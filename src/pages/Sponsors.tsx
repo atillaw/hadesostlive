@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Helmet } from "react-helmet-async";
 import { supabase } from "@/integrations/supabase/client";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
@@ -40,6 +41,14 @@ const Sponsors = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-background text-foreground">
+      <Helmet>
+        <title>Sponsorlarımız - HadesOST | Destekçilerimiz</title>
+        <meta name="description" content="HadesOST'u destekleyen değerli sponsorlarımız ve iş ortaklarımız. Birlikte büyüyoruz." />
+        <meta property="og:title" content="Sponsorlarımız - HadesOST" />
+        <meta property="og:description" content="Bizi destekleyen değerli sponsorlarımız." />
+        <meta name="twitter:title" content="Sponsorlarımız - HadesOST" />
+        <meta name="twitter:description" content="Bizi destekleyen değerli sponsorlarımız." />
+      </Helmet>
       <Navigation />
       <main className="flex-grow container mx-auto px-4 pt-24 pb-8">
         <div className="max-w-6xl mx-auto">
