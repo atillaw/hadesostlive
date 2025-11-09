@@ -14,6 +14,7 @@ import AIChatWidget from "@/components/AIChatWidget";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import StreamMiniGames from "@/components/StreamMiniGames";
 import SupportContentSection from "@/components/SupportContentSection";
+import AtaturkMemorial from "@/components/AtaturkMemorial";
 
 const Index = () => {
   const [snowEnabled, setSnowEnabled] = useState(() => {
@@ -38,6 +39,7 @@ const Index = () => {
       <ErrorBoundary fallback={null}>
         <SnowEffect enabled={snowEnabled} />
       </ErrorBoundary>
+      <AtaturkMemorial />
       <Navigation onSnowToggle={() => setSnowEnabled(!snowEnabled)} snowEnabled={snowEnabled} />
       <HeroSection />
       <StreamSection />
