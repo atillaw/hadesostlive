@@ -1,22 +1,43 @@
 import { useEffect, useState } from "react";
 import ataturkImage from "@/assets/ataturk-memorial.png";
+import { supabase } from "@/integrations/supabase/client";
 
 const AtaturkMemorial = () => {
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
-    const checkVisibility = () => {
-      const now = new Date();
-      const startDate = new Date('2025-11-10T00:00:00');
-      const endDate = new Date('2025-11-11T12:00:00');
+    const checkVisibility = async () => {
+      const { data } = await supabase
+        .from('site_settings')
+        .select('value')
+        .eq('key', 'ataturk_memorial_visible')
+        .single();
       
-      setIsVisible(now >= startDate && now < endDate);
+      setIsVisible(data?.value === true);
     };
 
     checkVisibility();
-    const interval = setInterval(checkVisibility, 60000); // Check every minute
+    
+    // Subscribe to changes
+    const channel = supabase
+      .channel('ataturk-memorial-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'site_settings',
+          filter: 'key=eq.ataturk_memorial_visible'
+        },
+        (payload: any) => {
+          setIsVisible(payload.new.value === true);
+        }
+      )
+      .subscribe();
 
-    return () => clearInterval(interval);
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   if (!isVisible) return null;

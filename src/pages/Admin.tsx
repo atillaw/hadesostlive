@@ -24,6 +24,7 @@ import AdminAnalytics from "@/components/admin/AdminAnalytics";
 import AdminCommunityVoting from "@/components/admin/AdminCommunityVoting";
 import AdminMiniGames from "@/components/admin/AdminMiniGames";
 import AdminSponsors from "@/components/admin/AdminSponsors";
+import AdminMemorialBanner from "@/components/admin/AdminMemorialBanner";
 
 
 
@@ -174,6 +175,8 @@ const Admin = () => {
         return <AdminClock />;
       case "countdown":
         return <AdminCountdown />;
+      case "memorial-banner":
+        return <AdminMemorialBanner />;
       case "subscribers":
         return <AdminSubscribers />;
       case "vods":
@@ -191,6 +194,8 @@ const Admin = () => {
         return <AdminAdSense />;
       case "ad-placements":
         return <AdminAdPlacements />;
+      case "ad-performance":
+        return <AdminAdPerformance />;
       case "memes":
         return <AdminMemes />;
       case "clips":

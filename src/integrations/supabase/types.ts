@@ -656,22 +656,28 @@ export type Database = {
       }
       site_settings: {
         Row: {
+          created_at: string | null
+          description: string | null
           id: string
           key: string
-          updated_at: string
-          value: Json
+          updated_at: string | null
+          value: Json | null
         }
         Insert: {
+          created_at?: string | null
+          description?: string | null
           id?: string
           key: string
-          updated_at?: string
-          value: Json
+          updated_at?: string | null
+          value?: Json | null
         }
         Update: {
+          created_at?: string | null
+          description?: string | null
           id?: string
           key?: string
-          updated_at?: string
-          value?: Json
+          updated_at?: string | null
+          value?: Json | null
         }
         Relationships: []
       }
