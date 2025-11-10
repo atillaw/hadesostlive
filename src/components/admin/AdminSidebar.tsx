@@ -40,7 +40,7 @@ const menuItems = [
   { id: "analytics", title: "Analytics", icon: BarChart3 },
   { id: "clock", title: "Saat", icon: Clock },
   { id: "countdown", title: "Geri Sayım", icon: Timer },
-  { id: "memorial-banner", title: "Anma Banner", icon: Heart },
+  { id: "holiday-banners", title: "Bayram Banner'ları", icon: Heart },
   { id: "subscribers", title: "Aboneler", icon: Mail },
   { id: "vods", title: "VODs", icon: Video },
   { id: "kick-subs", title: "Kick Subs", icon: TrendingUp },
