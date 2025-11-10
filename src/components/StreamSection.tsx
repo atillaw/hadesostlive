@@ -13,10 +13,10 @@ const StreamSection = () => {
           </p>
         </div>
         
-        <div className="grid lg:grid-cols-[1fr,400px] gap-6 animate-slide-up">
+        <div className="grid lg:grid-cols-[1fr,400px] gap-6 animate-slide-up items-start">
           {/* Stream Player */}
-          <div className="overflow-hidden rounded-lg border border-primary/30 card-glow bg-card/50 backdrop-blur-sm">
-            <div className="aspect-video relative">
+          <div className="overflow-hidden rounded-lg border border-primary/30 card-glow bg-card/50 backdrop-blur-sm flex flex-col">
+            <div className="aspect-video relative bg-black">
               <iframe
                 src="https://player.kick.com/hadesost"
                 className="absolute inset-0 w-full h-full"
@@ -26,7 +26,7 @@ const StreamSection = () => {
                 title="HadesOST Live Stream"
               />
             </div>
-            <div className="p-4 bg-card/80 backdrop-blur">
+            <div className="p-4 bg-card/80 backdrop-blur border-t border-border/50">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <div className="w-2.5 h-2.5 bg-secondary rounded-full animate-pulse" />
@@ -48,7 +48,7 @@ const StreamSection = () => {
           </div>
           
           {/* Chat */}
-          <Card className="overflow-hidden border-primary/30 card-glow bg-card/50 backdrop-blur-sm lg:h-[720px] h-[500px] flex flex-col">
+          <Card className="overflow-hidden border-primary/30 card-glow bg-card/50 backdrop-blur-sm lg:h-[720px] h-[500px] flex flex-col shrink-0">
             <div className="p-4 bg-card/80 backdrop-blur border-b border-border/50">
               <h3 className="font-bold text-lg flex items-center gap-2">
                 <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
