@@ -163,7 +163,7 @@ const AdminAdSense = () => {
         <CardHeader>
           <CardTitle className="glow-text">Google AdSense Ayarları</CardTitle>
           <CardDescription>
-            Destek sayfasında görüntülenecek AdSense reklam birimini yapılandırın
+            Sitedeki tüm reklam yerlerinde kullanılacak AdSense reklam birimini yapılandırın
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
@@ -249,18 +249,18 @@ const AdminAdSense = () => {
 
       <Card className="bg-card/50 backdrop-blur border-border">
         <CardHeader>
-          <CardTitle className="glow-text">Özel Reklam HTML Kodu</CardTitle>
+          <CardTitle className="glow-text">Özel Reklam HTML Kodu (Yedek)</CardTitle>
           <CardDescription>
-            Destek sayfasında görüntülenecek özel reklam HTML kodunu ekleyin
+            AdSense ayarları yapılmamışsa tüm reklam yerlerinde gösterilecek HTML kodunu ekleyin
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           <Alert>
             <Info className="h-4 w-4" />
             <AlertDescription>
-              Reklam ağlarından aldığınız HTML kodunu buraya yapıştırabilirsiniz.
+              AdSense ayarları yoksa veya yüklenemezse, bu HTML kodu tüm reklam yerlerinde gösterilecektir.
               <br />
-              Kod olduğu gibi sayfada görüntülenecektir.
+              Bu alanı diğer reklam ağları veya özel reklamlar için kullanabilirsiniz.
             </AlertDescription>
           </Alert>
 

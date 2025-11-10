@@ -75,7 +75,7 @@ const HolidayBanner = () => {
   const isAtaturk = holiday.key === 'ataturk_memorial';
 
   return (
-    <div className="w-full bg-gradient-to-b from-black/95 to-black/80 py-8 relative overflow-hidden">
+    <div className="w-full bg-gradient-to-b from-black/95 to-black/80 py-8 relative overflow-hidden animate-fade-in">
       {/* Subtle pattern background */}
       <div className="absolute inset-0 opacity-5">
         <div className="absolute inset-0" style={{
@@ -87,18 +87,18 @@ const HolidayBanner = () => {
       <div className="container mx-auto px-4 relative">
         <div className="flex flex-col items-center justify-center space-y-6">
           {/* Holiday Image */}
-          <div className="relative">
-            <div className="absolute inset-0 bg-white/5 blur-3xl rounded-full" />
+          <div className="relative animate-scale-in">
+            <div className="absolute inset-0 bg-white/5 blur-3xl rounded-full animate-pulse" />
             <img 
               src={HOLIDAY_IMAGES[holiday.key]} 
               alt={holiday.name}
-              className="w-32 h-32 md:w-40 md:h-40 object-cover rounded-full opacity-90 relative z-10 border-2 border-white/20"
+              className="w-32 h-32 md:w-40 md:h-40 object-cover rounded-full opacity-90 relative z-10 border-2 border-white/20 hover:scale-110 transition-transform duration-300"
             />
           </div>
 
           {/* Holiday Text */}
-          <div className="text-center space-y-3">
-            <h2 className="text-2xl md:text-4xl font-bold text-white tracking-wide">
+          <div className="text-center space-y-3 animate-fade-in" style={{ animationDelay: '0.2s', animationFillMode: 'backwards' }}>
+            <h2 className="text-2xl md:text-4xl font-bold text-white tracking-wide hover:scale-105 transition-transform duration-300">
               {holiday.title}
             </h2>
             {holiday.subtitle && (
@@ -116,7 +116,7 @@ const HolidayBanner = () => {
           </div>
 
           {/* Decorative line */}
-          <div className="w-32 h-px bg-gradient-to-r from-transparent via-white/50 to-transparent" />
+          <div className="w-32 h-px bg-gradient-to-r from-transparent via-white/50 to-transparent animate-fade-in" style={{ animationDelay: '0.4s', animationFillMode: 'backwards' }} />
         </div>
       </div>
     </div>

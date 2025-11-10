@@ -24,6 +24,7 @@ const AdSenseUnit = ({
   const [loading, setLoading] = useState(!propClient || !propSlot);
   const [client, setClient] = useState(propClient || "");
   const [slot, setSlot] = useState(propSlot || "");
+  const [customHtml, setCustomHtml] = useState("");
   const impressionTracked = useRef(false);
 
   // Track ad impression
@@ -55,21 +56,36 @@ const AdSenseUnit = ({
 
   const loadAdSenseSettings = async () => {
     try {
-      const { data, error } = await supabase
+      // Try to load AdSense settings first
+      const { data: adsenseData, error: adsenseError } = await supabase
         .from("site_settings")
         .select("value")
         .eq("key", "adsense")
         .maybeSingle();
 
-      if (error) throw error;
+      if (adsenseError) throw adsenseError;
 
-      if (data?.value) {
-        const settings = data.value as { client: string; slot: string };
+      if (adsenseData?.value) {
+        const settings = adsenseData.value as { client: string; slot: string };
         setClient(settings.client || "");
         setSlot(settings.slot || "");
       }
+
+      // If no AdSense settings, try to load custom HTML
+      if (!adsenseData?.value || !(adsenseData.value as any).client || !(adsenseData.value as any).slot) {
+        const { data: htmlData, error: htmlError } = await supabase
+          .from("site_settings")
+          .select("value")
+          .eq("key", "custom_ad_html")
+          .maybeSingle();
+
+        if (!htmlError && htmlData?.value) {
+          const htmlSettings = htmlData.value as { html: string };
+          setCustomHtml(htmlSettings.html || "");
+        }
+      }
     } catch (error) {
-      console.error("AdSense ayarları yüklenemedi:", error);
+      console.error("Reklam ayarları yüklenemedi:", error);
     } finally {
       setLoading(false);
     }
@@ -95,11 +111,17 @@ const AdSenseUnit = ({
   }
 
   if (!client || !slot) {
-    return (
-      <div className="flex items-center justify-center p-8 text-muted-foreground">
-        <p>AdSense ayarları yapılmamış</p>
-      </div>
-    );
+    // Show custom HTML if available
+    if (customHtml) {
+      return (
+        <div 
+          className={className}
+          dangerouslySetInnerHTML={{ __html: customHtml }}
+        />
+      );
+    }
+    
+    return null;
   }
 
   return (
