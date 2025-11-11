@@ -3,6 +3,8 @@ import { useEffect, useState, useRef } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
+import ViewerStatsChart from "@/components/ViewerStatsChart";
+import { supabase } from "@/integrations/supabase/client";
 
 const StreamSection = () => {
   const [isLive, setIsLive] = useState(false);
@@ -52,6 +54,18 @@ const StreamSection = () => {
     });
   };
 
+  const saveViewerCount = async (count: number) => {
+    try {
+      // Use service role or public insert with admin check
+      await supabase.from("viewer_stats").insert({
+        viewer_count: count,
+        is_live: true
+      });
+    } catch (error) {
+      console.error("Error saving viewer count:", error);
+    }
+  };
+
   const checkIfLive = async () => {
     try {
       const response = await fetch("https://kick.com/api/v2/channels/hadesost");
@@ -66,9 +80,14 @@ const StreamSection = () => {
       wasLiveRef.current = live;
       setIsLive(live);
       
-      // Set viewer count if live
+      // Set viewer count if live and save to database
       if (data.livestream?.viewer_count !== undefined) {
         setViewerCount(data.livestream.viewer_count);
+        
+        // Save viewer count every check (every minute)
+        if (live) {
+          saveViewerCount(data.livestream.viewer_count);
+        }
       } else {
         setViewerCount(null);
       }
@@ -192,6 +211,13 @@ const StreamSection = () => {
               </div>
             </div>
           </div>
+          
+          {/* Viewer Stats Chart - Only show when live and has viewer count */}
+          {isLive && viewerCount !== null && (
+            <div className="w-full lg:col-span-2 mt-6">
+              <ViewerStatsChart />
+            </div>
+          )}
           
           {/* Chat */}
           <Card className="overflow-hidden border-primary/30 card-glow bg-card/50 backdrop-blur-sm lg:h-[720px] h-[500px] flex flex-col shrink-0 w-full lg:w-auto">

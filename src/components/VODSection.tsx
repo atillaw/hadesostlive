@@ -1,7 +1,15 @@
 import { useState, useEffect } from "react";
-import { Star } from "lucide-react";
+import { Star, Filter, Calendar, TrendingUp } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
+import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface VOD {
   id: string;
@@ -10,12 +18,17 @@ interface VOD {
   video_url: string;
   average_rating: number;
   vote_count: number;
+  category: string;
+  created_at: string;
 }
 
 const VODSection = () => {
   const [vods, setVods] = useState<VOD[]>([]);
   const [loading, setLoading] = useState(true);
   const [userRatings, setUserRatings] = useState<Record<string, number>>({});
+  const [sortBy, setSortBy] = useState<"latest" | "popular" | "rating">("latest");
+  const [filterCategory, setFilterCategory] = useState<string>("all");
+  const [categories, setCategories] = useState<string[]>([]);
 
   // Get user identifier (using localStorage for simplicity)
   const getUserIdentifier = () => {
@@ -30,23 +43,60 @@ const VODSection = () => {
   useEffect(() => {
     loadVODs();
     loadUserRatings();
+    loadCategories();
   }, []);
+
+  useEffect(() => {
+    loadVODs();
+  }, [sortBy, filterCategory]);
+
+  const loadCategories = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("vods")
+        .select("category")
+        .not("category", "is", null);
+
+      if (error) throw error;
+      
+      const uniqueCategories = Array.from(new Set(data?.map(v => v.category) || []));
+      setCategories(uniqueCategories);
+    } catch (error) {
+      console.error("Error loading categories:", error);
+    }
+  };
 
   const loadVODs = async () => {
     try {
-      const { data, error } = await supabase
+      let query = supabase
         .from("vod_stats")
-        .select("*")
-        .order("created_at", { ascending: false })
-        .limit(3);
+        .select("*");
+
+      // Apply category filter
+      if (filterCategory !== "all") {
+        query = query.eq("category", filterCategory);
+      }
+
+      // Apply sorting
+      if (sortBy === "latest") {
+        query = query.order("created_at", { ascending: false });
+      } else if (sortBy === "popular") {
+        query = query.order("vote_count", { ascending: false });
+      } else if (sortBy === "rating") {
+        query = query.order("average_rating", { ascending: false });
+      }
+
+      query = query.limit(12);
+
+      const { data, error } = await query;
 
       if (error) throw error;
       setVods(data || []);
     } catch (error) {
       console.error("Error loading VODs:", error);
       toast({
-        title: "Error",
-        description: "Failed to load VODs",
+        title: "Hata",
+        description: "VOD'lar yüklenemedi",
         variant: "destructive",
       });
     } finally {
@@ -169,11 +219,59 @@ const VODSection = () => {
   return (
     <section id="vods" className="py-16 md:py-24 px-4 bg-gradient-to-b from-background to-background/50 animate-fade-in scroll-mt-20">
       <div className="container mx-auto">
-        <div className="text-center mb-12 animate-slide-up">
+        <div className="text-center mb-8 animate-slide-up">
           <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4 glow-text">VODs & Highlights</h2>
           <p className="text-muted-foreground text-base md:text-lg max-w-2xl mx-auto">
             Geçmiş yayınları keşfet ve favori anları izle
           </p>
+        </div>
+
+        {/* Filters */}
+        <div className="flex flex-col sm:flex-row gap-4 mb-8 justify-center items-center">
+          <div className="flex items-center gap-2">
+            <Filter className="w-5 h-5 text-muted-foreground" />
+            <span className="text-sm font-medium">Filtrele:</span>
+          </div>
+          
+          <Select value={sortBy} onValueChange={(value: any) => setSortBy(value)}>
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Sırala" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="latest">
+                <div className="flex items-center gap-2">
+                  <Calendar className="w-4 h-4" />
+                  En Yeni
+                </div>
+              </SelectItem>
+              <SelectItem value="popular">
+                <div className="flex items-center gap-2">
+                  <TrendingUp className="w-4 h-4" />
+                  En Popüler
+                </div>
+              </SelectItem>
+              <SelectItem value="rating">
+                <div className="flex items-center gap-2">
+                  <Star className="w-4 h-4" />
+                  En Yüksek Puan
+                </div>
+              </SelectItem>
+            </SelectContent>
+          </Select>
+
+          <Select value={filterCategory} onValueChange={setFilterCategory}>
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Kategori" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Tüm Kategoriler</SelectItem>
+              {categories.map((category) => (
+                <SelectItem key={category} value={category}>
+                  {category}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
 
         {vods.length === 0 ? (

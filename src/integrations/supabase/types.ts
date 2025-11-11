@@ -714,6 +714,74 @@ export type Database = {
         }
         Relationships: []
       }
+      stream_reminders: {
+        Row: {
+          created_at: string
+          id: string
+          reminded: boolean | null
+          schedule_id: string
+          user_email: string | null
+          user_identifier: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          reminded?: boolean | null
+          schedule_id: string
+          user_email?: string | null
+          user_identifier: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          reminded?: boolean | null
+          schedule_id?: string
+          user_email?: string | null
+          user_identifier?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "stream_reminders_schedule_id_fkey"
+            columns: ["schedule_id"]
+            isOneToOne: false
+            referencedRelation: "stream_schedule"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      stream_schedule: {
+        Row: {
+          category: string | null
+          created_at: string
+          description: string | null
+          id: string
+          is_active: boolean | null
+          scheduled_date: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          scheduled_date: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          scheduled_date?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       support_chats: {
         Row: {
           admin_id: string | null
@@ -838,6 +906,27 @@ export type Database = {
         }
         Relationships: []
       }
+      viewer_stats: {
+        Row: {
+          id: string
+          is_live: boolean | null
+          recorded_at: string
+          viewer_count: number
+        }
+        Insert: {
+          id?: string
+          is_live?: boolean | null
+          recorded_at?: string
+          viewer_count: number
+        }
+        Update: {
+          id?: string
+          is_live?: boolean | null
+          recorded_at?: string
+          viewer_count?: number
+        }
+        Relationships: []
+      }
       vod_ratings: {
         Row: {
           created_at: string
@@ -879,6 +968,7 @@ export type Database = {
       }
       vods: {
         Row: {
+          category: string | null
           created_at: string
           id: string
           thumbnail_url: string | null
@@ -886,6 +976,7 @@ export type Database = {
           video_url: string
         }
         Insert: {
+          category?: string | null
           created_at?: string
           id?: string
           thumbnail_url?: string | null
@@ -893,6 +984,7 @@ export type Database = {
           video_url: string
         }
         Update: {
+          category?: string | null
           created_at?: string
           id?: string
           thumbnail_url?: string | null
@@ -906,6 +998,7 @@ export type Database = {
       vod_stats: {
         Row: {
           average_rating: number | null
+          category: string | null
           created_at: string | null
           id: string | null
           thumbnail_url: string | null
