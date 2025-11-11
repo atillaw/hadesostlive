@@ -146,7 +146,7 @@ const StreamSection = () => {
                       <h3 className="text-xl font-bold mb-2">Yayın Çevrimdışı</h3>
                       <p className="text-muted-foreground text-sm mb-4">Şu anda canlı yayın yok. Eski yayınları izlemek için arşivi ziyaret et!</p>
                       <Button 
-                        onClick={() => window.location.href = '/vods'}
+                        onClick={() => window.location.href = '/vodlar'}
                         className="bg-primary hover:bg-primary/90"
                       >
                         <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
