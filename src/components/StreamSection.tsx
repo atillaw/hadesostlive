@@ -4,6 +4,9 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
 import ViewerStatsChart from "@/components/ViewerStatsChart";
+import ViewerStatsDetailed from "@/components/ViewerStatsDetailed";
+import PredictionGame from "@/components/PredictionGame";
+import MiniGameWidget from "@/components/MiniGameWidget";
 import { supabase } from "@/integrations/supabase/client";
 
 const StreamSection = () => {
@@ -214,12 +217,15 @@ const StreamSection = () => {
             </div>
           </div>
           
-          {/* Viewer Stats Chart - Only show when live and has viewer count */}
-          {isLive && viewerCount !== null && (
-            <div className="w-full lg:col-span-2 mt-8">
-              <ViewerStatsChart />
+          {/* Interactive Widgets */}
+          <div className="w-full lg:col-span-2 mt-8 space-y-6">
+            {isLive && viewerCount !== null && <ViewerStatsChart />}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <PredictionGame />
+              <MiniGameWidget />
             </div>
-          )}
+            <ViewerStatsDetailed />
+          </div>
           
           {/* Chat */}
           <Card className="overflow-hidden rounded-xl border border-primary/20 card-glow bg-gradient-to-br from-card/60 to-card/40 backdrop-blur-md lg:h-[720px] h-[500px] flex flex-col shrink-0 w-full lg:w-auto shadow-2xl">
