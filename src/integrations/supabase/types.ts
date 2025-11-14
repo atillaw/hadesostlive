@@ -512,6 +512,68 @@ export type Database = {
         }
         Relationships: []
       }
+      mini_game_scores: {
+        Row: {
+          completed_at: string
+          game_id: string
+          id: string
+          score: number
+          user_identifier: string
+        }
+        Insert: {
+          completed_at?: string
+          game_id: string
+          id?: string
+          score?: number
+          user_identifier: string
+        }
+        Update: {
+          completed_at?: string
+          game_id?: string
+          id?: string
+          score?: number
+          user_identifier?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mini_game_scores_game_id_fkey"
+            columns: ["game_id"]
+            isOneToOne: false
+            referencedRelation: "mini_games"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      mini_games: {
+        Row: {
+          config: Json
+          created_at: string
+          ends_at: string | null
+          game_type: string
+          id: string
+          is_active: boolean
+          title: string
+        }
+        Insert: {
+          config?: Json
+          created_at?: string
+          ends_at?: string | null
+          game_type: string
+          id?: string
+          is_active?: boolean
+          title: string
+        }
+        Update: {
+          config?: Json
+          created_at?: string
+          ends_at?: string | null
+          game_type?: string
+          id?: string
+          is_active?: boolean
+          title?: string
+        }
+        Relationships: []
+      }
       page_views: {
         Row: {
           created_at: string
@@ -603,6 +665,77 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      prediction_bets: {
+        Row: {
+          created_at: string
+          id: string
+          option_index: number
+          points_wagered: number
+          prediction_id: string
+          user_identifier: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          option_index: number
+          points_wagered?: number
+          prediction_id: string
+          user_identifier: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          option_index?: number
+          points_wagered?: number
+          prediction_id?: string
+          user_identifier?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "prediction_bets_prediction_id_fkey"
+            columns: ["prediction_id"]
+            isOneToOne: false
+            referencedRelation: "prediction_games"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      prediction_games: {
+        Row: {
+          closes_at: string
+          correct_option_index: number | null
+          created_at: string
+          description: string | null
+          id: string
+          options: Json
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          closes_at: string
+          correct_option_index?: number | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          options?: Json
+          status?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          closes_at?: string
+          correct_option_index?: number | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          options?: Json
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
       }
       profiles: {
         Row: {
@@ -966,10 +1099,114 @@ export type Database = {
           },
         ]
       }
+      vod_tag_mappings: {
+        Row: {
+          created_at: string
+          id: string
+          tag_id: string
+          vod_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          tag_id: string
+          vod_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          tag_id?: string
+          vod_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "vod_tag_mappings_tag_id_fkey"
+            columns: ["tag_id"]
+            isOneToOne: false
+            referencedRelation: "vod_tags"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "vod_tag_mappings_vod_id_fkey"
+            columns: ["vod_id"]
+            isOneToOne: false
+            referencedRelation: "vod_stats"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "vod_tag_mappings_vod_id_fkey"
+            columns: ["vod_id"]
+            isOneToOne: false
+            referencedRelation: "vods"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      vod_tags: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      }
+      vod_views: {
+        Row: {
+          completed: boolean | null
+          id: string
+          user_identifier: string
+          vod_id: string
+          watch_duration: number | null
+          watched_at: string
+        }
+        Insert: {
+          completed?: boolean | null
+          id?: string
+          user_identifier: string
+          vod_id: string
+          watch_duration?: number | null
+          watched_at?: string
+        }
+        Update: {
+          completed?: boolean | null
+          id?: string
+          user_identifier?: string
+          vod_id?: string
+          watch_duration?: number | null
+          watched_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "vod_views_vod_id_fkey"
+            columns: ["vod_id"]
+            isOneToOne: false
+            referencedRelation: "vod_stats"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "vod_views_vod_id_fkey"
+            columns: ["vod_id"]
+            isOneToOne: false
+            referencedRelation: "vods"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       vods: {
         Row: {
           category: string | null
           created_at: string
+          duration: number | null
           id: string
           thumbnail_url: string | null
           title: string
@@ -978,6 +1215,7 @@ export type Database = {
         Insert: {
           category?: string | null
           created_at?: string
+          duration?: number | null
           id?: string
           thumbnail_url?: string | null
           title: string
@@ -986,6 +1224,7 @@ export type Database = {
         Update: {
           category?: string | null
           created_at?: string
+          duration?: number | null
           id?: string
           thumbnail_url?: string | null
           title?: string
@@ -995,6 +1234,46 @@ export type Database = {
       }
     }
     Views: {
+      viewer_stats_daily: {
+        Row: {
+          avg_viewers: number | null
+          data_points: number | null
+          day: string | null
+          min_viewers: number | null
+          peak_viewers: number | null
+        }
+        Relationships: []
+      }
+      viewer_stats_hourly: {
+        Row: {
+          avg_viewers: number | null
+          data_points: number | null
+          hour: string | null
+          min_viewers: number | null
+          peak_viewers: number | null
+        }
+        Relationships: []
+      }
+      viewer_stats_monthly: {
+        Row: {
+          avg_viewers: number | null
+          data_points: number | null
+          min_viewers: number | null
+          month: string | null
+          peak_viewers: number | null
+        }
+        Relationships: []
+      }
+      viewer_stats_weekly: {
+        Row: {
+          avg_viewers: number | null
+          data_points: number | null
+          min_viewers: number | null
+          peak_viewers: number | null
+          week: string | null
+        }
+        Relationships: []
+      }
       vod_stats: {
         Row: {
           average_rating: number | null

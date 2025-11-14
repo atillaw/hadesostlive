@@ -22,6 +22,11 @@ const ViewerStatsDetailed = () => {
 
   useEffect(() => {
     loadAllStats();
+    
+    // Auto-refresh every minute
+    const interval = setInterval(loadAllStats, 60000);
+    
+    return () => clearInterval(interval);
   }, []);
 
   const loadAllStats = async () => {
