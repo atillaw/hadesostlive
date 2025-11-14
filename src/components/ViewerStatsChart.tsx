@@ -16,6 +16,9 @@ const ViewerStatsChart = () => {
   useEffect(() => {
     loadStats();
     
+    // Auto-refresh every 30 seconds
+    const interval = setInterval(loadStats, 30000);
+    
     // Subscribe to realtime updates
     const channel = supabase
       .channel('viewer-stats-changes')
@@ -33,6 +36,7 @@ const ViewerStatsChart = () => {
       .subscribe();
 
     return () => {
+      clearInterval(interval);
       supabase.removeChannel(channel);
     };
   }, []);

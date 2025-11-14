@@ -11,8 +11,8 @@ interface VODSearchFiltersProps {
   onFiltersChange: (filters: {
     search: string;
     tags: string[];
-    minDuration?: number;
-    maxDuration?: number;
+    minDuration: number;
+    maxDuration: number;
     sortBy: string;
   }) => void;
 }
