@@ -19,23 +19,33 @@ interface Prediction {
   options: PredictionOption[];
   closes_at: string;
   status: string;
-  correct_option_index?: number;
+  correct_option_index?: number | null;
+}
+
+interface UserStats {
+  total_points: number;
+  correct_predictions: number;
 }
 
 const PredictionGame = () => {
   const [prediction, setPrediction] = useState<Prediction | null>(null);
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
   const [userBet, setUserBet] = useState<any>(null);
+  const [userStats, setUserStats] = useState<UserStats | null>(null);
   const [bets, setBets] = useState<Record<number, number>>({});
   const [timeLeft, setTimeLeft] = useState<string>("");
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     loadActivePrediction();
+    loadUserStats();
     const channel = supabase
       .channel("predictions-changes")
       .on("postgres_changes", { event: "*", schema: "public", table: "prediction_games" }, loadActivePrediction)
-      .on("postgres_changes", { event: "*", schema: "public", table: "prediction_bets" }, loadBets)
+      .on("postgres_changes", { event: "*", schema: "public", table: "prediction_bets" }, () => {
+        loadBets();
+        loadUserStats();
+      })
       .subscribe();
 
     return () => {
@@ -116,6 +126,24 @@ const PredictionGame = () => {
     }
   };
 
+  const loadUserStats = async () => {
+    const userId = localStorage.getItem("userId");
+    if (!userId) return;
+
+    const { data } = await supabase
+      .from("prediction_leaderboard")
+      .select("*")
+      .eq("user_identifier", userId)
+      .maybeSingle();
+
+    if (data) {
+      setUserStats({
+        total_points: data.total_points || 0,
+        correct_predictions: data.correct_predictions || 0,
+      });
+    }
+  };
+
   const placeBet = async () => {
     if (selectedOption === null) return;
 
@@ -166,9 +194,25 @@ const PredictionGame = () => {
   }
 
   const isClosed = new Date(prediction.closes_at) < new Date() || prediction.status !== "active";
+  const hasWinner = prediction.correct_option_index !== null && prediction.correct_option_index !== undefined;
+  const userWon = hasWinner && userBet && userBet.option_index === prediction.correct_option_index;
 
   return (
     <Card className="p-6 bg-gradient-to-br from-card/60 to-card/40 backdrop-blur-md border-primary/20 space-y-6">
+      {/* User Stats Header */}
+      {userStats && (
+        <div className="flex items-center justify-between p-3 bg-primary/10 rounded-lg border border-primary/20">
+          <div className="flex items-center gap-2">
+            <Trophy className="w-4 h-4 text-primary" />
+            <span className="text-sm font-medium">Senin Puanın</span>
+          </div>
+          <div className="flex gap-4 text-sm">
+            <span className="font-bold text-primary">{userStats.total_points} puan</span>
+            <span className="text-muted-foreground">{userStats.correct_predictions} doğru</span>
+          </div>
+        </div>
+      )}
+
       <div className="flex items-start justify-between">
         <div className="flex-1">
           <div className="flex items-center gap-2 mb-2">
@@ -188,32 +232,39 @@ const PredictionGame = () => {
       <div className="space-y-3">
         {prediction.options.map((option: PredictionOption, index: number) => {
           const percentage = getPercentage(index);
-          const isSelected = selectedOption === index;
-          const isUserBet = userBet?.option_index === index;
-
+          const isCorrect = hasWinner && prediction.correct_option_index === index;
+          const isUserChoice = userBet && userBet.option_index === index;
+          
           return (
             <div key={index} className="space-y-2">
               <button
-                onClick={() => !userBet && !isClosed && setSelectedOption(index)}
-                disabled={!!userBet || isClosed}
-                className={`w-full p-4 rounded-lg border-2 transition-all text-left ${
-                  isSelected
-                    ? "border-primary bg-primary/10 scale-[1.02]"
-                    : "border-border/50 hover:border-primary/50 hover:bg-accent/20"
-                } ${userBet || isClosed ? "cursor-not-allowed opacity-60" : "cursor-pointer"}`}
+                onClick={() => !isClosed && !userBet && setSelectedOption(index)}
+                disabled={isClosed || userBet !== null}
+                className={`w-full p-4 rounded-lg border-2 transition-all relative overflow-hidden ${
+                  selectedOption === index && !userBet
+                    ? "border-primary bg-primary/10"
+                    : isCorrect
+                    ? "border-green-500 bg-green-500/10"
+                    : isUserChoice && hasWinner
+                    ? "border-red-500 bg-red-500/10"
+                    : "border-border hover:border-primary/50"
+                } ${isClosed || userBet ? "cursor-not-allowed" : "cursor-pointer"}`}
               >
-                <div className="flex items-center justify-between mb-2">
-                  <span className="font-semibold">{option.label}</span>
-                  {isUserBet && <Badge variant="secondary">Tahminiz</Badge>}
+                <div className="flex items-center justify-between relative z-10">
+                  <span className="font-medium flex items-center gap-2">
+                    {option.label}
+                    {isCorrect && <span className="text-green-500">✓</span>}
+                    {isUserChoice && !isCorrect && hasWinner && <span className="text-red-500">✗</span>}
+                  </span>
                   {totalBets > 0 && (
-                    <div className="flex items-center gap-2">
-                      <Users className="w-4 h-4" />
-                      <span className="text-sm">{percentage}%</span>
+                    <div className="flex items-center gap-3">
+                      <span className="text-sm text-muted-foreground">{percentage}%</span>
+                      <Badge variant="secondary" className="text-xs">{bets[index] || 0}</Badge>
                     </div>
                   )}
                 </div>
                 {totalBets > 0 && (
-                  <Progress value={percentage} className="h-2" />
+                  <Progress value={percentage} className="h-1 mt-2" />
                 )}
               </button>
             </div>
@@ -221,24 +272,22 @@ const PredictionGame = () => {
         })}
       </div>
 
-      {totalBets > 0 && (
-        <div className="text-center text-sm text-muted-foreground">
-          <Users className="w-4 h-4 inline mr-1" />
-          {totalBets} kişi tahmin yaptı
-        </div>
+      {!userBet && !isClosed && selectedOption !== null && (
+        <Button onClick={placeBet} disabled={loading} className="w-full" size="lg">
+          {loading ? "Kaydediliyor..." : "Tahmini Kaydet"}
+        </Button>
       )}
 
-      {!userBet && !isClosed && selectedOption !== null && (
-        <Button
-          onClick={placeBet}
-          disabled={loading}
-          className="w-full bg-gradient-to-r from-primary to-primary-glow hover:opacity-90"
-        >
-          {loading ? "Kaydediliyor..." : "Tahmini Onayla"}
-        </Button>
+      {userBet && (
+        <Badge variant={userWon ? "default" : "secondary"} className="w-full justify-center p-3 text-base">
+          {userWon ? "🎉 Kazandın! +" + (userBet.points_won || 0) + " puan" : hasWinner ? "❌ Kaybettin" : "⏳ Sonuçlar bekleniyor..."}
+        </Badge>
       )}
     </Card>
   );
+};
+
+export default PredictionGame;
 };
 
 export default PredictionGame;

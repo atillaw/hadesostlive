@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Star, Eye } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
+import { Badge } from "@/components/ui/badge";
 import VODSearchFilters from "@/components/VODSearchFilters";
 
 interface VOD {
@@ -14,12 +15,20 @@ interface VOD {
   category: string;
   created_at: string;
   duration?: number;
+  tags?: Array<{ id: string; name: string }>;
+}
+
+interface WatchProgress {
+  vod_id: string;
+  last_position: number;
+  watch_duration: number;
 }
 
 const VODSection = () => {
   const [vods, setVods] = useState<VOD[]>([]);
   const [loading, setLoading] = useState(true);
   const [userRatings, setUserRatings] = useState<Record<string, number>>({});
+  const [watchProgress, setWatchProgress] = useState<Record<string, WatchProgress>>({});
   const [filters, setFilters] = useState({
     search: "",
     tags: [] as string[],
@@ -40,12 +49,21 @@ const VODSection = () => {
   useEffect(() => {
     loadVODs();
     loadUserRatings();
+    loadWatchProgress();
   }, [filters]);
 
   const loadVODs = async () => {
     try {
       setLoading(true);
-      let query = supabase.from("vod_stats").select("*");
+      let query = supabase.from("vods").select(`
+        *,
+        vod_tag_mappings (
+          vod_tags (
+            id,
+            name
+          )
+        )
+      `);
 
       if (filters.search) {
         query = query.ilike("title", `%${filters.search}%`);
@@ -63,19 +81,45 @@ const VODSection = () => {
         }
       }
 
+      if (filters.minDuration > 0 || filters.maxDuration < 240 * 60) {
+        query = query.gte("duration", filters.minDuration).lte("duration", filters.maxDuration);
+      }
+
       if (filters.sortBy === "latest") {
         query = query.order("created_at", { ascending: false });
-      } else if (filters.sortBy === "popular" || filters.sortBy === "most-watched") {
-        query = query.order("vote_count", { ascending: false });
-      } else if (filters.sortBy === "rating") {
-        query = query.order("average_rating", { ascending: false });
       }
 
       query = query.limit(20);
 
       const { data, error } = await query;
       if (error) throw error;
-      setVods(data || []);
+
+      // Transform data to include tags
+      const vodsWithTags = data?.map((vod: any) => ({
+        ...vod,
+        tags: vod.vod_tag_mappings?.map((mapping: any) => mapping.vod_tags).filter(Boolean) || []
+      })) || [];
+
+      // Get ratings
+      const { data: ratingsData } = await supabase
+        .from("vod_ratings")
+        .select("vod_id, rating")
+        .in("vod_id", vodsWithTags.map(v => v.id));
+
+      const vodRatings: Record<string, { total: number; count: number }> = {};
+      ratingsData?.forEach((r: any) => {
+        if (!vodRatings[r.vod_id]) vodRatings[r.vod_id] = { total: 0, count: 0 };
+        vodRatings[r.vod_id].total += r.rating;
+        vodRatings[r.vod_id].count += 1;
+      });
+
+      const vodsWithRatings = vodsWithTags.map(vod => ({
+        ...vod,
+        average_rating: vodRatings[vod.id] ? vodRatings[vod.id].total / vodRatings[vod.id].count : 0,
+        vote_count: vodRatings[vod.id]?.count || 0
+      }));
+
+      setVods(vodsWithRatings);
     } catch (error) {
       console.error("Error loading VODs:", error);
       toast({ title: "Hata", description: "VOD'lar yüklenemedi", variant: "destructive" });
@@ -100,6 +144,44 @@ const VODSection = () => {
       setUserRatings(ratings);
     } catch (error) {
       console.error("Error loading user ratings:", error);
+    }
+  };
+
+  const loadWatchProgress = async () => {
+    try {
+      const userId = getUserIdentifier();
+      const { data, error } = await supabase
+        .from("vod_views")
+        .select("vod_id, last_position, watch_duration")
+        .eq("user_identifier", userId)
+        .gt("last_position", 0);
+
+      if (error) throw error;
+      const progress: Record<string, WatchProgress> = {};
+      data?.forEach((view) => {
+        progress[view.vod_id] = view;
+      });
+      setWatchProgress(progress);
+    } catch (error) {
+      console.error("Error loading watch progress:", error);
+    }
+  };
+
+  const saveWatchProgress = async (vodId: string, position: number, duration: number) => {
+    const userId = getUserIdentifier();
+    try {
+      await supabase.from("vod_views").upsert(
+        {
+          vod_id: vodId,
+          user_identifier: userId,
+          last_position: position,
+          watch_duration: duration,
+          completed: position >= duration * 0.9,
+        },
+        { onConflict: "vod_id,user_identifier" }
+      );
+    } catch (error) {
+      console.error("Error saving watch progress:", error);
     }
   };
 
@@ -188,12 +270,24 @@ const VODSection = () => {
                       {formatDuration(vod.duration)}
                     </div>
                   )}
+                  {watchProgress[vod.id] && (
+                    <div className="absolute bottom-2 left-2 bg-green-600/90 px-2 py-1 rounded text-xs font-medium">
+                      Kaldığın yer: {formatDuration(watchProgress[vod.id].last_position)}
+                    </div>
+                  )}
                 </a>
                 <div className="p-4 space-y-3">
                   <h3 className="font-semibold text-base line-clamp-2 group-hover:text-primary transition-colors">{vod.title}</h3>
-                  {vod.category && (
-                    <span className="text-xs text-muted-foreground bg-muted/50 px-2 py-1 rounded inline-block">{vod.category}</span>
-                  )}
+                  <div className="flex flex-wrap gap-1">
+                    {vod.category && (
+                      <Badge variant="outline" className="text-xs">{vod.category}</Badge>
+                    )}
+                    {vod.tags?.map((tag) => (
+                      <Badge key={tag.id} variant="secondary" className="text-xs">
+                        {tag.name}
+                      </Badge>
+                    ))}
+                  </div>
                   <div className="flex items-center justify-between pt-2 border-t border-border/30">
                     <div className="flex gap-1">
                       {[1, 2, 3, 4, 5].map((star) => (

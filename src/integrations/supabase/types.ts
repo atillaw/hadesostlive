@@ -672,6 +672,7 @@ export type Database = {
           id: string
           option_index: number
           points_wagered: number
+          points_won: number | null
           prediction_id: string
           user_identifier: string
         }
@@ -680,6 +681,7 @@ export type Database = {
           id?: string
           option_index: number
           points_wagered?: number
+          points_won?: number | null
           prediction_id: string
           user_identifier: string
         }
@@ -688,6 +690,7 @@ export type Database = {
           id?: string
           option_index?: number
           points_wagered?: number
+          points_won?: number | null
           prediction_id?: string
           user_identifier?: string
         }
@@ -1164,6 +1167,7 @@ export type Database = {
         Row: {
           completed: boolean | null
           id: string
+          last_position: number | null
           user_identifier: string
           vod_id: string
           watch_duration: number | null
@@ -1172,6 +1176,7 @@ export type Database = {
         Insert: {
           completed?: boolean | null
           id?: string
+          last_position?: number | null
           user_identifier: string
           vod_id: string
           watch_duration?: number | null
@@ -1180,6 +1185,7 @@ export type Database = {
         Update: {
           completed?: boolean | null
           id?: string
+          last_position?: number | null
           user_identifier?: string
           vod_id?: string
           watch_duration?: number | null
@@ -1234,6 +1240,15 @@ export type Database = {
       }
     }
     Views: {
+      prediction_leaderboard: {
+        Row: {
+          correct_predictions: number | null
+          games_played: number | null
+          total_points: number | null
+          user_identifier: string | null
+        }
+        Relationships: []
+      }
       viewer_stats_daily: {
         Row: {
           avg_viewers: number | null

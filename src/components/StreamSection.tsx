@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
 import ViewerStatsChart from "@/components/ViewerStatsChart";
 import ViewerStatsDetailed from "@/components/ViewerStatsDetailed";
+import LeaderboardWidget from "@/components/LeaderboardWidget";
 import PredictionGame from "@/components/PredictionGame";
 import MiniGameWidget from "@/components/MiniGameWidget";
 import { supabase } from "@/integrations/supabase/client";
@@ -218,9 +219,10 @@ const StreamSection = () => {
         </div>
 
         {/* İnteraktif Widgetlar */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
           <PredictionGame />
           <MiniGameWidget />
+          <LeaderboardWidget />
         </div>
 
         {/* Detaylı İstatistikler - Altta */}
