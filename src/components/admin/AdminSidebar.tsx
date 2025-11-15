@@ -15,7 +15,9 @@ import {
   Gamepad2,
   Award,
   MapPin,
-  Heart
+  Heart,
+  Target,
+  Tag
 } from "lucide-react";
 import { NavLink } from "react-router-dom";
 import {
@@ -43,6 +45,7 @@ const menuItems = [
   { id: "holiday-banners", title: "Bayram Banner'ları", icon: Heart },
   { id: "subscribers", title: "Aboneler", icon: Mail },
   { id: "vods", title: "VODs", icon: Video },
+  { id: "vod-tags", title: "VOD Etiketleri", icon: Tag },
   { id: "kick-subs", title: "Kick Subs", icon: TrendingUp },
   { id: "support", title: "Destek", icon: MessageCircle },
   { id: "adsense", title: "AdSense", icon: Megaphone },
@@ -51,6 +54,7 @@ const menuItems = [
   { id: "memes", title: "Memeler", icon: ImageIcon },
   { id: "clips", title: "Klipler", icon: Film },
   { id: "community-voting", title: "Topluluk Önerileri", icon: Vote },
+  { id: "prediction-games", title: "Tahmin Oyunları", icon: Target },
   { id: "mini-games", title: "Mini Oyunlar", icon: Gamepad2 },
   { id: "sponsors", title: "Sponsorlar", icon: Award },
   { id: "logs", title: "Loglar", icon: ScrollText },
