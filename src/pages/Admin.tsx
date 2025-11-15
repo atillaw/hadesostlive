@@ -26,6 +26,7 @@ import AdminMiniGames from "@/components/admin/AdminMiniGames";
 import AdminSponsors from "@/components/admin/AdminSponsors";
 import AdminHolidayBanners from "@/components/admin/AdminHolidayBanners";
 import AdminVODTags from "@/components/admin/AdminVODTags";
+import AdminPredictionGames from "@/components/admin/AdminPredictionGames";
 
 
 
@@ -209,6 +210,8 @@ const Admin = () => {
         return <AdminSponsors />;
       case "vod-tags":
         return <AdminVODTags />;
+      case "prediction-games":
+        return <AdminPredictionGames />;
       case "users":
         return userRole === "admin" ? <AdminUsers /> : null;
       case "logs":
