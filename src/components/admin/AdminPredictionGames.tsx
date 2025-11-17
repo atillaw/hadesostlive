@@ -146,9 +146,18 @@ const AdminPredictionGames = () => {
 
       if (error) throw error;
 
+      // Calculate rewards
+      const { error: rewardsError } = await supabase.functions.invoke('calculate-prediction-rewards', {
+        body: { predictionId: gameId }
+      });
+
+      if (rewardsError) {
+        console.error("Error calculating rewards:", rewardsError);
+      }
+
       toast({
         title: "Başarılı",
-        description: "Kazanan seçenek belirlendi",
+        description: "Kazanan seçenek belirlendi, puanlar dağıtıldı",
       });
 
       loadGames();

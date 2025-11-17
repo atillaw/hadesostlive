@@ -288,6 +288,3 @@ const PredictionGame = () => {
 };
 
 export default PredictionGame;
-};
-
-export default PredictionGame;
