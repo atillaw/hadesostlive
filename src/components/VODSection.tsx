@@ -3,6 +3,7 @@ import { Star, Eye } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import VODSearchFilters from "@/components/VODSearchFilters";
 
 interface VOD {
@@ -271,8 +272,22 @@ const VODSection = () => {
                     </div>
                   )}
                   {watchProgress[vod.id] && (
-                    <div className="absolute bottom-2 left-2 bg-green-600/90 px-2 py-1 rounded text-xs font-medium">
-                      Kaldığın yer: {formatDuration(watchProgress[vod.id].last_position)}
+                    <div className="absolute top-2 left-2 flex flex-col gap-1">
+                      <div className="bg-green-600/90 px-2 py-1 rounded text-xs font-medium">
+                        Kaldığın yer: {formatDuration(watchProgress[vod.id].last_position)}
+                      </div>
+                      <Button
+                        size="sm"
+                        variant="secondary"
+                        className="text-xs h-6"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          const progressInSeconds = watchProgress[vod.id].last_position;
+                          window.open(`${vod.video_url}&t=${Math.floor(progressInSeconds)}s`, '_blank');
+                        }}
+                      >
+                        Devam Et
+                      </Button>
                     </div>
                   )}
                 </a>
