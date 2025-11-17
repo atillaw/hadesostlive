@@ -250,47 +250,46 @@ const VODSection = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 animate-slide-up">
             {vods.map((vod) => (
               <div key={vod.id} className="group relative overflow-hidden rounded-xl border border-primary/20 card-glow bg-gradient-to-br from-card/60 to-card/40 backdrop-blur-sm hover:scale-[1.02] transition-all duration-300">
-                <a href={vod.video_url} target="_blank" rel="noopener noreferrer" className="block aspect-video relative overflow-hidden">
+                <div className="aspect-video relative overflow-hidden">
                   {vod.thumbnail_url ? (
-                    <img src={vod.thumbnail_url} alt={vod.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                    <img src={vod.thumbnail_url} alt={vod.title} className="w-full h-full object-cover" />
                   ) : (
                     <div className="w-full h-full bg-gradient-to-br from-muted/50 to-muted/30 flex items-center justify-center">
                       <span className="text-muted-foreground">No thumbnail</span>
                     </div>
                   )}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                    <div className="w-16 h-16 rounded-full bg-primary/90 flex items-center justify-center">
-                      <svg className="w-8 h-8 text-white ml-1" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M8 5v14l11-7z" />
-                      </svg>
-                    </div>
+                  <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
+                    <video
+                      src={vod.video_url}
+                      className="w-full h-full"
+                      controls
+                      onTimeUpdate={(e) => {
+                        const video = e.currentTarget;
+                        const currentTime = Math.floor(video.currentTime);
+                        if (currentTime % 10 === 0 && currentTime > 0) {
+                          saveWatchProgress(vod.id, currentTime, Math.floor(video.duration || 0));
+                        }
+                      }}
+                      onLoadedMetadata={(e) => {
+                        const video = e.currentTarget;
+                        if (watchProgress[vod.id]?.last_position) {
+                          video.currentTime = watchProgress[vod.id].last_position;
+                        }
+                      }}
+                    />
                   </div>
                   {vod.duration && (
-                    <div className="absolute bottom-2 right-2 bg-black/80 px-2 py-1 rounded text-xs font-medium flex items-center gap-1">
+                    <div className="absolute bottom-14 right-2 bg-black/80 px-2 py-1 rounded text-xs font-medium flex items-center gap-1">
                       <Eye className="w-3 h-3" />
                       {formatDuration(vod.duration)}
                     </div>
                   )}
                   {watchProgress[vod.id] && (
-                    <div className="absolute top-2 left-2 flex flex-col gap-1">
-                      <div className="bg-green-600/90 px-2 py-1 rounded text-xs font-medium">
-                        Kaldığın yer: {formatDuration(watchProgress[vod.id].last_position)}
-                      </div>
-                      <Button
-                        size="sm"
-                        variant="secondary"
-                        className="text-xs h-6"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          const progressInSeconds = watchProgress[vod.id].last_position;
-                          window.open(`${vod.video_url}&t=${Math.floor(progressInSeconds)}s`, '_blank');
-                        }}
-                      >
-                        Devam Et
-                      </Button>
+                    <div className="absolute top-2 left-2 bg-green-600/90 px-2 py-1 rounded text-xs font-medium">
+                      Kaldığın yer: {formatDuration(watchProgress[vod.id].last_position)}
                     </div>
                   )}
-                </a>
+                </div>
                 <div className="p-4 space-y-3">
                   <h3 className="font-semibold text-base line-clamp-2 group-hover:text-primary transition-colors">{vod.title}</h3>
                   <div className="flex flex-wrap gap-1">

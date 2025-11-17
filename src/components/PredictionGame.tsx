@@ -41,7 +41,24 @@ const PredictionGame = () => {
     loadUserStats();
     const channel = supabase
       .channel("predictions-changes")
-      .on("postgres_changes", { event: "*", schema: "public", table: "prediction_games" }, loadActivePrediction)
+      .on("postgres_changes", { event: "*", schema: "public", table: "prediction_games" }, (payload) => {
+        loadActivePrediction();
+        
+        // Check if game ended and show notification
+        if (payload.eventType === "UPDATE" && payload.new.status === "closed" && userBet) {
+          const game = payload.new as any;
+          const isWinner = game.correct_option_index === userBet.option_index;
+          const pointsChange = userBet.points_won || 0;
+          
+          toast({
+            title: isWinner ? "🎉 Tebrikler!" : "😔 Kaybettiniz",
+            description: isWinner 
+              ? `Doğru tahmin ettiniz! +${pointsChange} puan kazandınız!`
+              : `Maalesef yanlış tahmin. -${userBet.points_wagered} puan`,
+            variant: isWinner ? "default" : "destructive",
+          });
+        }
+      })
       .on("postgres_changes", { event: "*", schema: "public", table: "prediction_bets" }, () => {
         loadBets();
         loadUserStats();
@@ -51,7 +68,7 @@ const PredictionGame = () => {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, []);
+  }, [userBet]);
 
   useEffect(() => {
     if (!prediction) return;
