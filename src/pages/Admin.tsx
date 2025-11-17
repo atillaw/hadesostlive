@@ -28,6 +28,8 @@ import AdminHolidayBanners from "@/components/admin/AdminHolidayBanners";
 import AdminVODTags from "@/components/admin/AdminVODTags";
 import AdminPredictionGames from "@/components/admin/AdminPredictionGames";
 import AdminGameTypes from "@/components/admin/AdminGameTypes";
+import AdminPredictionAnalytics from "@/components/admin/AdminPredictionAnalytics";
+import AdminMiniGamesAnalytics from "@/components/admin/AdminMiniGamesAnalytics";
 
 
 
@@ -206,13 +208,23 @@ const Admin = () => {
       case "community-voting":
         return <AdminCommunityVoting />;
       case "mini-games":
-        return <AdminGameTypes />;
+        return (
+          <div className="space-y-6">
+            <AdminMiniGamesAnalytics />
+            <AdminGameTypes />
+          </div>
+        );
       case "sponsors":
         return <AdminSponsors />;
       case "vod-tags":
         return <AdminVODTags />;
       case "prediction-games":
-        return <AdminPredictionGames />;
+        return (
+          <div className="space-y-6">
+            <AdminPredictionAnalytics />
+            <AdminPredictionGames />
+          </div>
+        );
       case "users":
         return userRole === "admin" ? <AdminUsers /> : null;
       case "logs":
