@@ -211,7 +211,7 @@ const StreamSection = () => {
           <Card className="h-full bg-card/50 backdrop-blur border-border/50 overflow-hidden">
             <div className="h-[600px] lg:h-full min-h-[600px]">
               <iframe
-                src="https://kick.com/hekayetv/chatroom"
+                src="https://kick.com/popout/hadesost/chat"
                 className="w-full h-full"
                 frameBorder="0"
                 title="Kick Chat"
