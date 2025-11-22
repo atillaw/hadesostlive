@@ -16,6 +16,9 @@ interface AnalyticsData {
   uniqueVisitors: number;
   totalImpactPoints: number;
   totalTransactions: number;
+  activeMiniGames: number;
+  activePredictions: number;
+  recentVODViews: number;
 }
 
 interface PageViewStats {
@@ -37,6 +40,9 @@ const AdminAnalytics = () => {
     uniqueVisitors: 0,
     totalImpactPoints: 0,
     totalTransactions: 0,
+    activeMiniGames: 0,
+    activePredictions: 0,
+    recentVODViews: 0,
   });
   const [pageStats, setPageStats] = useState<PageViewStats[]>([]);
   const [loading, setLoading] = useState(true);
@@ -73,7 +79,7 @@ const AdminAnalytics = () => {
       const today = new Date();
       today.setHours(0, 0, 0, 0);
 
-      const [users, proposals, memes, clips, kickSubs, subscribers, supportChats, pageViews, todayViews, uniqueVisitors, topPages, impactPoints, paytrTransactions] = await Promise.all([
+      const [users, proposals, memes, clips, kickSubs, subscribers, supportChats, pageViews, todayViews, uniqueVisitors, topPages, impactPoints, paytrTransactions, miniGames, predictions, vodViews] = await Promise.all([
         supabase.from("profiles").select("*", { count: "exact", head: true }),
         supabase.from("community_proposals").select("*", { count: "exact", head: true }),
         supabase.from("meme_uploads").select("*", { count: "exact", head: true }),
@@ -94,6 +100,9 @@ const AdminAnalytics = () => {
           .gte("created_at", today.toISOString()),
         supabase.from("impact_points").select("*", { count: "exact", head: true }),
         supabase.from("paytr_transactions").select("*", { count: "exact", head: true }),
+        supabase.from("mini_games").select("*", { count: "exact", head: true }).eq("is_active", true),
+        supabase.from("prediction_games").select("*", { count: "exact", head: true }).eq("status", "active"),
+        supabase.from("vod_views").select("*", { count: "exact", head: true }).gte("watched_at", new Date(Date.now() - 3600000).toISOString()),
       ]);
 
       // Calculate unique visitors
@@ -127,6 +136,9 @@ const AdminAnalytics = () => {
         uniqueVisitors: uniqueVisitorsSet.size,
         totalImpactPoints: impactPoints.count || 0,
         totalTransactions: paytrTransactions.count || 0,
+        activeMiniGames: miniGames.count || 0,
+        activePredictions: predictions.count || 0,
+        recentVODViews: vodViews.count || 0,
       });
     } catch (error) {
       console.error("Error fetching analytics:", error);
@@ -153,6 +165,12 @@ const AdminAnalytics = () => {
     { title: "Tekil Ziyaretçi", value: analytics.uniqueVisitors, icon: Users, color: "text-violet-500", description: "Bugün" },
   ];
 
+  const liveStats = [
+    { title: "Aktif Mini Oyunlar", value: analytics.activeMiniGames, icon: Activity, color: "text-blue-500", description: "Şu anda aktif" },
+    { title: "Aktif Tahmin Oyunları", value: analytics.activePredictions, icon: TrendingUp, color: "text-purple-500", description: "Devam ediyor" },
+    { title: "Son Saat VOD İzlemeleri", value: analytics.recentVODViews, icon: Film, color: "text-pink-500", description: "Son 1 saat" },
+  ];
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
@@ -173,6 +191,33 @@ const AdminAnalytics = () => {
             🟢 {realtimeViews} yeni ziyaret (canlı)
           </p>
         )}
+      </div>
+
+      {/* Live Activity Stats */}
+      <div>
+        <h3 className="text-xl font-semibold mb-4 flex items-center gap-2">
+          <span className="relative flex h-3 w-3">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
+          </span>
+          Canlı Aktivite
+        </h3>
+        <div className="grid gap-4 md:grid-cols-3">
+          {liveStats.map((stat) => (
+            <Card key={stat.title} className="hover:shadow-lg transition-shadow border-primary/20">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <div>
+                  <CardTitle className="text-sm font-medium">{stat.title}</CardTitle>
+                  <CardDescription className="text-xs mt-1">{stat.description}</CardDescription>
+                </div>
+                <stat.icon className={`h-5 w-5 ${stat.color}`} />
+              </CardHeader>
+              <CardContent>
+                <div className="text-3xl font-bold">{stat.value.toLocaleString()}</div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
       </div>
 
       {/* Traffic Stats */}

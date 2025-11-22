@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { Star, Eye } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
+import { Star, Eye, Maximize, Volume2, VolumeX, Settings } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
@@ -37,6 +37,11 @@ const VODSection = () => {
     maxDuration: 240 * 60,
     sortBy: "latest",
   });
+  const [volume, setVolume] = useState(1);
+  const [isMuted, setIsMuted] = useState(false);
+  const [playbackRate, setPlaybackRate] = useState(1);
+  const [showControls, setShowControls] = useState<string | null>(null);
+  const videoRefs = useRef<{ [key: string]: HTMLVideoElement | null }>({});
 
   const getUserIdentifier = () => {
     let userId = localStorage.getItem("vod_user_id");
@@ -216,6 +221,46 @@ const VODSection = () => {
     return hours > 0 ? `${hours}s ${minutes}dk` : `${minutes}dk`;
   };
 
+  const toggleFullscreen = (vodId: string) => {
+    const video = videoRefs.current[vodId];
+    if (!video) return;
+    if (!document.fullscreenElement) {
+      video.requestFullscreen();
+    } else {
+      document.exitFullscreen();
+    }
+  };
+
+  const toggleMute = (vodId: string) => {
+    const video = videoRefs.current[vodId];
+    if (video) {
+      video.muted = !isMuted;
+      setIsMuted(!isMuted);
+    }
+  };
+
+  const handleVolumeChange = (vodId: string, value: number) => {
+    const video = videoRefs.current[vodId];
+    setVolume(value);
+    if (video) {
+      video.volume = value;
+      if (value === 0) {
+        setIsMuted(true);
+      } else if (isMuted) {
+        setIsMuted(false);
+      }
+    }
+  };
+
+  const handlePlaybackRateChange = (vodId: string, rate: number) => {
+    const video = videoRefs.current[vodId];
+    setPlaybackRate(rate);
+    if (video) {
+      video.playbackRate = rate;
+    }
+    setShowControls(null);
+  };
+
   return (
     <section className="py-16 md:py-24 container mx-auto px-4">
       <div className="max-w-7xl mx-auto">
@@ -258,26 +303,82 @@ const VODSection = () => {
                       <span className="text-muted-foreground">No thumbnail</span>
                     </div>
                   )}
-                  <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
-                    <video
-                      src={vod.video_url}
-                      className="w-full h-full"
-                      controls
-                      onTimeUpdate={(e) => {
-                        const video = e.currentTarget;
-                        const currentTime = Math.floor(video.currentTime);
-                        if (currentTime % 10 === 0 && currentTime > 0) {
-                          saveWatchProgress(vod.id, currentTime, Math.floor(video.duration || 0));
-                        }
-                      }}
-                      onLoadedMetadata={(e) => {
-                        const video = e.currentTarget;
-                        if (watchProgress[vod.id]?.last_position) {
-                          video.currentTime = watchProgress[vod.id].last_position;
-                        }
-                      }}
-                    />
-                  </div>
+                   <div className="absolute inset-0 bg-black/60 flex items-center justify-center group">
+                     <video
+                       ref={(el) => {
+                         videoRefs.current[vod.id] = el;
+                       }}
+                       src={vod.video_url}
+                       className="w-full h-full"
+                       controls
+                       onTimeUpdate={(e) => {
+                         const video = e.currentTarget;
+                         const currentTime = Math.floor(video.currentTime);
+                         if (currentTime % 10 === 0 && currentTime > 0) {
+                           saveWatchProgress(vod.id, currentTime, Math.floor(video.duration || 0));
+                         }
+                       }}
+                       onLoadedMetadata={(e) => {
+                         const video = e.currentTarget;
+                         if (watchProgress[vod.id]?.last_position) {
+                           video.currentTime = watchProgress[vod.id].last_position;
+                         }
+                       }}
+                     />
+                     
+                     {/* Custom controls overlay */}
+                     <div className="absolute bottom-12 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                       <div className="flex items-center gap-3 justify-end">
+                         <button
+                           onClick={() => toggleMute(vod.id)}
+                           className="text-white hover:text-primary transition-colors"
+                         >
+                           {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+                         </button>
+                         
+                         <input
+                           type="range"
+                           min="0"
+                           max="1"
+                           step="0.01"
+                           value={volume}
+                           onChange={(e) => handleVolumeChange(vod.id, parseFloat(e.target.value))}
+                           className="w-16 h-1"
+                         />
+
+                         <div className="relative">
+                           <button
+                             onClick={() => setShowControls(showControls === vod.id ? null : vod.id)}
+                             className="text-white hover:text-primary transition-colors"
+                           >
+                             <Settings className="w-4 h-4" />
+                           </button>
+                           {showControls === vod.id && (
+                             <div className="absolute bottom-full right-0 mb-2 bg-black/90 rounded-lg p-2 space-y-1 z-50">
+                               {[0.5, 0.75, 1, 1.25, 1.5, 2].map((rate) => (
+                                 <button
+                                   key={rate}
+                                   onClick={() => handlePlaybackRateChange(vod.id, rate)}
+                                   className={`block w-full px-3 py-1 text-xs text-white hover:bg-white/20 rounded ${
+                                     playbackRate === rate ? "bg-white/30" : ""
+                                   }`}
+                                 >
+                                   {rate}x
+                                 </button>
+                               ))}
+                             </div>
+                           )}
+                         </div>
+
+                         <button
+                           onClick={() => toggleFullscreen(vod.id)}
+                           className="text-white hover:text-primary transition-colors"
+                         >
+                           <Maximize className="w-4 h-4" />
+                         </button>
+                       </div>
+                     </div>
+                   </div>
                   {vod.duration && (
                     <div className="absolute bottom-14 right-2 bg-black/80 px-2 py-1 rounded text-xs font-medium flex items-center gap-1">
                       <Eye className="w-3 h-3" />

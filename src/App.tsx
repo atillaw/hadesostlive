@@ -19,6 +19,7 @@ import VODs from "./pages/VODs";
 import Team from "./pages/Team";
 import Aboneler from "./pages/Aboneler";
 import ImpactPoints from "./pages/ImpactPoints";
+import PredictionProfile from "./pages/PredictionProfile";
 import Community from "./pages/Community";
 import Sponsors from "./pages/Sponsors";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
@@ -44,6 +45,7 @@ const AppContent = () => {
       <Route path="/vodlar" element={<VODs />} />
       <Route path="/takima-katil" element={<Team />} />
       <Route path="/impact-points" element={<ImpactPoints />} />
+      <Route path="/tahmin-gecmisi" element={<PredictionProfile />} />
       <Route path="/topluluk" element={<Community />} />
       <Route path="/sponsorlar" element={<Sponsors />} />
       <Route path="/gizlilik-politikasi" element={<PrivacyPolicy />} />
