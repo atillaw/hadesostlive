@@ -5,8 +5,9 @@ import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
 import ViewerStatsChart from "@/components/ViewerStatsChart";
 import ViewerStatsDetailed from "@/components/ViewerStatsDetailed";
-import LeaderboardWidget from "@/components/LeaderboardWidget";
-import GlobalMiniGamesLeaderboard from "@/components/GlobalMiniGamesLeaderboard";
+import LeaderboardWidget from "./LeaderboardWidget";
+import GlobalMiniGamesLeaderboard from "./GlobalMiniGamesLeaderboard";
+import AchievementsBadge from "./AchievementsBadge";
 import PredictionGame from "@/components/PredictionGame";
 import MiniGameWidget from "@/components/MiniGameWidget";
 import { supabase } from "@/integrations/supabase/client";
@@ -225,6 +226,11 @@ const StreamSection = () => {
           <MiniGameWidget />
           <LeaderboardWidget />
           <GlobalMiniGamesLeaderboard />
+        </div>
+        
+        {/* Başarımlar */}
+        <div className="mb-8">
+          <AchievementsBadge />
         </div>
 
         {/* Detaylı İstatistikler - Altta */}
