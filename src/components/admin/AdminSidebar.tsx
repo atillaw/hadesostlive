@@ -17,7 +17,8 @@ import {
   MapPin,
   Heart,
   Target,
-  Tag
+  Tag,
+  Shield
 } from "lucide-react";
 import { NavLink } from "react-router-dom";
 import {
@@ -40,6 +41,7 @@ interface AdminSidebarProps {
 
 const menuItems = [
   { id: "analytics", title: "Analytics", icon: BarChart3 },
+  { id: "security-logs", title: "Güvenlik Logları", icon: Shield },
   { id: "clock", title: "Saat", icon: Clock },
   { id: "countdown", title: "Geri Sayım", icon: Timer },
   { id: "holiday-banners", title: "Bayram Banner'ları", icon: Heart },

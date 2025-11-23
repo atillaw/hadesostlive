@@ -30,6 +30,7 @@ import AdminPredictionGames from "@/components/admin/AdminPredictionGames";
 import AdminGameTypes from "@/components/admin/AdminGameTypes";
 import AdminPredictionAnalytics from "@/components/admin/AdminPredictionAnalytics";
 import AdminMiniGamesAnalytics from "@/components/admin/AdminMiniGamesAnalytics";
+import AdminSecurityLogs from "@/components/admin/AdminSecurityLogs";
 
 
 
@@ -229,6 +230,8 @@ const Admin = () => {
         return userRole === "admin" ? <AdminUsers /> : null;
       case "logs":
         return <AdminLogs />;
+      case "security-logs":
+        return <AdminSecurityLogs />;
       default:
         return <AdminAnalytics />;
     }

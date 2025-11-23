@@ -707,6 +707,7 @@ export type Database = {
           points_wagered: number
           points_won: number | null
           prediction_id: string
+          user_id: string | null
           user_identifier: string
         }
         Insert: {
@@ -716,6 +717,7 @@ export type Database = {
           points_wagered?: number
           points_won?: number | null
           prediction_id: string
+          user_id?: string | null
           user_identifier: string
         }
         Update: {
@@ -725,6 +727,7 @@ export type Database = {
           points_wagered?: number
           points_won?: number | null
           prediction_id?: string
+          user_id?: string | null
           user_identifier?: string
         }
         Relationships: [
@@ -822,6 +825,69 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      rate_limit_tracking: {
+        Row: {
+          created_at: string | null
+          endpoint: string
+          id: string
+          ip_address: string
+          request_count: number | null
+          window_start: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          endpoint: string
+          id?: string
+          ip_address: string
+          request_count?: number | null
+          window_start?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          endpoint?: string
+          id?: string
+          ip_address?: string
+          request_count?: number | null
+          window_start?: string | null
+        }
+        Relationships: []
+      }
+      security_logs: {
+        Row: {
+          created_at: string | null
+          details: Json | null
+          endpoint: string | null
+          event_type: string
+          id: string
+          ip_address: string | null
+          severity: string
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          details?: Json | null
+          endpoint?: string | null
+          event_type: string
+          id?: string
+          ip_address?: string | null
+          severity: string
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          details?: Json | null
+          endpoint?: string | null
+          event_type?: string
+          id?: string
+          ip_address?: string | null
+          severity?: string
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
       }
       site_settings: {
         Row: {
@@ -1307,7 +1373,7 @@ export type Database = {
           correct_predictions: number | null
           games_played: number | null
           total_points: number | null
-          user_identifier: string | null
+          user_id: string | null
         }
         Relationships: []
       }

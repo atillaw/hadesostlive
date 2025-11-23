@@ -5,7 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Trophy, Medal, Award } from "lucide-react";
 
 interface LeaderboardEntry {
-  user_identifier: string;
+  user_id: string;
   total_points: number;
   correct_predictions: number;
   games_played: number;
@@ -83,7 +83,7 @@ const LeaderboardWidget = () => {
         <div className="space-y-2">
           {leaders.map((leader, index) => (
             <div
-              key={leader.user_identifier}
+              key={leader.user_id}
               className={`flex items-center justify-between p-3 rounded-lg transition-all ${
                 index < 3
                   ? "bg-gradient-to-r from-primary/10 to-primary/5 border border-primary/20"
@@ -96,7 +96,7 @@ const LeaderboardWidget = () => {
                 </div>
                 <div>
                   <div className="font-medium truncate max-w-[150px]">
-                    {leader.user_identifier.substring(0, 12)}...
+                    Kullanıcı {leader.user_id.substring(0, 8)}
                   </div>
                   <div className="text-xs text-muted-foreground">
                     {leader.correct_predictions} doğru / {leader.games_played} oyun
