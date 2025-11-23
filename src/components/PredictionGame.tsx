@@ -5,7 +5,8 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
-import { TrendingUp, Clock, Users, Trophy } from "lucide-react";
+import { TrendingUp, Clock, Trophy, Lock } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 interface PredictionOption {
   label: string;
@@ -28,6 +29,7 @@ interface UserStats {
 }
 
 const PredictionGame = () => {
+  const navigate = useNavigate();
   const [prediction, setPrediction] = useState<Prediction | null>(null);
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
   const [userBet, setUserBet] = useState<any>(null);
@@ -35,16 +37,18 @@ const PredictionGame = () => {
   const [bets, setBets] = useState<Record<number, number>>({});
   const [timeLeft, setTimeLeft] = useState<string>("");
   const [loading, setLoading] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
+    checkAuth();
     loadActivePrediction();
     loadUserStats();
+    
     const channel = supabase
       .channel("predictions-changes")
       .on("postgres_changes", { event: "*", schema: "public", table: "prediction_games" }, (payload) => {
         loadActivePrediction();
         
-        // Check if game ended and show notification
         if (payload.eventType === "UPDATE" && payload.new.status === "closed" && userBet) {
           const game = payload.new as any;
           const isWinner = game.correct_option_index === userBet.option_index;
@@ -92,6 +96,11 @@ const PredictionGame = () => {
     return () => clearInterval(timer);
   }, [prediction]);
 
+  const checkAuth = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    setIsAuthenticated(!!user);
+  };
+
   const loadActivePrediction = async () => {
     const { data } = await supabase
       .from("prediction_games")
@@ -129,12 +138,14 @@ const PredictionGame = () => {
   };
 
   const checkUserBet = async (predictionId: string) => {
-    const userId = localStorage.getItem("userId") || `guest_${Math.random()}`;
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
     const { data } = await supabase
       .from("prediction_bets")
       .select("*")
       .eq("prediction_id", predictionId)
-      .eq("user_identifier", userId)
+      .eq("user_id", user.id)
       .maybeSingle();
 
     if (data) {
@@ -144,13 +155,13 @@ const PredictionGame = () => {
   };
 
   const loadUserStats = async () => {
-    const userId = localStorage.getItem("userId");
-    if (!userId) return;
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
 
     const { data } = await supabase
       .from("prediction_leaderboard")
       .select("*")
-      .eq("user_identifier", userId)
+      .eq("user_id", user.id)
       .maybeSingle();
 
     if (data) {
@@ -164,23 +175,41 @@ const PredictionGame = () => {
   const placeBet = async () => {
     if (selectedOption === null) return;
 
-    setLoading(true);
-    const userId = localStorage.getItem("userId") || `guest_${Math.random()}`;
-    localStorage.setItem("userId", userId);
-
-    const { error } = await supabase.from("prediction_bets").insert({
-      prediction_id: prediction!.id,
-      user_identifier: userId,
-      option_index: selectedOption,
-      points_wagered: 10,
-    });
-
-    if (error) {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
       toast({
-        title: "Hata",
-        description: "Tahmininiz kaydedilemedi.",
+        title: "Giriş Gerekli",
+        description: "Bahis yapmak için giriş yapmalısınız.",
         variant: "destructive",
       });
+      navigate("/auth");
+      return;
+    }
+
+    setLoading(true);
+
+    const { error } = await supabase.from("prediction_bets").insert([{
+      prediction_id: prediction!.id,
+      user_id: user.id,
+      user_identifier: user.id,
+      option_index: selectedOption,
+      points_wagered: 10,
+    }]);
+
+    if (error) {
+      if (error.message?.includes("duplicate") || error.code === "23505") {
+        toast({
+          title: "Zaten Bahis Yaptınız",
+          description: "Bu oyunda sadece bir kez bahis yapabilirsiniz.",
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Hata",
+          description: "Tahmininiz kaydedilemedi.",
+          variant: "destructive",
+        });
+      }
     } else {
       toast({
         title: "Tahmin Kaydedildi!",
@@ -188,6 +217,7 @@ const PredictionGame = () => {
       });
       checkUserBet(prediction!.id);
       loadBets();
+      loadUserStats();
     }
     setLoading(false);
   };
@@ -230,6 +260,13 @@ const PredictionGame = () => {
         </div>
       )}
 
+      {!isAuthenticated && (
+        <div className="flex items-center justify-center gap-2 p-4 bg-muted/50 rounded-lg border border-border">
+          <Lock className="w-4 h-4 text-muted-foreground" />
+          <span className="text-sm text-muted-foreground">Bahis yapmak için giriş yapın</span>
+        </div>
+      )}
+
       <div className="flex items-start justify-between">
         <div className="flex-1">
           <div className="flex items-center gap-2 mb-2">
@@ -255,8 +292,8 @@ const PredictionGame = () => {
           return (
             <div key={index} className="space-y-2">
               <button
-                onClick={() => !isClosed && !userBet && setSelectedOption(index)}
-                disabled={isClosed || userBet !== null}
+                onClick={() => isAuthenticated && !isClosed && !userBet && setSelectedOption(index)}
+                disabled={!isAuthenticated || isClosed || userBet !== null}
                 className={`w-full p-4 rounded-lg border-2 transition-all relative overflow-hidden ${
                   selectedOption === index && !userBet
                     ? "border-primary bg-primary/10"
@@ -265,7 +302,7 @@ const PredictionGame = () => {
                     : isUserChoice && hasWinner
                     ? "border-red-500 bg-red-500/10"
                     : "border-border hover:border-primary/50"
-                } ${isClosed || userBet ? "cursor-not-allowed" : "cursor-pointer"}`}
+                } ${!isAuthenticated || isClosed || userBet ? "cursor-not-allowed" : "cursor-pointer"}`}
               >
                 <div className="flex items-center justify-between relative z-10">
                   <span className="font-medium flex items-center gap-2">
@@ -290,8 +327,13 @@ const PredictionGame = () => {
       </div>
 
       {!userBet && !isClosed && selectedOption !== null && (
-        <Button onClick={placeBet} disabled={loading} className="w-full" size="lg">
-          {loading ? "Kaydediliyor..." : "Tahmini Kaydet"}
+        <Button 
+          onClick={isAuthenticated ? placeBet : () => navigate("/auth")} 
+          disabled={loading} 
+          className="w-full" 
+          size="lg"
+        >
+          {loading ? "Kaydediliyor..." : !isAuthenticated ? "Giriş Yap" : "Tahmini Kaydet"}
         </Button>
       )}
 
