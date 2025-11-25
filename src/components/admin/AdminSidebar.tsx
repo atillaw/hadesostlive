@@ -18,7 +18,8 @@ import {
   Heart,
   Target,
   Tag,
-  Shield
+  Shield,
+  MessageSquare
 } from "lucide-react";
 import { NavLink } from "react-router-dom";
 import {
@@ -59,6 +60,7 @@ const menuItems = [
   { id: "prediction-games", title: "Tahmin Oyunları", icon: Target },
   { id: "mini-games", title: "Mini Oyunlar", icon: Gamepad2 },
   { id: "sponsors", title: "Sponsorlar", icon: Award },
+  { id: "forum", title: "Forum", icon: MessageSquare },
   { id: "logs", title: "Loglar", icon: ScrollText },
 ];
 

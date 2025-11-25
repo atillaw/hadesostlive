@@ -13,6 +13,7 @@ const Navigation = ({ onSnowToggle, snowEnabled }: { onSnowToggle?: () => void; 
     { to: "/vodlar", icon: Video, label: "VODs & Highlights" },
     { to: "/takima-katil", icon: Users, label: "Takıma Katıl" },
     { to: "/topluluk", icon: Sparkles, label: "Topluluk" },
+    { to: "/forum", icon: MessageCircle, label: "Forum" },
     { to: "/aboneler", icon: Heart, label: "Aboneler" },
     { to: "/sponsorlar", icon: Award, label: "Sponsorlar" },
     { to: "/memeler", icon: ImageIcon, label: "Meme's" },
