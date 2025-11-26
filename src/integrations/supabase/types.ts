@@ -266,6 +266,75 @@ export type Database = {
         }
         Relationships: []
       }
+      comments: {
+        Row: {
+          author_id: string | null
+          author_username: string
+          content: string
+          content_html: string | null
+          created_at: string | null
+          downvotes: number | null
+          id: string
+          is_anonymous: boolean | null
+          is_deleted: boolean | null
+          is_shadowbanned: boolean | null
+          media_urls: string[] | null
+          parent_comment_id: string | null
+          post_id: string | null
+          updated_at: string | null
+          upvotes: number | null
+        }
+        Insert: {
+          author_id?: string | null
+          author_username: string
+          content: string
+          content_html?: string | null
+          created_at?: string | null
+          downvotes?: number | null
+          id?: string
+          is_anonymous?: boolean | null
+          is_deleted?: boolean | null
+          is_shadowbanned?: boolean | null
+          media_urls?: string[] | null
+          parent_comment_id?: string | null
+          post_id?: string | null
+          updated_at?: string | null
+          upvotes?: number | null
+        }
+        Update: {
+          author_id?: string | null
+          author_username?: string
+          content?: string
+          content_html?: string | null
+          created_at?: string | null
+          downvotes?: number | null
+          id?: string
+          is_anonymous?: boolean | null
+          is_deleted?: boolean | null
+          is_shadowbanned?: boolean | null
+          media_urls?: string[] | null
+          parent_comment_id?: string | null
+          post_id?: string | null
+          updated_at?: string | null
+          upvotes?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "comments_parent_comment_id_fkey"
+            columns: ["parent_comment_id"]
+            isOneToOne: false
+            referencedRelation: "comments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "comments_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       community_proposals: {
         Row: {
           author: string
@@ -403,524 +472,6 @@ export type Database = {
           is_active?: boolean
         }
         Relationships: []
-      }
-      forum_bans: {
-        Row: {
-          banned_by: string
-          created_at: string | null
-          expires_at: string | null
-          id: string
-          ip_address: string | null
-          is_active: boolean | null
-          is_permanent: boolean | null
-          reason: string
-          user_id: string | null
-        }
-        Insert: {
-          banned_by: string
-          created_at?: string | null
-          expires_at?: string | null
-          id?: string
-          ip_address?: string | null
-          is_active?: boolean | null
-          is_permanent?: boolean | null
-          reason: string
-          user_id?: string | null
-        }
-        Update: {
-          banned_by?: string
-          created_at?: string | null
-          expires_at?: string | null
-          id?: string
-          ip_address?: string | null
-          is_active?: boolean | null
-          is_permanent?: boolean | null
-          reason?: string
-          user_id?: string | null
-        }
-        Relationships: []
-      }
-      forum_bookmarks: {
-        Row: {
-          created_at: string | null
-          id: string
-          topic_id: string
-          user_id: string
-        }
-        Insert: {
-          created_at?: string | null
-          id?: string
-          topic_id: string
-          user_id: string
-        }
-        Update: {
-          created_at?: string | null
-          id?: string
-          topic_id?: string
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "forum_bookmarks_topic_id_fkey"
-            columns: ["topic_id"]
-            isOneToOne: false
-            referencedRelation: "forum_topics"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      forum_categories: {
-        Row: {
-          created_at: string | null
-          description: string | null
-          display_order: number | null
-          icon: string | null
-          id: string
-          is_active: boolean | null
-          name: string
-          slug: string
-          updated_at: string | null
-        }
-        Insert: {
-          created_at?: string | null
-          description?: string | null
-          display_order?: number | null
-          icon?: string | null
-          id?: string
-          is_active?: boolean | null
-          name: string
-          slug: string
-          updated_at?: string | null
-        }
-        Update: {
-          created_at?: string | null
-          description?: string | null
-          display_order?: number | null
-          icon?: string | null
-          id?: string
-          is_active?: boolean | null
-          name?: string
-          slug?: string
-          updated_at?: string | null
-        }
-        Relationships: []
-      }
-      forum_entries: {
-        Row: {
-          author_id: string | null
-          author_username: string
-          content: string
-          content_html: string | null
-          created_at: string | null
-          id: string
-          is_anonymous: boolean | null
-          is_deleted: boolean | null
-          is_edited: boolean | null
-          parent_entry_id: string | null
-          quoted_entry_id: string | null
-          topic_id: string
-          updated_at: string | null
-          vote_score: number | null
-        }
-        Insert: {
-          author_id?: string | null
-          author_username: string
-          content: string
-          content_html?: string | null
-          created_at?: string | null
-          id?: string
-          is_anonymous?: boolean | null
-          is_deleted?: boolean | null
-          is_edited?: boolean | null
-          parent_entry_id?: string | null
-          quoted_entry_id?: string | null
-          topic_id: string
-          updated_at?: string | null
-          vote_score?: number | null
-        }
-        Update: {
-          author_id?: string | null
-          author_username?: string
-          content?: string
-          content_html?: string | null
-          created_at?: string | null
-          id?: string
-          is_anonymous?: boolean | null
-          is_deleted?: boolean | null
-          is_edited?: boolean | null
-          parent_entry_id?: string | null
-          quoted_entry_id?: string | null
-          topic_id?: string
-          updated_at?: string | null
-          vote_score?: number | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "forum_entries_parent_entry_id_fkey"
-            columns: ["parent_entry_id"]
-            isOneToOne: false
-            referencedRelation: "forum_entries"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "forum_entries_quoted_entry_id_fkey"
-            columns: ["quoted_entry_id"]
-            isOneToOne: false
-            referencedRelation: "forum_entries"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "forum_entries_topic_id_fkey"
-            columns: ["topic_id"]
-            isOneToOne: false
-            referencedRelation: "forum_topics"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      forum_media: {
-        Row: {
-          created_at: string | null
-          entry_id: string
-          file_path: string
-          file_type: string
-          file_url: string | null
-          id: string
-          thumbnail_url: string | null
-        }
-        Insert: {
-          created_at?: string | null
-          entry_id: string
-          file_path: string
-          file_type: string
-          file_url?: string | null
-          id?: string
-          thumbnail_url?: string | null
-        }
-        Update: {
-          created_at?: string | null
-          entry_id?: string
-          file_path?: string
-          file_type?: string
-          file_url?: string | null
-          id?: string
-          thumbnail_url?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "forum_media_entry_id_fkey"
-            columns: ["entry_id"]
-            isOneToOne: false
-            referencedRelation: "forum_entries"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      forum_mentions: {
-        Row: {
-          created_at: string | null
-          entry_id: string
-          id: string
-          mentioned_user_id: string | null
-          mentioned_username: string
-        }
-        Insert: {
-          created_at?: string | null
-          entry_id: string
-          id?: string
-          mentioned_user_id?: string | null
-          mentioned_username: string
-        }
-        Update: {
-          created_at?: string | null
-          entry_id?: string
-          id?: string
-          mentioned_user_id?: string | null
-          mentioned_username?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "forum_mentions_entry_id_fkey"
-            columns: ["entry_id"]
-            isOneToOne: false
-            referencedRelation: "forum_entries"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      forum_notifications: {
-        Row: {
-          actor_username: string | null
-          created_at: string | null
-          entry_id: string | null
-          id: string
-          is_read: boolean | null
-          notification_type: string
-          topic_id: string | null
-          user_id: string
-        }
-        Insert: {
-          actor_username?: string | null
-          created_at?: string | null
-          entry_id?: string | null
-          id?: string
-          is_read?: boolean | null
-          notification_type: string
-          topic_id?: string | null
-          user_id: string
-        }
-        Update: {
-          actor_username?: string | null
-          created_at?: string | null
-          entry_id?: string | null
-          id?: string
-          is_read?: boolean | null
-          notification_type?: string
-          topic_id?: string | null
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "forum_notifications_entry_id_fkey"
-            columns: ["entry_id"]
-            isOneToOne: false
-            referencedRelation: "forum_entries"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "forum_notifications_topic_id_fkey"
-            columns: ["topic_id"]
-            isOneToOne: false
-            referencedRelation: "forum_topics"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      forum_reports: {
-        Row: {
-          created_at: string | null
-          description: string | null
-          id: string
-          reason: string
-          report_type: string
-          reporter_id: string | null
-          reporter_identifier: string | null
-          reviewed_at: string | null
-          reviewed_by: string | null
-          status: string | null
-          target_id: string
-        }
-        Insert: {
-          created_at?: string | null
-          description?: string | null
-          id?: string
-          reason: string
-          report_type: string
-          reporter_id?: string | null
-          reporter_identifier?: string | null
-          reviewed_at?: string | null
-          reviewed_by?: string | null
-          status?: string | null
-          target_id: string
-        }
-        Update: {
-          created_at?: string | null
-          description?: string | null
-          id?: string
-          reason?: string
-          report_type?: string
-          reporter_id?: string | null
-          reporter_identifier?: string | null
-          reviewed_at?: string | null
-          reviewed_by?: string | null
-          status?: string | null
-          target_id?: string
-        }
-        Relationships: []
-      }
-      forum_settings: {
-        Row: {
-          created_at: string | null
-          description: string | null
-          id: string
-          key: string
-          updated_at: string | null
-          value: Json | null
-        }
-        Insert: {
-          created_at?: string | null
-          description?: string | null
-          id?: string
-          key: string
-          updated_at?: string | null
-          value?: Json | null
-        }
-        Update: {
-          created_at?: string | null
-          description?: string | null
-          id?: string
-          key?: string
-          updated_at?: string | null
-          value?: Json | null
-        }
-        Relationships: []
-      }
-      forum_tags: {
-        Row: {
-          created_at: string | null
-          id: string
-          name: string
-          slug: string
-          usage_count: number | null
-        }
-        Insert: {
-          created_at?: string | null
-          id?: string
-          name: string
-          slug: string
-          usage_count?: number | null
-        }
-        Update: {
-          created_at?: string | null
-          id?: string
-          name?: string
-          slug?: string
-          usage_count?: number | null
-        }
-        Relationships: []
-      }
-      forum_topic_tags: {
-        Row: {
-          created_at: string | null
-          id: string
-          tag_id: string
-          topic_id: string
-        }
-        Insert: {
-          created_at?: string | null
-          id?: string
-          tag_id: string
-          topic_id: string
-        }
-        Update: {
-          created_at?: string | null
-          id?: string
-          tag_id?: string
-          topic_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "forum_topic_tags_tag_id_fkey"
-            columns: ["tag_id"]
-            isOneToOne: false
-            referencedRelation: "forum_tags"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "forum_topic_tags_topic_id_fkey"
-            columns: ["topic_id"]
-            isOneToOne: false
-            referencedRelation: "forum_topics"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      forum_topics: {
-        Row: {
-          author_id: string | null
-          author_username: string
-          category_id: string
-          created_at: string | null
-          entry_count: number | null
-          id: string
-          is_anonymous: boolean | null
-          is_deleted: boolean | null
-          is_locked: boolean | null
-          is_pinned: boolean | null
-          last_entry_at: string | null
-          slug: string
-          title: string
-          updated_at: string | null
-          view_count: number | null
-        }
-        Insert: {
-          author_id?: string | null
-          author_username: string
-          category_id: string
-          created_at?: string | null
-          entry_count?: number | null
-          id?: string
-          is_anonymous?: boolean | null
-          is_deleted?: boolean | null
-          is_locked?: boolean | null
-          is_pinned?: boolean | null
-          last_entry_at?: string | null
-          slug: string
-          title: string
-          updated_at?: string | null
-          view_count?: number | null
-        }
-        Update: {
-          author_id?: string | null
-          author_username?: string
-          category_id?: string
-          created_at?: string | null
-          entry_count?: number | null
-          id?: string
-          is_anonymous?: boolean | null
-          is_deleted?: boolean | null
-          is_locked?: boolean | null
-          is_pinned?: boolean | null
-          last_entry_at?: string | null
-          slug?: string
-          title?: string
-          updated_at?: string | null
-          view_count?: number | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "forum_topics_category_id_fkey"
-            columns: ["category_id"]
-            isOneToOne: false
-            referencedRelation: "forum_categories"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      forum_votes: {
-        Row: {
-          created_at: string | null
-          entry_id: string
-          id: string
-          user_id: string | null
-          user_identifier: string | null
-          vote_type: number
-        }
-        Insert: {
-          created_at?: string | null
-          entry_id: string
-          id?: string
-          user_id?: string | null
-          user_identifier?: string | null
-          vote_type: number
-        }
-        Update: {
-          created_at?: string | null
-          entry_id?: string
-          id?: string
-          user_id?: string | null
-          user_identifier?: string | null
-          vote_type?: number
-        }
-        Relationships: [
-          {
-            foreignKeyName: "forum_votes_entry_id_fkey"
-            columns: ["entry_id"]
-            isOneToOne: false
-            referencedRelation: "forum_entries"
-            referencedColumns: ["id"]
-          },
-        ]
       }
       impact_points: {
         Row: {
@@ -1125,6 +676,39 @@ export type Database = {
         }
         Relationships: []
       }
+      notifications: {
+        Row: {
+          content: string | null
+          created_at: string | null
+          id: string
+          is_read: boolean | null
+          link: string | null
+          title: string
+          type: string
+          user_id: string
+        }
+        Insert: {
+          content?: string | null
+          created_at?: string | null
+          id?: string
+          is_read?: boolean | null
+          link?: string | null
+          title: string
+          type: string
+          user_id: string
+        }
+        Update: {
+          content?: string | null
+          created_at?: string | null
+          id?: string
+          is_read?: boolean | null
+          link?: string | null
+          title?: string
+          type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       page_views: {
         Row: {
           created_at: string
@@ -1213,6 +797,136 @@ export type Database = {
             columns: ["poll_id"]
             isOneToOne: false
             referencedRelation: "live_polls"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      post_queue: {
+        Row: {
+          created_at: string | null
+          flagged_by: string | null
+          id: string
+          post_id: string | null
+          reason: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          flagged_by?: string | null
+          id?: string
+          post_id?: string | null
+          reason?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          flagged_by?: string | null
+          id?: string
+          post_id?: string | null
+          reason?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "post_queue_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: true
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      posts: {
+        Row: {
+          approval_required: boolean | null
+          approved_at: string | null
+          approved_by: string | null
+          author_id: string | null
+          author_username: string
+          comment_count: number | null
+          content: string
+          content_html: string | null
+          created_at: string | null
+          downvotes: number | null
+          id: string
+          is_anonymous: boolean | null
+          is_approved: boolean | null
+          is_deleted: boolean | null
+          is_locked: boolean | null
+          is_pinned: boolean | null
+          is_shadowbanned: boolean | null
+          media_urls: string[] | null
+          tags: string[] | null
+          title: string
+          university_id: string | null
+          updated_at: string | null
+          upvotes: number | null
+          view_count: number | null
+        }
+        Insert: {
+          approval_required?: boolean | null
+          approved_at?: string | null
+          approved_by?: string | null
+          author_id?: string | null
+          author_username: string
+          comment_count?: number | null
+          content: string
+          content_html?: string | null
+          created_at?: string | null
+          downvotes?: number | null
+          id?: string
+          is_anonymous?: boolean | null
+          is_approved?: boolean | null
+          is_deleted?: boolean | null
+          is_locked?: boolean | null
+          is_pinned?: boolean | null
+          is_shadowbanned?: boolean | null
+          media_urls?: string[] | null
+          tags?: string[] | null
+          title: string
+          university_id?: string | null
+          updated_at?: string | null
+          upvotes?: number | null
+          view_count?: number | null
+        }
+        Update: {
+          approval_required?: boolean | null
+          approved_at?: string | null
+          approved_by?: string | null
+          author_id?: string | null
+          author_username?: string
+          comment_count?: number | null
+          content?: string
+          content_html?: string | null
+          created_at?: string | null
+          downvotes?: number | null
+          id?: string
+          is_anonymous?: boolean | null
+          is_approved?: boolean | null
+          is_deleted?: boolean | null
+          is_locked?: boolean | null
+          is_pinned?: boolean | null
+          is_shadowbanned?: boolean | null
+          media_urls?: string[] | null
+          tags?: string[] | null
+          title?: string
+          university_id?: string | null
+          updated_at?: string | null
+          upvotes?: number | null
+          view_count?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "posts_university_id_fkey"
+            columns: ["university_id"]
+            isOneToOne: false
+            referencedRelation: "universities"
             referencedColumns: ["id"]
           },
         ]
@@ -1368,6 +1082,48 @@ export type Database = {
           ip_address?: string
           request_count?: number | null
           window_start?: string | null
+        }
+        Relationships: []
+      }
+      reports: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          id: string
+          reason: string
+          reporter_id: string | null
+          reporter_identifier: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: string | null
+          target_id: string
+          target_type: string
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          reason: string
+          reporter_id?: string | null
+          reporter_identifier?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string | null
+          target_id: string
+          target_type: string
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          reason?: string
+          reporter_id?: string | null
+          reporter_identifier?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string | null
+          target_id?: string
+          target_type?: string
         }
         Relationships: []
       }
@@ -1638,6 +1394,86 @@ export type Database = {
           },
         ]
       }
+      universities: {
+        Row: {
+          banner_url: string | null
+          city: string | null
+          created_at: string | null
+          description: string | null
+          id: string
+          is_active: boolean | null
+          logo_url: string | null
+          member_count: number | null
+          name: string
+          post_count: number | null
+          slug: string
+          updated_at: string | null
+        }
+        Insert: {
+          banner_url?: string | null
+          city?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          logo_url?: string | null
+          member_count?: number | null
+          name: string
+          post_count?: number | null
+          slug: string
+          updated_at?: string | null
+        }
+        Update: {
+          banner_url?: string | null
+          city?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          logo_url?: string | null
+          member_count?: number | null
+          name?: string
+          post_count?: number | null
+          slug?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      university_moderators: {
+        Row: {
+          assigned_by: string | null
+          created_at: string | null
+          id: string
+          permissions: Json | null
+          university_id: string | null
+          user_id: string
+        }
+        Insert: {
+          assigned_by?: string | null
+          created_at?: string | null
+          id?: string
+          permissions?: Json | null
+          university_id?: string | null
+          user_id: string
+        }
+        Update: {
+          assigned_by?: string | null
+          created_at?: string | null
+          id?: string
+          permissions?: Json | null
+          university_id?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "university_moderators_university_id_fkey"
+            columns: ["university_id"]
+            isOneToOne: false
+            referencedRelation: "universities"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_achievements: {
         Row: {
           achievement_id: string
@@ -1666,6 +1502,80 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      user_bans: {
+        Row: {
+          banned_by: string
+          created_at: string | null
+          expires_at: string | null
+          id: string
+          ip_address: string | null
+          is_permanent: boolean | null
+          is_shadowban: boolean | null
+          reason: string
+          university_id: string | null
+          user_id: string | null
+        }
+        Insert: {
+          banned_by: string
+          created_at?: string | null
+          expires_at?: string | null
+          id?: string
+          ip_address?: string | null
+          is_permanent?: boolean | null
+          is_shadowban?: boolean | null
+          reason: string
+          university_id?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          banned_by?: string
+          created_at?: string | null
+          expires_at?: string | null
+          id?: string
+          ip_address?: string | null
+          is_permanent?: boolean | null
+          is_shadowban?: boolean | null
+          reason?: string
+          university_id?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_bans_university_id_fkey"
+            columns: ["university_id"]
+            isOneToOne: false
+            referencedRelation: "universities"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_preferences: {
+        Row: {
+          created_at: string | null
+          email_notifications: boolean | null
+          show_nsfw: boolean | null
+          theme: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          email_notifications?: boolean | null
+          show_nsfw?: boolean | null
+          theme?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          email_notifications?: boolean | null
+          show_nsfw?: boolean | null
+          theme?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
       }
       user_roles: {
         Row: {
@@ -1884,6 +1794,51 @@ export type Database = {
         }
         Relationships: []
       }
+      votes: {
+        Row: {
+          comment_id: string | null
+          created_at: string | null
+          id: string
+          post_id: string | null
+          user_id: string | null
+          user_identifier: string | null
+          vote_type: number
+        }
+        Insert: {
+          comment_id?: string | null
+          created_at?: string | null
+          id?: string
+          post_id?: string | null
+          user_id?: string | null
+          user_identifier?: string | null
+          vote_type: number
+        }
+        Update: {
+          comment_id?: string | null
+          created_at?: string | null
+          id?: string
+          post_id?: string | null
+          user_id?: string | null
+          user_identifier?: string | null
+          vote_type?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "votes_comment_id_fkey"
+            columns: ["comment_id"]
+            isOneToOne: false
+            referencedRelation: "comments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "votes_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       prediction_leaderboard: {
@@ -1960,7 +1915,13 @@ export type Database = {
       increment_idea_likes: { Args: { _idea_id: string }; Returns: undefined }
     }
     Enums: {
-      app_role: "admin" | "editor" | "developer"
+      app_role:
+        | "admin"
+        | "editor"
+        | "developer"
+        | "super_admin"
+        | "global_mod"
+        | "university_mod"
       chat_status: "waiting" | "active" | "closed"
       clip_category: "gameplay" | "funny" | "music" | "other"
       message_sender: "user" | "admin" | "ai"
@@ -2091,7 +2052,14 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      app_role: ["admin", "editor", "developer"],
+      app_role: [
+        "admin",
+        "editor",
+        "developer",
+        "super_admin",
+        "global_mod",
+        "university_mod",
+      ],
       chat_status: ["waiting", "active", "closed"],
       clip_category: ["gameplay", "funny", "music", "other"],
       message_sender: ["user", "admin", "ai"],

@@ -25,10 +25,10 @@ import Sponsors from "./pages/Sponsors";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfService from "./pages/TermsOfService";
 import CookiePolicy from "./pages/CookiePolicy";
-import Forum from "./pages/Forum";
-import ForumCategory from "./pages/ForumCategory";
-import ForumTopic from "./pages/ForumTopic";
-import ForumNew from "./pages/ForumNew";
+import UniversityFeed from "./pages/UniversityFeed";
+import UniversityForum from "./pages/UniversityForum";
+import CreatePost from "./pages/CreatePost";
+import Post from "./pages/Post";
 
 
 const AppContent = () => {
@@ -55,11 +55,10 @@ const AppContent = () => {
       <Route path="/gizlilik-politikasi" element={<PrivacyPolicy />} />
       <Route path="/kullanim-kosullari" element={<TermsOfService />} />
       <Route path="/cerez-politikasi" element={<CookiePolicy />} />
-      <Route path="/forum" element={<Forum />} />
-      <Route path="/forum/new" element={<ForumNew />} />
-      <Route path="/forum/c/:slug" element={<ForumCategory />} />
-      <Route path="/forum/c/:slug/new" element={<ForumNew />} />
-      <Route path="/forum/t/:slug" element={<ForumTopic />} />
+      <Route path="/forum" element={<UniversityFeed />} />
+      <Route path="/u/:slug" element={<UniversityForum />} />
+      <Route path="/u/:slug/new" element={<CreatePost />} />
+      <Route path="/u/:slug/post/:postId" element={<Post />} />
       <Route path="*" element={<NotFound />} />
     </Routes>
   );
