@@ -20,13 +20,12 @@ import Team from "./pages/Team";
 import Aboneler from "./pages/Aboneler";
 import ImpactPoints from "./pages/ImpactPoints";
 import PredictionProfile from "./pages/PredictionProfile";
-import Community from "./pages/Community";
 import Sponsors from "./pages/Sponsors";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfService from "./pages/TermsOfService";
 import CookiePolicy from "./pages/CookiePolicy";
-import UniversityFeed from "./pages/UniversityFeed";
-import UniversityForum from "./pages/UniversityForum";
+import CommunityFeed from "./pages/CommunityFeed";
+import Community from "./pages/Community";
 import CreatePost from "./pages/CreatePost";
 import Post from "./pages/Post";
 
@@ -55,10 +54,10 @@ const AppContent = () => {
       <Route path="/gizlilik-politikasi" element={<PrivacyPolicy />} />
       <Route path="/kullanim-kosullari" element={<TermsOfService />} />
       <Route path="/cerez-politikasi" element={<CookiePolicy />} />
-      <Route path="/forum" element={<UniversityFeed />} />
-      <Route path="/u/:slug" element={<UniversityForum />} />
-      <Route path="/u/:slug/new" element={<CreatePost />} />
-      <Route path="/u/:slug/post/:postId" element={<Post />} />
+          <Route path="/forum" element={<CommunityFeed />} />
+          <Route path="/c/:slug" element={<Community />} />
+          <Route path="/c/:slug/new" element={<CreatePost />} />
+          <Route path="/c/:slug/post/:postId" element={<Post />} />
       <Route path="*" element={<NotFound />} />
     </Routes>
   );
