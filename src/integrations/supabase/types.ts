@@ -335,6 +335,95 @@ export type Database = {
           },
         ]
       }
+      communities: {
+        Row: {
+          banner_url: string | null
+          created_at: string | null
+          description: string | null
+          description_long: string | null
+          icon_url: string | null
+          id: string
+          is_active: boolean | null
+          logo_url: string | null
+          member_count: number | null
+          name: string
+          post_count: number | null
+          rules: Json | null
+          slug: string
+          theme_color: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          banner_url?: string | null
+          created_at?: string | null
+          description?: string | null
+          description_long?: string | null
+          icon_url?: string | null
+          id?: string
+          is_active?: boolean | null
+          logo_url?: string | null
+          member_count?: number | null
+          name: string
+          post_count?: number | null
+          rules?: Json | null
+          slug: string
+          theme_color?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          banner_url?: string | null
+          created_at?: string | null
+          description?: string | null
+          description_long?: string | null
+          icon_url?: string | null
+          id?: string
+          is_active?: boolean | null
+          logo_url?: string | null
+          member_count?: number | null
+          name?: string
+          post_count?: number | null
+          rules?: Json | null
+          slug?: string
+          theme_color?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      community_moderators: {
+        Row: {
+          assigned_by: string | null
+          community_id: string | null
+          created_at: string | null
+          id: string
+          permissions: Json | null
+          user_id: string
+        }
+        Insert: {
+          assigned_by?: string | null
+          community_id?: string | null
+          created_at?: string | null
+          id?: string
+          permissions?: Json | null
+          user_id: string
+        }
+        Update: {
+          assigned_by?: string | null
+          community_id?: string | null
+          created_at?: string | null
+          id?: string
+          permissions?: Json | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "community_moderators_community_id_fkey"
+            columns: ["community_id"]
+            isOneToOne: false
+            referencedRelation: "communities"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       community_proposals: {
         Row: {
           author: string
@@ -850,6 +939,7 @@ export type Database = {
           author_id: string | null
           author_username: string
           comment_count: number | null
+          community_id: string | null
           content: string
           content_html: string | null
           created_at: string | null
@@ -864,7 +954,6 @@ export type Database = {
           media_urls: string[] | null
           tags: string[] | null
           title: string
-          university_id: string | null
           updated_at: string | null
           upvotes: number | null
           view_count: number | null
@@ -876,6 +965,7 @@ export type Database = {
           author_id?: string | null
           author_username: string
           comment_count?: number | null
+          community_id?: string | null
           content: string
           content_html?: string | null
           created_at?: string | null
@@ -890,7 +980,6 @@ export type Database = {
           media_urls?: string[] | null
           tags?: string[] | null
           title: string
-          university_id?: string | null
           updated_at?: string | null
           upvotes?: number | null
           view_count?: number | null
@@ -902,6 +991,7 @@ export type Database = {
           author_id?: string | null
           author_username?: string
           comment_count?: number | null
+          community_id?: string | null
           content?: string
           content_html?: string | null
           created_at?: string | null
@@ -916,17 +1006,16 @@ export type Database = {
           media_urls?: string[] | null
           tags?: string[] | null
           title?: string
-          university_id?: string | null
           updated_at?: string | null
           upvotes?: number | null
           view_count?: number | null
         }
         Relationships: [
           {
-            foreignKeyName: "posts_university_id_fkey"
-            columns: ["university_id"]
+            foreignKeyName: "posts_community_id_fkey"
+            columns: ["community_id"]
             isOneToOne: false
-            referencedRelation: "universities"
+            referencedRelation: "communities"
             referencedColumns: ["id"]
           },
         ]
@@ -1394,86 +1483,6 @@ export type Database = {
           },
         ]
       }
-      universities: {
-        Row: {
-          banner_url: string | null
-          city: string | null
-          created_at: string | null
-          description: string | null
-          id: string
-          is_active: boolean | null
-          logo_url: string | null
-          member_count: number | null
-          name: string
-          post_count: number | null
-          slug: string
-          updated_at: string | null
-        }
-        Insert: {
-          banner_url?: string | null
-          city?: string | null
-          created_at?: string | null
-          description?: string | null
-          id?: string
-          is_active?: boolean | null
-          logo_url?: string | null
-          member_count?: number | null
-          name: string
-          post_count?: number | null
-          slug: string
-          updated_at?: string | null
-        }
-        Update: {
-          banner_url?: string | null
-          city?: string | null
-          created_at?: string | null
-          description?: string | null
-          id?: string
-          is_active?: boolean | null
-          logo_url?: string | null
-          member_count?: number | null
-          name?: string
-          post_count?: number | null
-          slug?: string
-          updated_at?: string | null
-        }
-        Relationships: []
-      }
-      university_moderators: {
-        Row: {
-          assigned_by: string | null
-          created_at: string | null
-          id: string
-          permissions: Json | null
-          university_id: string | null
-          user_id: string
-        }
-        Insert: {
-          assigned_by?: string | null
-          created_at?: string | null
-          id?: string
-          permissions?: Json | null
-          university_id?: string | null
-          user_id: string
-        }
-        Update: {
-          assigned_by?: string | null
-          created_at?: string | null
-          id?: string
-          permissions?: Json | null
-          university_id?: string | null
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "university_moderators_university_id_fkey"
-            columns: ["university_id"]
-            isOneToOne: false
-            referencedRelation: "universities"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       user_achievements: {
         Row: {
           achievement_id: string
@@ -1506,6 +1515,7 @@ export type Database = {
       user_bans: {
         Row: {
           banned_by: string
+          community_id: string | null
           created_at: string | null
           expires_at: string | null
           id: string
@@ -1513,11 +1523,11 @@ export type Database = {
           is_permanent: boolean | null
           is_shadowban: boolean | null
           reason: string
-          university_id: string | null
           user_id: string | null
         }
         Insert: {
           banned_by: string
+          community_id?: string | null
           created_at?: string | null
           expires_at?: string | null
           id?: string
@@ -1525,11 +1535,11 @@ export type Database = {
           is_permanent?: boolean | null
           is_shadowban?: boolean | null
           reason: string
-          university_id?: string | null
           user_id?: string | null
         }
         Update: {
           banned_by?: string
+          community_id?: string | null
           created_at?: string | null
           expires_at?: string | null
           id?: string
@@ -1537,15 +1547,14 @@ export type Database = {
           is_permanent?: boolean | null
           is_shadowban?: boolean | null
           reason?: string
-          university_id?: string | null
           user_id?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: "user_bans_university_id_fkey"
-            columns: ["university_id"]
+            foreignKeyName: "user_bans_community_id_fkey"
+            columns: ["community_id"]
             isOneToOne: false
-            referencedRelation: "universities"
+            referencedRelation: "communities"
             referencedColumns: ["id"]
           },
         ]

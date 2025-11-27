@@ -48,16 +48,16 @@ const CreatePost = () => {
         return;
       }
 
-      const { data: uni } = await supabase
-        .from("universities")
+      const { data: comm } = await supabase
+        .from("communities")
         .select("id")
         .eq("slug", slug)
         .single();
 
-      if (!uni) {
+      if (!comm) {
         toast({
           title: "Hata",
-          description: "Üniversite bulunamadı",
+          description: "Topluluk bulunamadı",
           variant: "destructive",
         });
         return;
@@ -72,7 +72,7 @@ const CreatePost = () => {
       const { data: post, error } = await supabase
         .from("posts")
         .insert({
-          university_id: uni.id,
+          community_id: comm.id,
           author_id: user.id,
           author_username: isAnonymous ? "Anonim" : (profile?.username || "Kullanıcı"),
           title,
@@ -90,7 +90,7 @@ const CreatePost = () => {
         description: "Gönderin oluşturuldu",
       });
 
-      navigate(`/u/${slug}/post/${post.id}`);
+      navigate(`/c/${slug}/post/${post.id}`);
     } catch (error) {
       console.error("Gönderi oluşturulamadı:", error);
       toast({
@@ -108,7 +108,7 @@ const CreatePost = () => {
       <div className="container mx-auto px-4 py-8 max-w-3xl">
         <div className="flex items-center gap-4 mb-6">
           <Button variant="ghost" size="icon" asChild>
-            <Link to={`/u/${slug}`}>
+            <Link to={`/c/${slug}`}>
               <ArrowLeft className="h-4 w-4" />
             </Link>
           </Button>
@@ -201,7 +201,7 @@ const CreatePost = () => {
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => navigate(`/u/${slug}`)}
+                onClick={() => navigate(`/c/${slug}`)}
               >
                 İptal
               </Button>
