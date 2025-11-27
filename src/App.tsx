@@ -28,6 +28,7 @@ import CommunityFeed from "./pages/CommunityFeed";
 import Community from "./pages/Community";
 import CreatePost from "./pages/CreatePost";
 import Post from "./pages/Post";
+import UserProfile from "./pages/UserProfile";
 
 
 const AppContent = () => {
@@ -54,10 +55,11 @@ const AppContent = () => {
       <Route path="/gizlilik-politikasi" element={<PrivacyPolicy />} />
       <Route path="/kullanim-kosullari" element={<TermsOfService />} />
       <Route path="/cerez-politikasi" element={<CookiePolicy />} />
-          <Route path="/forum" element={<CommunityFeed />} />
+      <Route path="/forum" element={<CommunityFeed />} />
           <Route path="/c/:slug" element={<Community />} />
           <Route path="/c/:slug/new" element={<CreatePost />} />
           <Route path="/c/:slug/post/:postId" element={<Post />} />
+          <Route path="/u/:username" element={<UserProfile />} />
       <Route path="*" element={<NotFound />} />
     </Routes>
   );

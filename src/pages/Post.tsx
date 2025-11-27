@@ -256,7 +256,12 @@ const Post = () => {
               </div>
 
               <div className="flex items-center gap-3 text-sm text-muted-foreground mb-4">
-                <span>{post.is_anonymous ? "Anonim" : post.author_username}</span>
+                <Link 
+                  to={`/u/${post.author_username}`}
+                  className="hover:text-primary hover:underline"
+                >
+                  {post.is_anonymous ? "Anonim" : post.author_username}
+                </Link>
                 <span>•</span>
                 <span>
                   {formatDistanceToNow(new Date(post.created_at), {
@@ -337,9 +342,12 @@ const Post = () => {
 
                 <div className="flex-1">
                   <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
-                    <span className="font-semibold">
+                    <Link 
+                      to={`/u/${comment.author_username}`}
+                      className="font-semibold hover:text-primary hover:underline"
+                    >
                       {comment.is_anonymous ? "Anonim" : comment.author_username}
-                    </span>
+                    </Link>
                     <span>•</span>
                     <span>
                       {formatDistanceToNow(new Date(comment.created_at), {
