@@ -1,11 +1,32 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Settings, DollarSign, ImageIcon, Video, MessageCircle, Menu, X, Snowflake, Heart, Home, Calendar, Bell, Users, Trophy, Sparkles, Award } from "lucide-react";
-import { useState } from "react";
+import { Settings, DollarSign, ImageIcon, Video, MessageCircle, Menu, X, Snowflake, Heart, Home, Calendar, Bell, Users, Trophy, Sparkles, Award, UserCircle } from "lucide-react";
+import { useState, useEffect } from "react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { supabase } from "@/integrations/supabase/client";
 
 const Navigation = ({ onSnowToggle, snowEnabled }: { onSnowToggle?: () => void; snowEnabled?: boolean }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [username, setUsername] = useState<string | null>(null);
+
+  useEffect(() => {
+    loadUser();
+  }, []);
+
+  const loadUser = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user) {
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("username")
+        .eq("id", user.id)
+        .single();
+      
+      if (profile) {
+        setUsername(profile.username);
+      }
+    }
+  };
 
   const allNavLinks = [
     { to: "/", icon: Home, label: "Ana Sayfa" },
@@ -51,6 +72,21 @@ const Navigation = ({ onSnowToggle, snowEnabled }: { onSnowToggle?: () => void; 
                 <SheetTitle className="text-2xl font-bold glow-text">Menu</SheetTitle>
               </SheetHeader>
               <div className="mt-8 space-y-2">
+                {username && (
+                  <Link 
+                    to={`/u/${username}`}
+                    onClick={() => setIsOpen(false)}
+                    className="block mb-4"
+                  >
+                    <Button 
+                      variant="outline"
+                      className="w-full justify-start rounded-full hover:bg-primary hover:text-primary-foreground transition-all hover:scale-105"
+                    >
+                      <UserCircle className="mr-3 h-5 w-5" />
+                      <span className="text-base">Profilim (u/{username})</span>
+                    </Button>
+                  </Link>
+                )}
                 {onSnowToggle && (
                   <Button
                     variant={snowEnabled ? "default" : "outline"}
