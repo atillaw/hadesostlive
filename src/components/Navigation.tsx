@@ -1,15 +1,18 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Settings, DollarSign, ImageIcon, Video, MessageCircle, Menu, X, Snowflake, Heart, Home, Calendar, Bell, Users, Trophy, Sparkles, Award, UserCircle, Search } from "lucide-react";
+import { Settings, DollarSign, ImageIcon, Video, MessageCircle, Menu, X, Snowflake, Heart, Home, Calendar, Bell, Users, Trophy, Sparkles, Award, UserCircle, Search, Mail, Rss } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { supabase } from "@/integrations/supabase/client";
 import ForumSearch from "./ForumSearch";
+import { NotificationDropdown } from "./NotificationDropdown";
 
 const Navigation = ({ onSnowToggle, snowEnabled }: { onSnowToggle?: () => void; snowEnabled?: boolean }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [username, setUsername] = useState<string | null>(null);
   const [searchOpen, setSearchOpen] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     loadUser();
@@ -17,6 +20,7 @@ const Navigation = ({ onSnowToggle, snowEnabled }: { onSnowToggle?: () => void; 
 
   const loadUser = async () => {
     const { data: { user } } = await supabase.auth.getUser();
+    setIsAuthenticated(!!user);
     if (user) {
       const { data: profile } = await supabase
         .from("profiles")
@@ -68,6 +72,31 @@ const Navigation = ({ onSnowToggle, snowEnabled }: { onSnowToggle?: () => void; 
             >
               <Search className="h-6 w-6" />
             </Button>
+
+            {/* Authenticated User Actions */}
+            {isAuthenticated && (
+              <>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => navigate("/takip-akisi")}
+                  className="hover:bg-card/50 hover:scale-105 transition-all"
+                  title="Takip Akışı"
+                >
+                  <Rss className="h-6 w-6" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => navigate("/mesajlar")}
+                  className="hover:bg-card/50 hover:scale-105 transition-all"
+                  title="Mesajlar"
+                >
+                  <Mail className="h-6 w-6" />
+                </Button>
+                <NotificationDropdown />
+              </>
+            )}
             
             {/* Hamburger Menu */}
           <Sheet open={isOpen} onOpenChange={setIsOpen}>

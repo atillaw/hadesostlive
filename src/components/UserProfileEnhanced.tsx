@@ -2,10 +2,11 @@ import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Trophy, Star, MessageSquare, FileText, Calendar, TrendingUp, UserPlus, UserMinus, Crown, Award } from "lucide-react";
+import { Trophy, Star, MessageSquare, FileText, Calendar, TrendingUp, UserPlus, UserMinus, Crown, Award, Mail } from "lucide-react";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { useNavigate } from "react-router-dom";
 
 interface UserProfileEnhancedProps {
   profileId: string;
@@ -32,6 +33,7 @@ const UserProfileEnhanced = ({
   const [followerCount, setFollowerCount] = useState(0);
   const [followingCount, setFollowingCount] = useState(0);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   useEffect(() => {
     loadKarmaHistory();
@@ -162,40 +164,85 @@ const UserProfileEnhanced = ({
 
   const isOwnProfile = currentUser?.id === profileId;
 
+  const startConversation = async () => {
+    if (!currentUser) {
+      toast({ title: "Mesaj göndermek için giriş yapmalısınız", variant: "destructive" });
+      return;
+    }
+
+    const [smallerId, largerId] = [currentUser.id, profileId].sort();
+
+    const { data: existingConv } = await supabase
+      .from("conversations")
+      .select("id")
+      .eq("participant_1", smallerId)
+      .eq("participant_2", largerId)
+      .maybeSingle();
+
+    if (existingConv) {
+      navigate("/mesajlar");
+      return;
+    }
+
+    const { error } = await supabase.from("conversations").insert({
+      participant_1: smallerId,
+      participant_2: largerId,
+    });
+
+    if (error) {
+      toast({ title: "Konuşma başlatılamadı", variant: "destructive" });
+      return;
+    }
+
+    navigate("/mesajlar");
+  };
+
   return (
     <div className="space-y-6">
       {/* Follow Stats and Button */}
       <Card className="bg-card/50 backdrop-blur border-border/50">
         <CardContent className="p-6">
-          <div className="flex items-center justify-between">
-            <div className="flex gap-6">
-              <div className="text-center">
-                <div className="text-2xl font-bold text-foreground">{followerCount}</div>
-                <div className="text-sm text-muted-foreground">Takipçi</div>
-              </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-foreground">{followingCount}</div>
-                <div className="text-sm text-muted-foreground">Takip Edilen</div>
+          <div className="flex flex-col gap-4">
+            <div className="flex items-center justify-between">
+              <div className="flex gap-6">
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-foreground">{followerCount}</div>
+                  <div className="text-sm text-muted-foreground">Takipçi</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-foreground">{followingCount}</div>
+                  <div className="text-sm text-muted-foreground">Takip Edilen</div>
+                </div>
               </div>
             </div>
             {!isOwnProfile && (
-              <Button
-                onClick={toggleFollow}
-                variant={isFollowing ? "outline" : "default"}
-                className="gap-2"
-              >
-                {isFollowing ? (
-                  <>
-                    <UserMinus className="h-4 w-4" />
-                    Takibi Bırak
-                  </>
-                ) : (
-                  <>
-                    <UserPlus className="h-4 w-4" />
-                    Takip Et
-                  </>
-                )}
-              </Button>
+              <div className="flex gap-2">
+                <Button
+                  onClick={toggleFollow}
+                  variant={isFollowing ? "outline" : "default"}
+                  className="gap-2 flex-1"
+                >
+                  {isFollowing ? (
+                    <>
+                      <UserMinus className="h-4 w-4" />
+                      Takibi Bırak
+                    </>
+                  ) : (
+                    <>
+                      <UserPlus className="h-4 w-4" />
+                      Takip Et
+                    </>
+                  )}
+                </Button>
+                <Button
+                  onClick={startConversation}
+                  variant="outline"
+                  className="gap-2 flex-1"
+                >
+                  <Mail className="h-4 w-4" />
+                  Mesaj Gönder
+                </Button>
+              </div>
             )}
           </div>
         </CardContent>
