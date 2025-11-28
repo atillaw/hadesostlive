@@ -185,7 +185,8 @@ const CreatePost = () => {
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
-      <div className="container mx-auto px-4 py-8 max-w-3xl">
+      <div className="page-content">
+        <div className="container mx-auto px-4 py-8 max-w-3xl">
         <div className="flex items-center gap-4 mb-6">
           <Button variant="ghost" size="icon" asChild>
             <Link to={`/c/${slug}`}>
@@ -377,6 +378,7 @@ const CreatePost = () => {
             </div>
           </form>
         </Card>
+      </div>
       </div>
       <Footer />
     </div>

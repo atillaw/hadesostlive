@@ -202,8 +202,9 @@ const UserSettings = () => {
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
-      <div className="container mx-auto px-4 py-6 max-w-4xl">
-        <div className="mb-8">
+      <div className="page-content">
+        <div className="container mx-auto px-4 py-6 max-w-4xl">
+          <div className="mb-8">
           <h1 className="text-4xl font-bold mb-2 flex items-center gap-3">
             <Settings className="h-10 w-10 text-primary" />
             Kullanıcı Ayarları
@@ -378,6 +379,7 @@ const UserSettings = () => {
             </Button>
           </div>
         </div>
+      </div>
       </div>
       <Footer />
     </div>
