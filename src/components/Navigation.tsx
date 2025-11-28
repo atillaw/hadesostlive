@@ -42,6 +42,7 @@ const Navigation = ({ onSnowToggle, snowEnabled }: { onSnowToggle?: () => void; 
     { to: "/topluluk", icon: Sparkles, label: "Topluluk" },
     { to: "/forum", icon: MessageCircle, label: "Forum" },
     { to: "/kaydedilenler", icon: Award, label: "Kaydedilenler", authRequired: true },
+    { to: "/ayarlar", icon: Settings, label: "Kullanıcı Ayarları", authRequired: true },
     { to: "/forum-kurallari", icon: Settings, label: "Forum Kuralları" },
     { to: "/aboneler", icon: Heart, label: "Aboneler" },
     { to: "/sponsorlar", icon: Award, label: "Sponsorlar" },

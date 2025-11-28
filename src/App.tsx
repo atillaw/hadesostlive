@@ -34,7 +34,7 @@ import Messages from "./pages/Messages";
 import FollowingFeed from "./pages/FollowingFeed";
 import SavedPosts from "./pages/SavedPosts";
 import ForumRules from "./pages/ForumRules";
-
+import UserSettings from "./pages/UserSettings";
 
 const AppContent = () => {
   usePageTracking();
@@ -70,6 +70,7 @@ const AppContent = () => {
       <Route path="/takip-akisi" element={<FollowingFeed />} />
       <Route path="/kaydedilenler" element={<SavedPosts />} />
       <Route path="/forum-kurallari" element={<ForumRules />} />
+      <Route path="/ayarlar" element={<UserSettings />} />
       <Route path="*" element={<NotFound />} />
     </Routes>
   );

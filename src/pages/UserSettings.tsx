@@ -1,0 +1,238 @@
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
+import Navigation from "@/components/Navigation";
+import Footer from "@/components/Footer";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
+import { Button } from "@/components/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Settings, Mail, Palette, Eye } from "lucide-react";
+import { toast } from "@/hooks/use-toast";
+
+const UserSettings = () => {
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [userId, setUserId] = useState<string | null>(null);
+  
+  // Settings state
+  const [emailNotifications, setEmailNotifications] = useState(true);
+  const [theme, setTheme] = useState("dark");
+  const [showNsfw, setShowNsfw] = useState(false);
+
+  useEffect(() => {
+    loadUser();
+  }, []);
+
+  const loadUser = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    
+    if (!user) {
+      toast({
+        title: "Giriş gerekli",
+        description: "Ayarlara erişmek için giriş yapmalısınız",
+        variant: "destructive",
+      });
+      navigate("/auth");
+      return;
+    }
+
+    setUserId(user.id);
+    await loadPreferences(user.id);
+  };
+
+  const loadPreferences = async (uid: string) => {
+    const { data, error } = await supabase
+      .from("user_preferences")
+      .select("*")
+      .eq("user_id", uid)
+      .maybeSingle();
+
+    if (data) {
+      setEmailNotifications(data.email_notifications ?? true);
+      setTheme(data.theme ?? "dark");
+      setShowNsfw(data.show_nsfw ?? false);
+    }
+    
+    setLoading(false);
+  };
+
+  const handleSave = async () => {
+    if (!userId) return;
+
+    setSaving(true);
+    try {
+      const { error } = await supabase
+        .from("user_preferences")
+        .upsert({
+          user_id: userId,
+          email_notifications: emailNotifications,
+          theme,
+          show_nsfw: showNsfw,
+          updated_at: new Date().toISOString(),
+        });
+
+      if (error) throw error;
+
+      toast({
+        title: "Ayarlar kaydedildi",
+        description: "Tercihleriniz başarıyla güncellendi",
+      });
+
+      // Apply theme
+      if (theme === "dark") {
+        document.documentElement.classList.add("dark");
+      } else {
+        document.documentElement.classList.remove("dark");
+      }
+    } catch (error) {
+      console.error("Settings save error:", error);
+      toast({
+        title: "Hata",
+        description: "Ayarlar kaydedilirken bir hata oluştu",
+        variant: "destructive",
+      });
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Navigation />
+        <div className="container mx-auto px-4 py-6 max-w-4xl">
+          <div className="animate-pulse space-y-4">
+            <div className="h-32 bg-muted rounded-lg" />
+            <div className="h-32 bg-muted rounded-lg" />
+            <div className="h-32 bg-muted rounded-lg" />
+          </div>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-background">
+      <Navigation />
+      <div className="container mx-auto px-4 py-6 max-w-4xl">
+        <div className="mb-8">
+          <h1 className="text-4xl font-bold mb-2 flex items-center gap-3">
+            <Settings className="h-10 w-10 text-primary" />
+            Kullanıcı Ayarları
+          </h1>
+          <p className="text-muted-foreground">
+            Hesabınızın tercihlerini ve görünüm ayarlarını yönetin
+          </p>
+        </div>
+
+        <div className="space-y-6">
+          {/* Email Notifications */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Mail className="h-5 w-5 text-primary" />
+                E-posta Bildirimleri
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div className="space-y-0.5">
+                  <Label htmlFor="email-notifications" className="text-base font-medium">
+                    E-posta bildirimleri al
+                  </Label>
+                  <p className="text-sm text-muted-foreground">
+                    Yeni yorumlar, yanıtlar ve önemli güncellemeler için e-posta bildirimleri alın
+                  </p>
+                </div>
+                <Switch
+                  id="email-notifications"
+                  checked={emailNotifications}
+                  onCheckedChange={setEmailNotifications}
+                />
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Theme */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Palette className="h-5 w-5 text-primary" />
+                Tema Tercihi
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="theme" className="text-base font-medium">
+                  Görünüm teması
+                </Label>
+                <Select value={theme} onValueChange={setTheme}>
+                  <SelectTrigger id="theme">
+                    <SelectValue placeholder="Tema seçin" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="dark">Koyu Tema</SelectItem>
+                    <SelectItem value="light">Açık Tema</SelectItem>
+                  </SelectContent>
+                </Select>
+                <p className="text-sm text-muted-foreground">
+                  Site genelinde kullanılacak renk temasını seçin
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* NSFW Content */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Eye className="h-5 w-5 text-primary" />
+                İçerik Filtreleri
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div className="space-y-0.5">
+                  <Label htmlFor="show-nsfw" className="text-base font-medium">
+                    Hassas içeriği göster
+                  </Label>
+                  <p className="text-sm text-muted-foreground">
+                    18+ veya hassas olarak işaretlenmiş içerikleri görmek istiyorsanız etkinleştirin
+                  </p>
+                </div>
+                <Switch
+                  id="show-nsfw"
+                  checked={showNsfw}
+                  onCheckedChange={setShowNsfw}
+                />
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Save Button */}
+          <div className="flex justify-end gap-3">
+            <Button
+              variant="outline"
+              onClick={() => navigate(-1)}
+            >
+              İptal
+            </Button>
+            <Button
+              onClick={handleSave}
+              disabled={saving}
+            >
+              {saving ? "Kaydediliyor..." : "Kaydet"}
+            </Button>
+          </div>
+        </div>
+      </div>
+      <Footer />
+    </div>
+  );
+};
+
+export default UserSettings;
