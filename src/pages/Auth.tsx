@@ -70,9 +70,12 @@ const Auth = () => {
         setIsLogin(true);
       }
     } catch (error: any) {
+      const errorMessage = error?.message || "Giriş yapılamadı. Lütfen bilgilerinizi kontrol edin.";
       toast({
         title: "Hata",
-        description: "Giriş yapılamadı. Lütfen bilgilerinizi kontrol edin.",
+        description: errorMessage.includes("Email not confirmed") 
+          ? "E-posta adresiniz henüz onaylanmamış. Lütfen e-postanızı kontrol edin."
+          : errorMessage,
         variant: "destructive",
       });
     } finally {
