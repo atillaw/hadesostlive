@@ -23,6 +23,7 @@ interface Community {
   description: string;
   member_count: number;
   post_count: number;
+  icon_url?: string | null;
 }
 
 interface Post {
@@ -406,7 +407,14 @@ const CommunityPosts = () => {
             {/* Community Info */}
             <Card>
               <CardContent className="p-4">
-                <h2 className="font-bold text-lg mb-3">{community.name}</h2>
+                <div className="flex items-center gap-3 mb-3">
+                  {community.icon_url && (
+                    <div className="w-12 h-12 rounded-full flex items-center justify-center text-2xl bg-muted">
+                      {community.icon_url}
+                    </div>
+                  )}
+                  <h2 className="font-bold text-lg">{community.name}</h2>
+                </div>
                 <p className="text-sm text-muted-foreground mb-4">
                   {community.description}
                 </p>
