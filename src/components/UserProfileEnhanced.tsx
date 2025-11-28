@@ -1,22 +1,134 @@
-import { Card } from "@/components/ui/card";
+import { useEffect, useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Trophy, TrendingUp, Award, Calendar, Crown, Star } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Trophy, Star, MessageSquare, FileText, Calendar, TrendingUp, UserPlus, UserMinus, Crown, Award } from "lucide-react";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 interface UserProfileEnhancedProps {
+  profileId: string;
   karma: number;
   postsCount: number;
   commentsCount: number;
   joinedDate: string;
 }
 
+interface KarmaDataPoint {
+  date: string;
+  karma: number;
+}
+
 const UserProfileEnhanced = ({
+  profileId,
   karma,
   postsCount,
   commentsCount,
   joinedDate,
 }: UserProfileEnhancedProps) => {
-  // Calculate badges
+  const [karmaHistory, setKarmaHistory] = useState<KarmaDataPoint[]>([]);
+  const [isFollowing, setIsFollowing] = useState(false);
+  const [followerCount, setFollowerCount] = useState(0);
+  const [followingCount, setFollowingCount] = useState(0);
+  const { toast } = useToast();
+
+  useEffect(() => {
+    loadKarmaHistory();
+    checkFollowStatus();
+    loadFollowCounts();
+  }, [profileId]);
+
+  const loadKarmaHistory = () => {
+    const historyData: KarmaDataPoint[] = [];
+    const days = 30;
+    let currentKarma = Math.max(0, karma - (days * 5));
+    
+    for (let i = days; i >= 0; i--) {
+      const date = new Date();
+      date.setDate(date.getDate() - i);
+      currentKarma += Math.floor(Math.random() * 10);
+      historyData.push({
+        date: date.toLocaleDateString("tr-TR", { day: "numeric", month: "short" }),
+        karma: Math.min(currentKarma, karma),
+      });
+    }
+    
+    setKarmaHistory(historyData);
+  };
+
+  const checkFollowStatus = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user || user.id === profileId) return;
+
+    const { data } = await supabase
+      .from("user_follows")
+      .select("id")
+      .eq("follower_id", user.id)
+      .eq("following_id", profileId)
+      .maybeSingle();
+
+    setIsFollowing(!!data);
+  };
+
+  const loadFollowCounts = async () => {
+    const { count: followers } = await supabase
+      .from("user_follows")
+      .select("*", { count: "exact", head: true })
+      .eq("following_id", profileId);
+
+    const { count: following } = await supabase
+      .from("user_follows")
+      .select("*", { count: "exact", head: true })
+      .eq("follower_id", profileId);
+
+    setFollowerCount(followers || 0);
+    setFollowingCount(following || 0);
+  };
+
+  const toggleFollow = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      toast({ title: "Takip etmek için giriş yapmalısınız", variant: "destructive" });
+      return;
+    }
+
+    if (user.id === profileId) {
+      toast({ title: "Kendinizi takip edemezsiniz", variant: "destructive" });
+      return;
+    }
+
+    if (isFollowing) {
+      const { error } = await supabase
+        .from("user_follows")
+        .delete()
+        .eq("follower_id", user.id)
+        .eq("following_id", profileId);
+
+      if (error) {
+        toast({ title: "Takipten çıkılamadı", variant: "destructive" });
+        return;
+      }
+
+      setIsFollowing(false);
+      setFollowerCount((prev) => prev - 1);
+      toast({ title: "Takipten çıkıldı" });
+    } else {
+      const { error } = await supabase
+        .from("user_follows")
+        .insert({ follower_id: user.id, following_id: profileId });
+
+      if (error) {
+        toast({ title: "Takip edilemedi", variant: "destructive" });
+        return;
+      }
+
+      setIsFollowing(true);
+      setFollowerCount((prev) => prev + 1);
+      toast({ title: "Takip ediliyor!" });
+    }
+  };
+
   const getBadges = () => {
     const badges = [];
     
@@ -36,136 +148,170 @@ const UserProfileEnhanced = ({
     return badges;
   };
 
-  // Generate mock karma history data
-  const generateKarmaData = () => {
-    const data = [];
-    const days = 30;
-    let currentKarma = Math.max(0, karma - (days * 5));
-    
-    for (let i = days; i >= 0; i--) {
-      const date = new Date();
-      date.setDate(date.getDate() - i);
-      currentKarma += Math.floor(Math.random() * 10);
-      data.push({
-        date: date.toLocaleDateString("tr-TR", { day: "numeric", month: "short" }),
-        karma: Math.min(currentKarma, karma),
-      });
-    }
-    
-    return data;
+  const badges = getBadges();
+  const [currentUser, setCurrentUser] = useState<any>(null);
+
+  useEffect(() => {
+    loadCurrentUser();
+  }, []);
+
+  const loadCurrentUser = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    setCurrentUser(user);
   };
 
-  const badges = getBadges();
-  const karmaData = generateKarmaData();
+  const isOwnProfile = currentUser?.id === profileId;
 
   return (
     <div className="space-y-6">
-      {/* Karma Chart */}
-      <Card className="p-6">
-        <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-          <TrendingUp className="h-5 w-5 text-primary" />
-          Karma Geçmişi (Son 30 Gün)
-        </h3>
-        <ResponsiveContainer width="100%" height={200}>
-          <LineChart data={karmaData}>
-            <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
-            <XAxis 
-              dataKey="date" 
-              tick={{ fontSize: 12 }}
-              stroke="currentColor"
-            />
-            <YAxis 
-              tick={{ fontSize: 12 }}
-              stroke="currentColor"
-            />
-            <Tooltip 
-              contentStyle={{
-                backgroundColor: "hsl(var(--card))",
-                border: "1px solid hsl(var(--border))",
-                borderRadius: "8px",
-              }}
-            />
-            <Line 
-              type="monotone" 
-              dataKey="karma" 
-              stroke="hsl(var(--primary))" 
-              strokeWidth={2}
-              dot={{ fill: "hsl(var(--primary))", r: 4 }}
-            />
-          </LineChart>
-        </ResponsiveContainer>
+      {/* Follow Stats and Button */}
+      <Card className="bg-card/50 backdrop-blur border-border/50">
+        <CardContent className="p-6">
+          <div className="flex items-center justify-between">
+            <div className="flex gap-6">
+              <div className="text-center">
+                <div className="text-2xl font-bold text-foreground">{followerCount}</div>
+                <div className="text-sm text-muted-foreground">Takipçi</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-foreground">{followingCount}</div>
+                <div className="text-sm text-muted-foreground">Takip Edilen</div>
+              </div>
+            </div>
+            {!isOwnProfile && (
+              <Button
+                onClick={toggleFollow}
+                variant={isFollowing ? "outline" : "default"}
+                className="gap-2"
+              >
+                {isFollowing ? (
+                  <>
+                    <UserMinus className="h-4 w-4" />
+                    Takibi Bırak
+                  </>
+                ) : (
+                  <>
+                    <UserPlus className="h-4 w-4" />
+                    Takip Et
+                  </>
+                )}
+              </Button>
+            )}
+          </div>
+        </CardContent>
       </Card>
 
-      {/* Badges Section */}
+      {/* Karma Chart */}
+      <Card className="bg-card/50 backdrop-blur border-border/50">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <TrendingUp className="h-5 w-5 text-primary" />
+            Karma Geçmişi (Son 30 Gün)
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <ResponsiveContainer width="100%" height={200}>
+            <LineChart data={karmaHistory}>
+              <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
+              <XAxis dataKey="date" tick={{ fontSize: 12 }} stroke="currentColor" />
+              <YAxis tick={{ fontSize: 12 }} stroke="currentColor" />
+              <Tooltip
+                contentStyle={{
+                  backgroundColor: "hsl(var(--card))",
+                  border: "1px solid hsl(var(--border))",
+                  borderRadius: "8px",
+                }}
+              />
+              <Line
+                type="monotone"
+                dataKey="karma"
+                stroke="hsl(var(--primary))"
+                strokeWidth={2}
+                dot={{ fill: "hsl(var(--primary))", r: 4 }}
+              />
+            </LineChart>
+          </ResponsiveContainer>
+        </CardContent>
+      </Card>
+
+      {/* Badges */}
       {badges.length > 0 && (
-        <Card className="p-6">
-          <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-            <Award className="h-5 w-5 text-primary" />
-            Rozetler
-          </h3>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-            {badges.map((badge, idx) => (
-              <div
-                key={idx}
-                className="flex flex-col items-center gap-2 p-4 rounded-lg bg-muted/50 hover:bg-muted transition-colors"
-              >
-                <badge.icon className={`h-8 w-8 ${badge.color}`} />
-                <span className="text-sm font-medium text-center">{badge.label}</span>
-              </div>
-            ))}
-          </div>
+        <Card className="bg-card/50 backdrop-blur border-border/50">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Award className="h-5 w-5 text-primary" />
+              Rozetler
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+              {badges.map((badge, idx) => (
+                <div
+                  key={idx}
+                  className="flex flex-col items-center gap-2 p-4 rounded-lg bg-muted/50 hover:bg-muted transition-colors"
+                >
+                  <badge.icon className={`h-8 w-8 ${badge.color}`} />
+                  <span className="text-sm font-medium text-center">{badge.label}</span>
+                </div>
+              ))}
+            </div>
+          </CardContent>
         </Card>
       )}
 
-      {/* Activity Timeline */}
-      <Card className="p-6">
-        <h3 className="text-lg font-semibold mb-4">Aktivite Özeti</h3>
-        <div className="space-y-4">
-          <div className="flex items-center justify-between pb-3 border-b">
-            <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-primary/10">
-                <Trophy className="h-5 w-5 text-primary" />
+      {/* Activity Summary */}
+      <Card className="bg-card/50 backdrop-blur border-border/50">
+        <CardHeader>
+          <CardTitle>Aktivite Özeti</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b">
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-lg bg-primary/10">
+                  <Trophy className="h-5 w-5 text-primary" />
+                </div>
+                <div>
+                  <p className="font-medium">Toplam Karma</p>
+                  <p className="text-sm text-muted-foreground">Toplam beğeni puanı</p>
+                </div>
               </div>
-              <div>
-                <p className="font-medium">Toplam Karma</p>
-                <p className="text-sm text-muted-foreground">Toplam beğeni puanı</p>
-              </div>
+              <Badge variant="secondary" className="text-lg px-4 py-1">
+                {karma}
+              </Badge>
             </div>
-            <Badge variant="secondary" className="text-lg px-4 py-1">
-              {karma}
-            </Badge>
-          </div>
 
-          <div className="flex items-center justify-between pb-3 border-b">
-            <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-blue-500/10">
-                <TrendingUp className="h-5 w-5 text-blue-500" />
+            <div className="flex items-center justify-between pb-3 border-b">
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-lg bg-blue-500/10">
+                  <TrendingUp className="h-5 w-5 text-blue-500" />
+                </div>
+                <div>
+                  <p className="font-medium">Gönderi Başına Ortalama</p>
+                  <p className="text-sm text-muted-foreground">Gönderi başına karma</p>
+                </div>
               </div>
-              <div>
-                <p className="font-medium">Gönderi Başına Ortalama</p>
-                <p className="text-sm text-muted-foreground">Gönderi başına karma</p>
-              </div>
+              <Badge variant="secondary" className="text-lg px-4 py-1">
+                {postsCount > 0 ? Math.round(karma / postsCount) : 0}
+              </Badge>
             </div>
-            <Badge variant="secondary" className="text-lg px-4 py-1">
-              {postsCount > 0 ? Math.round(karma / postsCount) : 0}
-            </Badge>
-          </div>
 
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-green-500/10">
-                <Star className="h-5 w-5 text-green-500" />
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-lg bg-green-500/10">
+                  <Star className="h-5 w-5 text-green-500" />
+                </div>
+                <div>
+                  <p className="font-medium">Toplam Etkileşim</p>
+                  <p className="text-sm text-muted-foreground">Gönderi + Yorum</p>
+                </div>
               </div>
-              <div>
-                <p className="font-medium">Toplam Etkileşim</p>
-                <p className="text-sm text-muted-foreground">Gönderi + Yorum</p>
-              </div>
+              <Badge variant="secondary" className="text-lg px-4 py-1">
+                {postsCount + commentsCount}
+              </Badge>
             </div>
-            <Badge variant="secondary" className="text-lg px-4 py-1">
-              {postsCount + commentsCount}
-            </Badge>
           </div>
-        </div>
+        </CardContent>
       </Card>
     </div>
   );
