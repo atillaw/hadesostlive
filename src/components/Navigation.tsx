@@ -1,13 +1,15 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Settings, DollarSign, ImageIcon, Video, MessageCircle, Menu, X, Snowflake, Heart, Home, Calendar, Bell, Users, Trophy, Sparkles, Award, UserCircle } from "lucide-react";
+import { Settings, DollarSign, ImageIcon, Video, MessageCircle, Menu, X, Snowflake, Heart, Home, Calendar, Bell, Users, Trophy, Sparkles, Award, UserCircle, Search } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { supabase } from "@/integrations/supabase/client";
+import ForumSearch from "./ForumSearch";
 
 const Navigation = ({ onSnowToggle, snowEnabled }: { onSnowToggle?: () => void; snowEnabled?: boolean }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [username, setUsername] = useState<string | null>(null);
+  const [searchOpen, setSearchOpen] = useState(false);
 
   useEffect(() => {
     loadUser();
@@ -55,8 +57,19 @@ const Navigation = ({ onSnowToggle, snowEnabled }: { onSnowToggle?: () => void; 
           >
             Hadesost
           </Link>
-          
-          {/* Hamburger Menu */}
+
+          <div className="flex items-center gap-2">
+            {/* Search Button */}
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setSearchOpen(true)}
+              className="hover:bg-card/50 hover:scale-105 transition-all"
+            >
+              <Search className="h-6 w-6" />
+            </Button>
+            
+            {/* Hamburger Menu */}
           <Sheet open={isOpen} onOpenChange={setIsOpen}>
             <SheetTrigger asChild>
               <Button
@@ -117,8 +130,11 @@ const Navigation = ({ onSnowToggle, snowEnabled }: { onSnowToggle?: () => void; 
               </div>
             </SheetContent>
           </Sheet>
+          </div>
         </div>
       </div>
+
+      <ForumSearch open={searchOpen} onOpenChange={setSearchOpen} />
     </nav>
   );
 };

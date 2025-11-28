@@ -6,13 +6,14 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { 
   ArrowUp, ArrowDown, MessageSquare, Plus, 
-  TrendingUp, Clock, Pin, Lock
+  TrendingUp, Clock, Pin, Lock, Flame
 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { formatDistanceToNow } from "date-fns";
 import { tr } from "date-fns/locale";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
+import { toast } from "@/hooks/use-toast";
 
 interface Community {
   id: string;
@@ -46,14 +47,35 @@ const CommunityPosts = () => {
   const [community, setCommunity] = useState<Community | null>(null);
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
-  const [sortBy, setSortBy] = useState<"hot" | "new">("hot");
+  const [sortBy, setSortBy] = useState<"hot" | "new" | "top">("hot");
+  const [userVotes, setUserVotes] = useState<Record<string, number>>({});
 
   useEffect(() => {
     if (slug) {
       loadCommunity();
       loadPosts();
+      loadUserVotes();
     }
   }, [slug, sortBy]);
+
+  const loadUserVotes = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    const { data } = await supabase
+      .from("votes")
+      .select("post_id, vote_type")
+      .eq("user_id", user.id)
+      .not("post_id", "is", null);
+
+    if (data) {
+      const votesMap: Record<string, number> = {};
+      data.forEach((vote) => {
+        if (vote.post_id) votesMap[vote.post_id] = vote.vote_type;
+      });
+      setUserVotes(votesMap);
+    }
+  };
 
   const loadCommunity = async () => {
     const { data } = await supabase
@@ -66,26 +88,104 @@ const CommunityPosts = () => {
   };
 
   const loadPosts = async () => {
+    const communityData = await supabase
+      .from("communities")
+      .select("id")
+      .eq("slug", slug)
+      .single();
+
+    if (!communityData.data) {
+      setLoading(false);
+      return;
+    }
+
     let query = supabase
       .from("posts")
       .select("*")
-      .eq("community_id", (await supabase
-        .from("communities")
-        .select("id")
-        .eq("slug", slug)
-        .single()
-      ).data?.id || "")
+      .eq("community_id", communityData.data.id)
       .eq("is_deleted", false);
 
     if (sortBy === "hot") {
+      // Hot algorithm: score = upvotes - downvotes / (hours_since_creation + 2)^1.5
+      const { data } = await query;
+      if (data) {
+        const rankedPosts = data
+          .map((post) => {
+            const score = post.upvotes - post.downvotes;
+            const hoursOld = (Date.now() - new Date(post.created_at).getTime()) / (1000 * 60 * 60);
+            const hotScore = score / Math.pow(hoursOld + 2, 1.5);
+            return { ...post, hotScore };
+          })
+          .sort((a, b) => {
+            if (a.is_pinned && !b.is_pinned) return -1;
+            if (!a.is_pinned && b.is_pinned) return 1;
+            return b.hotScore - a.hotScore;
+          });
+        setPosts(rankedPosts);
+      }
+    } else if (sortBy === "top") {
       query = query.order("upvotes", { ascending: false });
+      const { data } = await query;
+      if (data) setPosts(data);
     } else {
       query = query.order("created_at", { ascending: false });
+      const { data } = await query;
+      if (data) setPosts(data);
     }
 
-    const { data } = await query;
-    if (data) setPosts(data);
     setLoading(false);
+  };
+
+  const handleVote = async (postId: string, voteType: number, e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      toast({
+        title: "Giriş gerekli",
+        description: "Oy kullanmak için giriş yapmalısınız",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const existingVote = userVotes[postId];
+
+    if (existingVote === voteType) {
+      // Remove vote
+      await supabase
+        .from("votes")
+        .delete()
+        .eq("post_id", postId)
+        .eq("user_id", user.id);
+      
+      const newVotes = { ...userVotes };
+      delete newVotes[postId];
+      setUserVotes(newVotes);
+    } else if (existingVote) {
+      // Change vote
+      await supabase
+        .from("votes")
+        .update({ vote_type: voteType })
+        .eq("post_id", postId)
+        .eq("user_id", user.id);
+      
+      setUserVotes({ ...userVotes, [postId]: voteType });
+    } else {
+      // New vote
+      await supabase
+        .from("votes")
+        .insert({
+          post_id: postId,
+          user_id: user.id,
+          vote_type: voteType,
+        });
+      
+      setUserVotes({ ...userVotes, [postId]: voteType });
+    }
+
+    loadPosts();
   };
 
   if (loading) {
@@ -170,8 +270,8 @@ const CommunityPosts = () => {
             variant={sortBy === "hot" ? "default" : "ghost"}
             onClick={() => setSortBy("hot")}
           >
-            <TrendingUp className="h-4 w-4 mr-2" />
-            Popüler
+            <Flame className="h-4 w-4 mr-2" />
+            Hot
           </Button>
           <Button
             variant={sortBy === "new" ? "default" : "ghost"}
@@ -179,6 +279,13 @@ const CommunityPosts = () => {
           >
             <Clock className="h-4 w-4 mr-2" />
             Yeni
+          </Button>
+          <Button
+            variant={sortBy === "top" ? "default" : "ghost"}
+            onClick={() => setSortBy("top")}
+          >
+            <TrendingUp className="h-4 w-4 mr-2" />
+            En Çok Oylanan
           </Button>
         </div>
 
@@ -190,13 +297,23 @@ const CommunityPosts = () => {
                 <div className="flex gap-4">
                   {/* Vote Section */}
                   <div className="flex flex-col items-center gap-2">
-                    <Button variant="ghost" size="icon" className="h-8 w-8">
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      className={`h-8 w-8 ${userVotes[post.id] === 1 ? 'text-orange-500' : ''}`}
+                      onClick={(e) => handleVote(post.id, 1, e)}
+                    >
                       <ArrowUp className="h-4 w-4" />
                     </Button>
                     <span className="font-bold text-sm">
                       {post.upvotes - post.downvotes}
                     </span>
-                    <Button variant="ghost" size="icon" className="h-8 w-8">
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      className={`h-8 w-8 ${userVotes[post.id] === -1 ? 'text-blue-500' : ''}`}
+                      onClick={(e) => handleVote(post.id, -1, e)}
+                    >
                       <ArrowDown className="h-4 w-4" />
                     </Button>
                   </div>
