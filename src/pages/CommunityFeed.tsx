@@ -128,11 +128,9 @@ const CommunityFeed = () => {
                     <div className="bg-card rounded-lg border hover:border-primary/50 transition-colors p-4">
                       <div className="flex items-center gap-4">
                         {community.icon_url && (
-                          <img
-                            src={community.icon_url}
-                            alt={community.name}
-                            className="w-12 h-12 rounded-full flex-shrink-0"
-                          />
+                          <div className="w-12 h-12 rounded-full flex-shrink-0 flex items-center justify-center text-3xl bg-muted">
+                            {community.icon_url}
+                          </div>
                         )}
                         <div className="flex-1 min-w-0">
                           <h2 className="text-lg font-bold mb-1">{community.name}</h2>
