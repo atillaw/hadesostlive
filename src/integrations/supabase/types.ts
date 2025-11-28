@@ -1161,18 +1161,24 @@ export type Database = {
       }
       profiles: {
         Row: {
+          avatar_url: string | null
+          bio: string | null
           created_at: string
           email: string
           id: string
           username: string
         }
         Insert: {
+          avatar_url?: string | null
+          bio?: string | null
           created_at?: string
           email: string
           id: string
           username: string
         }
         Update: {
+          avatar_url?: string | null
+          bio?: string | null
           created_at?: string
           email?: string
           id?: string
@@ -2043,6 +2049,7 @@ export type Database = {
         | "super_admin"
         | "global_mod"
         | "university_mod"
+        | "forum_mod"
       chat_status: "waiting" | "active" | "closed"
       clip_category: "gameplay" | "funny" | "music" | "other"
       message_sender: "user" | "admin" | "ai"
@@ -2180,6 +2187,7 @@ export const Constants = {
         "super_admin",
         "global_mod",
         "university_mod",
+        "forum_mod",
       ],
       chat_status: ["waiting", "active", "closed"],
       clip_category: ["gameplay", "funny", "music", "other"],

@@ -24,6 +24,7 @@ interface Community {
   member_count: number;
   post_count: number;
   icon_url?: string | null;
+  rules?: any;
 }
 
 interface Post {
@@ -431,6 +432,34 @@ const CommunityPosts = () => {
                 <Button asChild className="w-full" size="sm">
                   <Link to={`/c/${slug}/create`}>Gönderi Oluştur</Link>
                 </Button>
+              </CardContent>
+            </Card>
+
+            {/* Community Rules */}
+            <Card>
+              <CardContent className="p-4">
+                <h3 className="font-bold text-sm mb-3">📋 Topluluk Kuralları</h3>
+                {community.rules && Array.isArray(community.rules) && community.rules.length > 0 ? (
+                  <ol className="space-y-2 text-sm">
+                    {(community.rules as any[]).map((rule: any, idx: number) => (
+                      <li key={idx} className="flex gap-2">
+                        <span className="font-bold text-primary">{idx + 1}.</span>
+                        <div>
+                          <div className="font-medium">{rule.title || rule}</div>
+                          {rule.description && (
+                            <div className="text-xs text-muted-foreground mt-1">
+                              {rule.description}
+                            </div>
+                          )}
+                        </div>
+                      </li>
+                    ))}
+                  </ol>
+                ) : (
+                  <p className="text-xs text-muted-foreground">
+                    Bu topluluk için henüz kural belirlenmemiş.
+                  </p>
+                )}
               </CardContent>
             </Card>
 

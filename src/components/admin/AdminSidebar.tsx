@@ -69,16 +69,24 @@ export function AdminSidebar({ userRole, onTabChange, activeTab }: AdminSidebarP
   const { state } = useSidebar();
   const isCollapsed = state === "collapsed";
 
+  // Forum moderators only have access to forum and moderators tabs
+  const forumModItems = [
+    { id: "forum", title: "Forum", icon: MessageSquare },
+    { id: "moderators", title: "Moderatörler", icon: Shield },
+  ];
+
+  const displayItems = userRole === "forum_mod" ? forumModItems : menuItems;
+
   return (
     <Sidebar className={isCollapsed ? "w-16" : "w-64"} collapsible="icon">
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel className="text-base font-semibold">
-            {!isCollapsed && "Yönetim Paneli"}
+            {!isCollapsed && (userRole === "forum_mod" ? "Forum Yönetimi" : "Yönetim Paneli")}
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {menuItems.map((item) => (
+              {displayItems.map((item) => (
                 <SidebarMenuItem key={item.id}>
                   <SidebarMenuButton
                     onClick={() => onTabChange(item.id)}

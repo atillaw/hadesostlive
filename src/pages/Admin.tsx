@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { LogOut, Menu } from "lucide-react";
@@ -85,7 +86,9 @@ const Admin = () => {
 
 
 
-      if (!roles) {
+      const allowedRoles = ['admin', 'super_admin', 'forum_mod'];
+      
+      if (!roles || !allowedRoles.includes(roles.role)) {
 
         toast({
 
@@ -176,6 +179,29 @@ const Admin = () => {
 
 
   const renderContent = () => {
+    // Forum moderators can only access forum-related tabs
+    if (userRole === "forum_mod") {
+      switch (activeTab) {
+        case "forum":
+          return <AdminCommunities />;
+        case "moderators":
+          return <AdminCommunityModerators />;
+        default:
+          return (
+            <Card className="p-12 text-center">
+              <h2 className="text-2xl font-bold mb-4">Forum Yönetim Paneli</h2>
+              <p className="text-muted-foreground mb-6">
+                Forum moderatör olarak sadece forum ile ilgili bölümlere erişebilirsiniz.
+              </p>
+              <Button onClick={() => setActiveTab("forum")} variant="default">
+                Forum Yönetimine Git
+              </Button>
+            </Card>
+          );
+      }
+    }
+
+    // Full access for admins and super_admins
     switch (activeTab) {
       case "analytics":
         return <AdminAnalytics />;
