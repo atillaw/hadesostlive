@@ -172,6 +172,18 @@ const CommunityFeed = () => {
 
             <Card>
               <CardContent className="p-4">
+                <h2 className="font-bold mb-2">📋 Forum Kuralları</h2>
+                <p className="text-sm text-muted-foreground mb-3">
+                  Topluluk kurallarımıza göz atın ve saygılı bir ortam oluşturmamıza yardımcı olun.
+                </p>
+                <Link to="/forum-kurallari" className="text-sm text-primary hover:underline font-medium">
+                  Kuralları Görüntüle →
+                </Link>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardContent className="p-4">
                 <div className="text-xs text-muted-foreground mb-2">Reklam</div>
                 <AdSenseUnit />
               </CardContent>
