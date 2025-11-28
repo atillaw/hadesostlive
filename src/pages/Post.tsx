@@ -14,6 +14,10 @@ import { formatDistanceToNow } from "date-fns";
 import { tr } from "date-fns/locale";
 import { toast } from "@/hooks/use-toast";
 import PostModerationTools from "@/components/PostModerationTools";
+import Navigation from "@/components/Navigation";
+import Footer from "@/components/Footer";
+import CustomAdUnit from "@/components/CustomAdUnit";
+import AdSenseUnit from "@/components/AdSenseUnit";
 
 interface Post {
   id: string;
@@ -29,6 +33,7 @@ interface Post {
   created_at: string;
   tags: string[];
   media_urls: string[] | null;
+  community_id: string | null;
 }
 
 interface Comment {
@@ -43,9 +48,19 @@ interface Comment {
   replies?: Comment[];
 }
 
+interface Community {
+  id: string;
+  name: string;
+  slug: string;
+  description: string | null;
+  member_count: number;
+  post_count: number;
+}
+
 const Post = () => {
   const { slug, postId } = useParams<{ slug: string; postId: string }>();
   const [post, setPost] = useState<Post | null>(null);
+  const [community, setCommunity] = useState<Community | null>(null);
   const [comments, setComments] = useState<Comment[]>([]);
   const [loading, setLoading] = useState(true);
   const [newComment, setNewComment] = useState("");
@@ -160,6 +175,17 @@ const Post = () => {
 
       if (error) throw error;
       setPost(data);
+
+      // Load community info
+      if (data.community_id) {
+        const { data: commData } = await supabase
+          .from("communities")
+          .select("*")
+          .eq("id", data.community_id)
+          .single();
+        
+        if (commData) setCommunity(commData);
+      }
     } catch (error) {
       console.error("Gönderi yüklenemedi:", error);
     } finally {
@@ -421,207 +447,257 @@ const Post = () => {
 
   if (loading) {
     return (
-      <div className="container mx-auto px-4 py-8 max-w-4xl">
-        <Skeleton className="h-64 w-full mb-8" />
-        <div className="space-y-4">
-          {[1, 2, 3].map((i) => (
-            <Skeleton key={i} className="h-32 w-full" />
-          ))}
+      <div className="min-h-screen bg-background">
+        <Navigation />
+        <div className="container mx-auto px-4 py-6 max-w-7xl">
+          <Skeleton className="h-96 w-full mb-8" />
         </div>
+        <Footer />
       </div>
     );
   }
 
   if (!post) {
     return (
-      <div className="container mx-auto px-4 py-8 max-w-4xl">
-        <Card className="p-12 text-center">
-          <p className="text-muted-foreground">Gönderi bulunamadı</p>
-          <Button asChild className="mt-4">
-            <Link to="/forum">Foruma Dön</Link>
-          </Button>
-        </Card>
+      <div className="min-h-screen bg-background">
+        <Navigation />
+        <div className="container mx-auto px-4 py-6 max-w-7xl">
+          <Card className="p-12 text-center">
+            <p className="text-muted-foreground">Gönderi bulunamadı</p>
+            <Button asChild className="mt-4">
+              <Link to="/forum">Foruma Dön</Link>
+            </Button>
+          </Card>
+        </div>
+        <Footer />
       </div>
     );
   }
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 py-8 max-w-4xl">
-        <div className="flex items-center gap-4 mb-6">
-          <Button variant="ghost" size="icon" asChild>
-            <Link to={`/c/${slug}`}>
-              <ArrowLeft className="h-4 w-4" />
-            </Link>
-          </Button>
-        </div>
-
-        <Card className="mb-6">
-          <div className="flex gap-4 p-6">
-            <div className="flex flex-col items-center gap-2">
-              <Button
-                variant="ghost"
-                size="icon"
-                className={userVote === 1 ? "text-orange-500" : ""}
-                onClick={() => handleVote(1)}
-              >
-                <ArrowUp className="h-5 w-5" />
-              </Button>
-              <span className="font-bold text-lg">
-                {post.upvotes - post.downvotes}
-              </span>
-              <Button
-                variant="ghost"
-                size="icon"
-                className={userVote === -1 ? "text-blue-500" : ""}
-                onClick={() => handleVote(-1)}
-              >
-                <ArrowDown className="h-5 w-5" />
+      <Navigation />
+      <div className="container mx-auto px-4 py-6 max-w-7xl">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Main Content */}
+          <div className="lg:col-span-2">
+            <div className="mb-4">
+              <Button variant="ghost" size="sm" asChild>
+                <Link to={`/c/${slug}`}>
+                  <ArrowLeft className="h-4 w-4 mr-2" />
+                  Geri
+                </Link>
               </Button>
             </div>
 
-            <div className="flex-1">
-              <div className="flex items-start gap-2 mb-3">
-                {post.is_pinned && <Pin className="h-5 w-5 text-primary mt-1" />}
-                {post.is_locked && <Lock className="h-5 w-5 text-muted-foreground mt-1" />}
-                <h1 className="text-3xl font-bold">{post.title}</h1>
-              </div>
+            <div className="bg-card rounded-lg border mb-4">
+              <div className="flex">
+                {/* Vote Section */}
+                <div className="flex flex-col items-center gap-2 bg-muted/30 p-4 rounded-l-lg">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className={`h-8 w-8 ${userVote === 1 ? "text-orange-500" : ""}`}
+                    onClick={() => handleVote(1)}
+                  >
+                    <ArrowUp className="h-5 w-5" />
+                  </Button>
+                  <span className="font-bold text-lg">
+                    {post.upvotes - post.downvotes}
+                  </span>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className={`h-8 w-8 ${userVote === -1 ? "text-blue-500" : ""}`}
+                    onClick={() => handleVote(-1)}
+                  >
+                    <ArrowDown className="h-5 w-5" />
+                  </Button>
+                </div>
 
-              <div className="flex items-center gap-3 text-sm text-muted-foreground mb-4">
-                <Link 
-                  to={`/u/${post.author_username}`}
-                  className="hover:text-primary hover:underline"
+                {/* Content Section */}
+                <div className="flex-1 p-6">
+                  <div className="flex items-start gap-2 mb-3">
+                    {post.is_pinned && <Pin className="h-5 w-5 text-primary mt-1" />}
+                    {post.is_locked && <Lock className="h-5 w-5 text-muted-foreground mt-1" />}
+                    <h1 className="text-2xl font-bold">{post.title}</h1>
+                  </div>
+
+                  <div className="flex items-center gap-3 text-sm text-muted-foreground mb-4">
+                    <Link 
+                      to={`/u/${post.author_username}`}
+                      className="hover:text-primary hover:underline font-medium"
+                    >
+                      {post.is_anonymous ? "Anonim" : post.author_username}
+                    </Link>
+                    <span>•</span>
+                    <span>
+                      {formatDistanceToNow(new Date(post.created_at), {
+                        addSuffix: true,
+                        locale: tr,
+                      })}
+                    </span>
+                  </div>
+
+                  <div className="prose dark:prose-invert max-w-none mb-4">
+                    <p className="whitespace-pre-wrap">{post.content}</p>
+                  </div>
+
+                  {post.media_urls && post.media_urls.length > 0 && (
+                    <div className="grid grid-cols-2 gap-2 mb-4">
+                      {post.media_urls.map((url, idx) => {
+                        const isVideo = url.includes(".mp4") || url.includes(".webm") || url.includes(".mov");
+                        return (
+                          <div key={idx} className="relative rounded-lg overflow-hidden">
+                            {isVideo ? (
+                              <video
+                                src={url}
+                                controls
+                                className="w-full h-auto"
+                              />
+                            ) : (
+                              <img
+                                src={url}
+                                alt={`Media ${idx + 1}`}
+                                className="w-full h-auto object-cover"
+                              />
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+
+                  {post.tags && post.tags.length > 0 && (
+                    <div className="flex gap-2 flex-wrap mb-4">
+                      {post.tags.map((tag, idx) => (
+                        <Badge key={idx} variant="secondary">
+                          {tag}
+                        </Badge>
+                      ))}
+                    </div>
+                  )}
+
+                  <div className="flex items-center gap-2 text-sm">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={toggleSave}
+                    >
+                      <Bookmark className={`h-4 w-4 mr-2 ${isSaved ? "fill-primary text-primary" : ""}`} />
+                      {isSaved ? "Kaydedildi" : "Kaydet"}
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={handleShare}
+                    >
+                      <Share2 className="h-4 w-4 mr-2" />
+                      Paylaş
+                    </Button>
+                    <PostModerationTools
+                      postId={post.id}
+                      isPinned={post.is_pinned}
+                      isLocked={post.is_locked}
+                      authorUsername={post.author_username}
+                      onUpdate={loadPost}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {!post.is_locked && (
+              <Card className="p-6 mb-6">
+                <h3 className="font-semibold mb-4">Yorum Yap</h3>
+                <Textarea
+                  value={newComment}
+                  onChange={(e) => setNewComment(e.target.value)}
+                  placeholder="Düşüncelerini paylaş..."
+                  rows={4}
+                  className="mb-4"
+                />
+                <Button
+                  onClick={handleSubmitComment}
+                  disabled={submitting || !newComment.trim()}
                 >
-                  {post.is_anonymous ? "Anonim" : post.author_username}
-                </Link>
-                <span>•</span>
-                <span>
-                  {formatDistanceToNow(new Date(post.created_at), {
-                    addSuffix: true,
-                    locale: tr,
-                  })}
-                </span>
-                <span>•</span>
-                <div className="flex items-center gap-1">
-                  <MessageSquare className="h-4 w-4" />
-                  <span>{post.comment_count} yorum</span>
-                </div>
-                <div className="ml-auto flex items-center gap-2">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={toggleSave}
-                  >
-                    <Bookmark className={`h-4 w-4 mr-2 ${isSaved ? "fill-primary text-primary" : ""}`} />
-                    {isSaved ? "Kaydedildi" : "Kaydet"}
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={handleShare}
-                  >
-                    <Share2 className="h-4 w-4 mr-2" />
-                    Paylaş
-                  </Button>
-                  <PostModerationTools
-                    postId={post.id}
-                    isPinned={post.is_pinned}
-                    isLocked={post.is_locked}
-                    authorUsername={post.author_username}
-                    onUpdate={loadPost}
-                  />
-                </div>
-              </div>
+                  {submitting ? "Gönderiliyor..." : "Yorum Yap"}
+                </Button>
+              </Card>
+            )}
 
-              <div className="prose dark:prose-invert max-w-none mb-4">
-                <p className="whitespace-pre-wrap">{post.content}</p>
-              </div>
+            <div className="space-y-4">
+              <h3 className="font-semibold text-lg">
+                {comments.length} Yorum
+              </h3>
+              {comments.map((comment) => (
+                <CommentItem
+                  key={comment.id}
+                  comment={comment}
+                  userCommentVotes={userCommentVotes}
+                  handleCommentVote={handleCommentVote}
+                  replyingTo={replyingTo}
+                  setReplyingTo={setReplyingTo}
+                  replyContent={replyContent}
+                  setReplyContent={setReplyContent}
+                  handleReplySubmit={handleReplySubmit}
+                  depth={0}
+                />
+              ))}
 
-              {post.media_urls && post.media_urls.length > 0 && (
-                <div className="grid grid-cols-2 gap-2 mb-4">
-                  {post.media_urls.map((url, idx) => {
-                    const isVideo = url.includes(".mp4") || url.includes(".webm") || url.includes(".mov");
-                    return (
-                      <div key={idx} className="relative rounded-lg overflow-hidden">
-                        {isVideo ? (
-                          <video
-                            src={url}
-                            controls
-                            className="w-full h-auto"
-                          />
-                        ) : (
-                          <img
-                            src={url}
-                            alt={`Media ${idx + 1}`}
-                            className="w-full h-auto object-cover"
-                          />
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
-
-              {post.tags && post.tags.length > 0 && (
-                <div className="flex gap-2 flex-wrap">
-                  {post.tags.map((tag, idx) => (
-                    <Badge key={idx} variant="secondary">
-                      {tag}
-                    </Badge>
-                  ))}
-                </div>
+              {comments.length === 0 && (
+                <Card className="p-8 text-center">
+                  <p className="text-muted-foreground">
+                    Henüz yorum yok. İlk yorumu sen yap!
+                  </p>
+                </Card>
               )}
             </div>
           </div>
-        </Card>
 
-        {!post.is_locked && (
-          <Card className="p-6 mb-6">
-            <h3 className="font-semibold mb-4">Yorum Yap</h3>
-            <Textarea
-              value={newComment}
-              onChange={(e) => setNewComment(e.target.value)}
-              placeholder="Düşüncelerini paylaş..."
-              rows={4}
-              className="mb-4"
-            />
-            <Button
-              onClick={handleSubmitComment}
-              disabled={submitting || !newComment.trim()}
-            >
-              {submitting ? "Gönderiliyor..." : "Yorum Yap"}
-            </Button>
-          </Card>
-        )}
+          {/* Sidebar */}
+          <div className="space-y-4">
+            {community && (
+              <Card>
+                <CardContent className="p-4">
+                  <h2 className="font-bold text-lg mb-3">{community.name}</h2>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    {community.description}
+                  </p>
+                  <div className="flex gap-4 text-sm mb-4">
+                    <div>
+                      <div className="font-bold">{community.member_count}</div>
+                      <div className="text-muted-foreground text-xs">Üye</div>
+                    </div>
+                    <div>
+                      <div className="font-bold">{community.post_count}</div>
+                      <div className="text-muted-foreground text-xs">Gönderi</div>
+                    </div>
+                  </div>
+                  <Button asChild className="w-full" size="sm">
+                    <Link to={`/c/${slug}/create`}>Gönderi Oluştur</Link>
+                  </Button>
+                </CardContent>
+              </Card>
+            )}
 
-        <div className="space-y-4">
-          <h3 className="font-semibold text-lg">
-            {comments.length} Yorum
-          </h3>
-          {comments.map((comment) => (
-            <CommentItem
-              key={comment.id}
-              comment={comment}
-              userCommentVotes={userCommentVotes}
-              handleCommentVote={handleCommentVote}
-              replyingTo={replyingTo}
-              setReplyingTo={setReplyingTo}
-              replyContent={replyContent}
-              setReplyContent={setReplyContent}
-              handleReplySubmit={handleReplySubmit}
-              depth={0}
-            />
-          ))}
-
-          {comments.length === 0 && (
-            <Card className="p-8 text-center">
-              <p className="text-muted-foreground">
-                Henüz yorum yok. İlk yorumu sen yap!
-              </p>
+            <Card>
+              <CardContent className="p-4">
+                <div className="text-xs text-muted-foreground mb-2">Sponsorlu</div>
+                <CustomAdUnit />
+              </CardContent>
             </Card>
-          )}
+
+            <Card>
+              <CardContent className="p-4">
+                <div className="text-xs text-muted-foreground mb-2">Reklam</div>
+                <AdSenseUnit />
+              </CardContent>
+            </Card>
+          </div>
         </div>
       </div>
+      <Footer />
     </div>
   );
 };
