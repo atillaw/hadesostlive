@@ -7,7 +7,8 @@ const ForumRules = () => {
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
-      <div className="container mx-auto px-4 py-6 max-w-4xl">
+      <div className="page-content">
+        <div className="container mx-auto px-4 py-6 max-w-4xl">
         <div className="mb-8">
           <h1 className="text-4xl font-bold mb-4 flex items-center gap-3">
             <Shield className="h-10 w-10 text-primary" />
@@ -206,6 +207,7 @@ const ForumRules = () => {
             </CardContent>
           </Card>
         </div>
+      </div>
       </div>
       <Footer />
     </div>

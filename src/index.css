@@ -79,6 +79,15 @@ All colors MUST be HSL.
   html {
     scroll-behavior: smooth;
   }
+
+  /* Fixed navigation spacing - tüm sayfalarda header altında içerik görünsün */
+  .page-content {
+    padding-top: 5rem; /* 80px - navigation yüksekliği için */
+  }
+
+  .page-content-minimal {
+    padding-top: 4.5rem; /* 72px - daha az padding gerektiğinde */
+  }
 }
 
 @layer utilities {

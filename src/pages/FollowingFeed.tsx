@@ -228,7 +228,8 @@ export default function FollowingFeed() {
   return (
     <div className="min-h-screen flex flex-col">
       <Navigation />
-      <main className="flex-1 container mx-auto px-4 py-8">
+      <div className="page-content">
+        <main className="flex-1 container mx-auto px-4 py-8">
         <div className="flex items-center gap-3 mb-6">
           <Users className="h-8 w-8 text-primary" />
           <h1 className="text-3xl font-bold">Takip Ettiğim Gönderiler</h1>
@@ -339,6 +340,7 @@ export default function FollowingFeed() {
           </div>
         )}
       </main>
+      </div>
       <Footer />
     </div>
   );

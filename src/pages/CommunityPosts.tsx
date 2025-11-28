@@ -235,8 +235,9 @@ const CommunityPosts = () => {
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
-      <div className="container mx-auto px-4 py-6 max-w-7xl">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="page-content">
+        <div className="container mx-auto px-4 py-6 max-w-7xl">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-4">
             {/* Sort Tabs */}
@@ -480,6 +481,7 @@ const CommunityPosts = () => {
             </Card>
           </div>
         </div>
+      </div>
       </div>
       <Footer />
     </div>

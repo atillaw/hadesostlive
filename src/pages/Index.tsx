@@ -125,7 +125,8 @@ const Index = () => {
       </ErrorBoundary>
       <HolidayBanner />
       <Navigation onSnowToggle={() => setSnowEnabled(!snowEnabled)} snowEnabled={snowEnabled} />
-      <HeroSection />
+      <div className="page-content">
+        <HeroSection />
 
       {/* Trend Posts Section */}
       <ErrorBoundary>
@@ -275,8 +276,9 @@ const Index = () => {
         </section>
       </ErrorBoundary>
 
-      <SupportContentSection />
-      <Footer />
+        <SupportContentSection />
+        <Footer />
+      </div>
       <ErrorBoundary fallback={null}>
         <KickLiveListener />
       </ErrorBoundary>
