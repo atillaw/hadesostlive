@@ -282,7 +282,7 @@ const Admin = () => {
 
   return (
     <SidebarProvider>
-      <div className="min-h-screen flex w-full bg-background">
+      <div className="min-h-screen flex w-full bg-gradient-to-br from-background via-muted/5 to-background">
         <AdminSidebar 
           userRole={userRole} 
           onTabChange={setActiveTab}
@@ -290,19 +290,26 @@ const Admin = () => {
         />
         
         <div className="flex-1 flex flex-col">
-          <header className="border-b border-border bg-card/50 backdrop-blur sticky top-0 z-50">
-            <div className="px-4 py-4 flex justify-between items-center">
+          <header className="border-b border-border/40 bg-card/80 backdrop-blur-md sticky top-0 z-50 shadow-sm">
+            <div className="px-6 py-4 flex justify-between items-center">
               <div className="flex items-center gap-4">
-                <SidebarTrigger className="h-10 w-10" />
+                <SidebarTrigger className="h-9 w-9 hover:bg-primary/10 transition-colors" />
                 <div>
-                  <h1 className="text-2xl font-bold glow-text">Admin Paneli</h1>
-                  <p className="text-sm text-muted-foreground">Hoş geldin, {username}</p>
+                  <h1 className="text-2xl font-bold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
+                    {userRole === "forum_mod" ? "Forum Yönetimi" : "Admin Paneli"}
+                  </h1>
+                  <p className="text-sm text-muted-foreground">Hoş geldin, <span className="font-medium">{username}</span></p>
                 </div>
               </div>
               <div className="flex items-center gap-3">
                 <MaintenanceToggle />
-                <Button onClick={handleLogout} variant="outline" className="rounded-full">
-                  <LogOut className="mr-2 h-4 w-4" />
+                <Button 
+                  onClick={handleLogout} 
+                  variant="outline" 
+                  size="sm"
+                  className="gap-2 hover:bg-destructive/10 hover:text-destructive hover:border-destructive/50 transition-colors"
+                >
+                  <LogOut className="h-4 w-4" />
                   Çıkış Yap
                 </Button>
               </div>
@@ -310,7 +317,9 @@ const Admin = () => {
           </header>
 
           <main className="flex-1 p-6 overflow-auto">
-            {renderContent()}
+            <div className="max-w-7xl mx-auto">
+              {renderContent()}
+            </div>
           </main>
         </div>
       </div>

@@ -20,9 +20,9 @@ import {
   Tag,
   Shield,
   MessageSquare,
-  Flag
+  Flag,
+  ChevronDown
 } from "lucide-react";
-import { NavLink } from "react-router-dom";
 import {
   Sidebar,
   SidebarContent,
@@ -34,6 +34,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
 interface AdminSidebarProps {
   userRole: string | null;
@@ -41,89 +42,126 @@ interface AdminSidebarProps {
   activeTab: string;
 }
 
-const menuItems = [
-  { id: "analytics", title: "Analytics", icon: BarChart3 },
-  { id: "security-logs", title: "Güvenlik Logları", icon: Shield },
-  { id: "clock", title: "Saat", icon: Clock },
-  { id: "countdown", title: "Geri Sayım", icon: Timer },
-  { id: "holiday-banners", title: "Bayram Banner'ları", icon: Heart },
-  { id: "subscribers", title: "Aboneler", icon: Mail },
-  { id: "vods", title: "VODs", icon: Video },
-  { id: "vod-tags", title: "VOD Etiketleri", icon: Tag },
-  { id: "kick-subs", title: "Kick Subs", icon: TrendingUp },
-  { id: "support", title: "Destek", icon: MessageCircle },
-  { id: "adsense", title: "AdSense", icon: Megaphone },
-  { id: "ad-placements", title: "Reklam Yerleri", icon: MapPin },
-  { id: "ad-performance", title: "Reklam Performansı", icon: TrendingUp },
-  { id: "memes", title: "Memeler", icon: ImageIcon },
-  { id: "clips", title: "Klipler", icon: Film },
-  { id: "community-voting", title: "Topluluk Önerileri", icon: Vote },
-  { id: "prediction-games", title: "Tahmin Oyunları", icon: Target },
-  { id: "mini-games", title: "Mini Oyunlar", icon: Gamepad2 },
-  { id: "sponsors", title: "Sponsorlar", icon: Award },
-  { id: "forum", title: "Forum", icon: MessageSquare },
-  { id: "moderators", title: "Moderatörler", icon: Shield },
-  { id: "reports", title: "Raporlar", icon: Flag },
-  { id: "banners", title: "Banner Yönetimi", icon: Users },
-  { id: "logs", title: "Loglar", icon: ScrollText },
-];
+const menuCategories = {
+  analytics: {
+    label: "📊 Analiz & İstatistik",
+    items: [
+      { id: "analytics", title: "Genel Analytics", icon: BarChart3 },
+      { id: "security-logs", title: "Güvenlik Logları", icon: Shield },
+      { id: "logs", title: "Admin Logları", icon: ScrollText },
+      { id: "ad-performance", title: "Reklam Performansı", icon: TrendingUp },
+    ]
+  },
+  content: {
+    label: "🎬 İçerik Yönetimi",
+    items: [
+      { id: "vods", title: "VOD'lar", icon: Video },
+      { id: "vod-tags", title: "VOD Etiketleri", icon: Tag },
+      { id: "memes", title: "Memeler", icon: ImageIcon },
+      { id: "clips", title: "Klipler", icon: Film },
+    ]
+  },
+  advertising: {
+    label: "💰 Reklam Yönetimi",
+    items: [
+      { id: "adsense", title: "AdSense", icon: Megaphone },
+      { id: "ad-placements", title: "Reklam Yerleri", icon: MapPin },
+      { id: "sponsors", title: "Sponsorlar", icon: Award },
+    ]
+  },
+  community: {
+    label: "👥 Topluluk & Forum",
+    items: [
+      { id: "forum", title: "Forum Yönetimi", icon: MessageSquare },
+      { id: "moderators", title: "Moderatörler", icon: Shield },
+      { id: "reports", title: "Raporlar", icon: Flag },
+      { id: "community-voting", title: "Topluluk Önerileri", icon: Vote },
+      { id: "banners", title: "Community Banner'lar", icon: Users },
+    ]
+  },
+  engagement: {
+    label: "🎮 Etkileşim & Oyunlar",
+    items: [
+      { id: "prediction-games", title: "Tahmin Oyunları", icon: Target },
+      { id: "mini-games", title: "Mini Oyunlar", icon: Gamepad2 },
+    ]
+  },
+  settings: {
+    label: "⚙️ Site Ayarları",
+    items: [
+      { id: "clock", title: "Saat Ayarları", icon: Clock },
+      { id: "countdown", title: "Geri Sayım", icon: Timer },
+      { id: "holiday-banners", title: "Bayram Banner'ları", icon: Heart },
+    ]
+  },
+  users: {
+    label: "📧 Kullanıcılar & Destek",
+    items: [
+      { id: "subscribers", title: "Email Aboneleri", icon: Mail },
+      { id: "kick-subs", title: "Kick Subs", icon: TrendingUp },
+      { id: "support", title: "Destek Mesajları", icon: MessageCircle },
+    ]
+  }
+};
+
+const forumModCategories = {
+  community: {
+    label: "👥 Forum Yönetimi",
+    items: [
+      { id: "forum", title: "Forum", icon: MessageSquare },
+      { id: "moderators", title: "Moderatörler", icon: Shield },
+      { id: "reports", title: "Raporlar", icon: Flag },
+    ]
+  }
+};
 
 export function AdminSidebar({ userRole, onTabChange, activeTab }: AdminSidebarProps) {
   const { state } = useSidebar();
   const isCollapsed = state === "collapsed";
 
-  // Forum moderators only have access to forum and moderators tabs
-  const forumModItems = [
-    { id: "forum", title: "Forum", icon: MessageSquare },
-    { id: "moderators", title: "Moderatörler", icon: Shield },
-    { id: "reports", title: "Raporlar", icon: Flag },
-  ];
-
-  const displayItems = userRole === "forum_mod" ? forumModItems : menuItems;
+  const categories = userRole === "forum_mod" ? forumModCategories : menuCategories;
 
   return (
-    <Sidebar className={isCollapsed ? "w-16" : "w-64"} collapsible="icon">
-      <SidebarContent>
-        <SidebarGroup>
-          <SidebarGroupLabel className="text-base font-semibold">
-            {!isCollapsed && (userRole === "forum_mod" ? "Forum Yönetimi" : "Yönetim Paneli")}
-          </SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {displayItems.map((item) => (
-                <SidebarMenuItem key={item.id}>
-                  <SidebarMenuButton
-                    onClick={() => onTabChange(item.id)}
-                    className={
-                      activeTab === item.id
-                        ? "bg-primary/10 text-primary font-medium"
-                        : "hover:bg-muted/50"
-                    }
-                  >
-                    <item.icon className="h-4 w-4" />
-                    {!isCollapsed && <span>{item.title}</span>}
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-              
-              {userRole === "admin" && (
-                <SidebarMenuItem>
-                  <SidebarMenuButton
-                    onClick={() => onTabChange("users")}
-                    className={
-                      activeTab === "users"
-                        ? "bg-primary/10 text-primary font-medium"
-                        : "hover:bg-muted/50"
-                    }
-                  >
-                    <Users className="h-4 w-4" />
-                    {!isCollapsed && <span>Kullanıcılar</span>}
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              )}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
+    <Sidebar className={isCollapsed ? "w-16" : "w-72"} collapsible="icon">
+      <SidebarContent className="gap-2">
+        {Object.entries(categories).map(([categoryKey, category]) => (
+          <Collapsible key={categoryKey} defaultOpen className="group/collapsible">
+            <SidebarGroup>
+              <CollapsibleTrigger asChild>
+                <SidebarGroupLabel className="text-sm font-semibold cursor-pointer hover:bg-muted/50 rounded-md px-2 py-2 transition-colors flex items-center justify-between">
+                  {!isCollapsed && (
+                    <>
+                      <span>{category.label}</span>
+                      <ChevronDown className="h-4 w-4 transition-transform group-data-[state=open]/collapsible:rotate-180" />
+                    </>
+                  )}
+                </SidebarGroupLabel>
+              </CollapsibleTrigger>
+              <CollapsibleContent>
+                <SidebarGroupContent>
+                  <SidebarMenu>
+                    {category.items.map((item) => (
+                      <SidebarMenuItem key={item.id}>
+                        <SidebarMenuButton
+                          onClick={() => onTabChange(item.id)}
+                          className={
+                            activeTab === item.id
+                              ? "bg-primary/10 text-primary font-medium"
+                              : "hover:bg-muted/50"
+                          }
+                          tooltip={isCollapsed ? item.title : undefined}
+                        >
+                          <item.icon className="h-4 w-4" />
+                          {!isCollapsed && <span>{item.title}</span>}
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
+                    ))}
+                  </SidebarMenu>
+                </SidebarGroupContent>
+              </CollapsibleContent>
+            </SidebarGroup>
+          </Collapsible>
+        ))}
       </SidebarContent>
     </Sidebar>
   );
