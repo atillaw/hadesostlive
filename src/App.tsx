@@ -30,6 +30,8 @@ import CommunityPosts from "./pages/CommunityPosts";
 import CreatePost from "./pages/CreatePost";
 import Post from "./pages/Post";
 import UserProfile from "./pages/UserProfile";
+import Messages from "./pages/Messages";
+import FollowingFeed from "./pages/FollowingFeed";
 
 
 const AppContent = () => {
@@ -61,6 +63,8 @@ const AppContent = () => {
           <Route path="/c/:slug/new" element={<CreatePost />} />
           <Route path="/c/:slug/post/:postId" element={<Post />} />
           <Route path="/u/:username" element={<UserProfile />} />
+          <Route path="/mesajlar" element={<Messages />} />
+          <Route path="/takip-akisi" element={<FollowingFeed />} />
       <Route path="*" element={<NotFound />} />
     </Routes>
   );
