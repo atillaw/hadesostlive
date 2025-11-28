@@ -5,6 +5,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { usePageTracking } from "@/hooks/usePageTracking";
 import ErrorBoundary from "@/components/ErrorBoundary";
+import { MaintenanceCheck } from "@/components/MaintenanceCheck";
+import Maintenance from "./pages/Maintenance";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Admin from "./pages/Admin";
@@ -41,6 +43,7 @@ const AppContent = () => {
   
   return (
     <Routes>
+      <Route path="/maintenance" element={<Maintenance />} />
       <Route path="/" element={<Index />} />
       <Route path="/auth" element={<Auth />} />
       <Route path="/admin" element={<Admin />} />
