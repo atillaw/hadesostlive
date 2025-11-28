@@ -25,7 +25,8 @@ const Community = () => {
         <meta name="twitter:description" content="AI karakterler, klip oluşturucu, mini oyunlar ve topluluk oylamaları." />
       </Helmet>
       <Navigation />
-      <main className="container mx-auto px-4 py-24">
+      <div className="page-content">
+        <main className="container mx-auto px-4 py-8">
         <div className="max-w-7xl mx-auto space-y-8 animate-fade-in">
           {/* Header */}
           <div className="text-center space-y-4">
@@ -128,7 +129,8 @@ const Community = () => {
             ]}
           />
         </div>
-      </main>
+        </main>
+      </div>
       <Footer />
     </div>
   );
