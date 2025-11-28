@@ -154,12 +154,62 @@ const CommunityFeed = () => {
 
           {/* Sidebar */}
           <div className="space-y-4">
+            {/* İstatistikler */}
             <Card>
               <CardContent className="p-4">
-                <h2 className="font-bold mb-2">Forum Hakkında</h2>
-                <p className="text-sm text-muted-foreground mb-4">
-                  Topluluklara katılın, gönderi paylaşın ve diğer üyelerle etkileşime geçin.
-                </p>
+                <h2 className="font-bold mb-4 flex items-center gap-2">
+                  📊 Topluluk İstatistikleri
+                </h2>
+                <div className="space-y-3">
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-muted-foreground">Toplam Üye</span>
+                    <span className="font-bold text-primary">
+                      {communities.reduce((sum, c) => sum + c.member_count, 0).toLocaleString('tr-TR')}
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-muted-foreground">Aktif Topluluk</span>
+                    <span className="font-bold text-primary">{communities.length}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-muted-foreground">Toplam Gönderi</span>
+                    <span className="font-bold text-primary">
+                      {communities.reduce((sum, c) => sum + c.post_count, 0).toLocaleString('tr-TR')}
+                    </span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Popüler Topluluklar */}
+            <Card>
+              <CardContent className="p-4">
+                <h2 className="font-bold mb-4 flex items-center gap-2">
+                  🔥 Popüler Topluluklar
+                </h2>
+                <div className="space-y-2">
+                  {communities
+                    .sort((a, b) => b.member_count - a.member_count)
+                    .slice(0, 5)
+                    .map((community, index) => (
+                      <Link
+                        key={community.id}
+                        to={`/c/${community.slug}`}
+                        className="flex items-center gap-3 p-2 rounded-lg hover:bg-muted/50 transition-colors"
+                      >
+                        <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-lg">
+                          {community.icon_url || "📁"}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="font-medium text-sm truncate">{community.name}</div>
+                          <div className="text-xs text-muted-foreground">
+                            {community.member_count.toLocaleString('tr-TR')} üye
+                          </div>
+                        </div>
+                        <div className="text-xs font-bold text-primary">#{index + 1}</div>
+                      </Link>
+                    ))}
+                </div>
               </CardContent>
             </Card>
 
