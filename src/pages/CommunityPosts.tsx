@@ -14,6 +14,7 @@ import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import { toast } from "sonner";
 import CustomAdUnit from "@/components/CustomAdUnit";
+import AdSenseUnit from "@/components/AdSenseUnit";
 import { CommunityMembership } from "@/components/CommunityMembership";
 
 interface Community {
