@@ -1,5 +1,7 @@
-import { Construction, Twitter, Instagram, Youtube, Twitch } from "lucide-react";
+import { Construction, Twitter, Instagram, Youtube, Twitch, ShieldCheck } from "lucide-react";
 import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 
 const Maintenance = () => {
   return (
@@ -56,6 +58,20 @@ const Maintenance = () => {
               <Twitch className="h-6 w-6" />
             </a>
           </div>
+        </div>
+
+        <div className="pt-4">
+          <Button
+            asChild
+            variant="outline"
+            size="sm"
+            className="gap-2 opacity-50 hover:opacity-100 transition-opacity"
+          >
+            <Link to="/admin">
+              <ShieldCheck className="h-4 w-4" />
+              Yönetici Girişi
+            </Link>
+          </Button>
         </div>
       </Card>
     </div>
