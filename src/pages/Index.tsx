@@ -16,9 +16,12 @@ import StreamMiniGames from "@/components/StreamMiniGames";
 import SupportContentSection from "@/components/SupportContentSection";
 import HolidayBanner from "@/components/HolidayBanner";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { TrendingUp, ArrowUp, MessageSquare, Clock } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { TrendingUp, ArrowUp, MessageSquare, Clock, Shield } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Link } from "react-router-dom";
+import CustomAdUnit from "@/components/CustomAdUnit";
+import AdSenseUnit from "@/components/AdSenseUnit";
 
 interface TrendingPost {
   id: string;
@@ -208,6 +211,70 @@ const Index = () => {
       <VODSection />
       <EmailSubscribeSection />
       <YouTubeSection />
+
+      {/* Forum Rules Section between Ads and Sponsors */}
+      <ErrorBoundary>
+        <section className="py-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Ad Section */}
+            <Card className="lg:col-span-1 bg-card/50 backdrop-blur">
+              <CardHeader>
+                <CardTitle className="text-sm text-muted-foreground">Reklam</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <AdSenseUnit />
+              </CardContent>
+            </Card>
+
+            {/* Forum Rules */}
+            <Card className="lg:col-span-1 bg-card/50 backdrop-blur border-primary/20">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Shield className="h-5 w-5 text-primary" />
+                  Forum Kuralları
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <p className="text-sm text-muted-foreground">
+                  Güvenli ve saygılı bir topluluk ortamı için kurallarımıza uyun
+                </p>
+                <ul className="space-y-2 text-sm">
+                  <li className="flex items-start gap-2">
+                    <span className="text-primary mt-0.5">•</span>
+                    <span>Saygılı olun ve kişisel saldırılardan kaçının</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-primary mt-0.5">•</span>
+                    <span>Spam ve gereksiz içerik paylaşmayın</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-primary mt-0.5">•</span>
+                    <span>Doğru toplulukta içerik paylaşın</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-primary mt-0.5">•</span>
+                    <span>Yasa dışı içerik yasaktır</span>
+                  </li>
+                </ul>
+                <Button asChild variant="outline" className="w-full mt-4">
+                  <Link to="/forum-kurallari">Tüm Kuralları Görüntüle</Link>
+                </Button>
+              </CardContent>
+            </Card>
+
+            {/* Sponsor Section */}
+            <Card className="lg:col-span-1 bg-card/50 backdrop-blur">
+              <CardHeader>
+                <CardTitle className="text-sm text-muted-foreground">Sponsorlu</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <CustomAdUnit />
+              </CardContent>
+            </Card>
+          </div>
+        </section>
+      </ErrorBoundary>
+
       <SupportContentSection />
       <Footer />
       <ErrorBoundary fallback={null}>

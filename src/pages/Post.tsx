@@ -7,7 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { 
   ArrowUp, ArrowDown, MessageSquare, ArrowLeft, 
-  Pin, Lock, Share2, User, Clock, Bookmark
+  Pin, Lock, Share2, User, Clock, Bookmark, X
 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { formatDistanceToNow } from "date-fns";
@@ -18,6 +18,8 @@ import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import CustomAdUnit from "@/components/CustomAdUnit";
 import AdSenseUnit from "@/components/AdSenseUnit";
+import ReportDialog from "@/components/ReportDialog";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 
 interface Post {
   id: string;
@@ -70,6 +72,7 @@ const Post = () => {
   const [isSaved, setIsSaved] = useState(false);
   const [replyingTo, setReplyingTo] = useState<string | null>(null);
   const [replyContent, setReplyContent] = useState("");
+  const [selectedMediaIndex, setSelectedMediaIndex] = useState<number | null>(null);
 
   useEffect(() => {
     if (postId) {
@@ -548,7 +551,11 @@ const Post = () => {
                       {post.media_urls.map((url, idx) => {
                         const isVideo = url.includes(".mp4") || url.includes(".webm") || url.includes(".mov");
                         return (
-                          <div key={idx} className="relative rounded-lg overflow-hidden">
+                          <div 
+                            key={idx} 
+                            className="relative rounded-lg overflow-hidden cursor-pointer hover:opacity-90 transition-opacity"
+                            onClick={() => !isVideo && setSelectedMediaIndex(idx)}
+                          >
                             {isVideo ? (
                               <video
                                 src={url}
@@ -595,6 +602,7 @@ const Post = () => {
                       <Share2 className="h-4 w-4 mr-2" />
                       Paylaş
                     </Button>
+                    <ReportDialog targetId={post.id} targetType="post" />
                     <PostModerationTools
                       postId={post.id}
                       isPinned={post.is_pinned}
@@ -698,6 +706,42 @@ const Post = () => {
         </div>
       </div>
       <Footer />
+
+      {/* Media Gallery Dialog */}
+      {selectedMediaIndex !== null && post?.media_urls && (
+        <Dialog open={selectedMediaIndex !== null} onOpenChange={() => setSelectedMediaIndex(null)}>
+          <DialogContent className="max-w-5xl w-full p-0">
+            <div className="relative">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="absolute top-2 right-2 z-10 bg-background/80 hover:bg-background"
+                onClick={() => setSelectedMediaIndex(null)}
+              >
+                <X className="h-4 w-4" />
+              </Button>
+              <img
+                src={post.media_urls[selectedMediaIndex]}
+                alt={`Media ${selectedMediaIndex + 1}`}
+                className="w-full h-auto max-h-[85vh] object-contain"
+              />
+              {post.media_urls.length > 1 && (
+                <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-2">
+                  {post.media_urls.map((_, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => setSelectedMediaIndex(idx)}
+                      className={`w-2 h-2 rounded-full transition-all ${
+                        idx === selectedMediaIndex ? "bg-primary w-4" : "bg-muted-foreground"
+                      }`}
+                    />
+                  ))}
+                </div>
+              )}
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
     </div>
   );
 };
