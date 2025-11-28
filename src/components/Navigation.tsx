@@ -12,7 +12,17 @@ const Navigation = ({ onSnowToggle, snowEnabled }: { onSnowToggle?: () => void; 
   const [username, setUsername] = useState<string | null>(null);
   const [searchOpen, setSearchOpen] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   useEffect(() => {
     loadUser();
@@ -74,13 +84,13 @@ const Navigation = ({ onSnowToggle, snowEnabled }: { onSnowToggle?: () => void; 
   ];
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-lg border-b border-border/50 shadow-lg">
-      <div className="container mx-auto px-4 py-3">
+    <nav className={`fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-lg border-b border-border/50 shadow-lg transition-all duration-300 ${scrolled ? 'py-2' : 'py-3'}`}>
+      <div className="container mx-auto px-4">
         <div className="flex items-center justify-between">
           {/* Logo */}
           <Link 
             to="/" 
-            className="text-2xl font-bold glow-text hover:scale-105 transition-transform"
+            className={`font-bold glow-text hover:scale-105 transition-all ${scrolled ? 'text-xl' : 'text-2xl'}`}
           >
             Hadesost
           </Link>
@@ -126,15 +136,18 @@ const Navigation = ({ onSnowToggle, snowEnabled }: { onSnowToggle?: () => void; 
             <SheetTrigger asChild>
               <Button
                 variant="ghost"
-                size="lg"
+                size={scrolled ? "default" : "lg"}
                 className="hover:bg-card/50 hover:scale-105 transition-all"
               >
-                <Menu className="h-12 w-12" strokeWidth={2.5} />
+                <Menu className={scrolled ? "h-8 w-8" : "h-10 w-10"} strokeWidth={2.5} />
               </Button>
             </SheetTrigger>
-            <SheetContent side="right" className="w-[300px] sm:w-[400px] bg-background/98 backdrop-blur-xl border-l border-primary/30">
-              <SheetHeader>
-                <SheetTitle className="text-2xl font-bold glow-text">Menu</SheetTitle>
+            <SheetContent side="right" className="w-[85vw] sm:w-[400px] bg-background/98 backdrop-blur-xl border-l border-primary/30 overflow-y-auto">
+              <SheetHeader className="sticky top-0 bg-background/95 backdrop-blur-lg pb-4 mb-4 border-b">
+                <SheetTitle className="text-2xl font-bold glow-text flex items-center gap-2">
+                  <Sparkles className="h-6 w-6 text-primary" />
+                  Menu
+                </SheetTitle>
               </SheetHeader>
               <div className="mt-8 space-y-2">
                 {username && (

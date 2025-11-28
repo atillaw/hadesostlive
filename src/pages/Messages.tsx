@@ -173,7 +173,8 @@ export default function Messages() {
   return (
     <div className="min-h-screen flex flex-col">
       <Navigation />
-      <main className="flex-1 container mx-auto px-4 py-8">
+      <div className="page-content flex-1">
+        <main className="container mx-auto px-4 py-8">
         <h1 className="text-3xl font-bold mb-6">Mesajlar</h1>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 h-[600px]">
@@ -282,7 +283,8 @@ export default function Messages() {
             )}
           </div>
         </div>
-      </main>
+        </main>
+      </div>
       <Footer />
     </div>
   );
