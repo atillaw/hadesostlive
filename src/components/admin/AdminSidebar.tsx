@@ -64,6 +64,7 @@ const menuItems = [
   { id: "forum", title: "Forum", icon: MessageSquare },
   { id: "moderators", title: "Moderatörler", icon: Shield },
   { id: "reports", title: "Raporlar", icon: Flag },
+  { id: "banners", title: "Banner Yönetimi", icon: Users },
   { id: "logs", title: "Loglar", icon: ScrollText },
 ];
 

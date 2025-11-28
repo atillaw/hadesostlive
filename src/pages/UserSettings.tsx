@@ -8,21 +8,19 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Settings, Mail, Palette, Eye, User, Upload } from "lucide-react";
+import { Settings, Mail, Palette, Eye, User } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
+import { AvatarUpload } from "@/components/AvatarUpload";
 
 const UserSettings = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
-  const [uploading, setUploading] = useState(false);
+  const [username, setUsername] = useState("");
   
   // Settings state
   const [emailNotifications, setEmailNotifications] = useState(true);
-  const [theme, setTheme] = useState("dark");
   const [showNsfw, setShowNsfw] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [bio, setBio] = useState("");
@@ -45,6 +43,18 @@ const UserSettings = () => {
     }
 
     setUserId(user.id);
+    
+    // Load username
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("username")
+      .eq("id", user.id)
+      .single();
+    
+    if (profile) {
+      setUsername(profile.username);
+    }
+    
     await loadPreferences(user.id);
   };
 
@@ -57,7 +67,6 @@ const UserSettings = () => {
 
     if (prefs) {
       setEmailNotifications(prefs.email_notifications ?? true);
-      setTheme(prefs.theme ?? "dark");
       setShowNsfw(prefs.show_nsfw ?? false);
     }
 
@@ -77,61 +86,8 @@ const UserSettings = () => {
   };
 
   const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!userId || !e.target.files || e.target.files.length === 0) return;
-
-    const file = e.target.files[0];
-    
-    // Validate file size (max 2MB)
-    if (file.size > 2 * 1024 * 1024) {
-      toast({
-        title: "Dosya çok büyük",
-        description: "Avatar dosyası 2MB'dan küçük olmalı",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    setUploading(true);
-    try {
-      const fileExt = file.name.split(".").pop();
-      const fileName = `${userId}.${fileExt}`;
-      const filePath = `${userId}/${fileName}`;
-
-      // Upload to storage
-      const { error: uploadError } = await supabase.storage
-        .from("avatars")
-        .upload(filePath, file, { upsert: true });
-
-      if (uploadError) throw uploadError;
-
-      // Get public URL
-      const { data: { publicUrl } } = supabase.storage
-        .from("avatars")
-        .getPublicUrl(filePath);
-
-      // Update profile
-      const { error: updateError } = await supabase
-        .from("profiles")
-        .update({ avatar_url: publicUrl })
-        .eq("id", userId);
-
-      if (updateError) throw updateError;
-
-      setAvatarUrl(publicUrl);
-      toast({
-        title: "Avatar güncellendi",
-        description: "Profil resminiz başarıyla yüklendi",
-      });
-    } catch (error) {
-      console.error("Avatar upload error:", error);
-      toast({
-        title: "Hata",
-        description: "Avatar yüklenirken bir hata oluştu",
-        variant: "destructive",
-      });
-    } finally {
-      setUploading(false);
-    }
+    // This function is now handled by AvatarUpload component
+    return;
   };
 
   const handleSave = async () => {
@@ -139,20 +95,17 @@ const UserSettings = () => {
 
     setSaving(true);
     try {
-      // Update preferences
       const { error: prefsError } = await supabase
         .from("user_preferences")
         .upsert({
           user_id: userId,
           email_notifications: emailNotifications,
-          theme,
           show_nsfw: showNsfw,
           updated_at: new Date().toISOString(),
         });
 
       if (prefsError) throw prefsError;
 
-      // Update profile
       const { error: profileError } = await supabase
         .from("profiles")
         .update({ bio })
@@ -164,11 +117,16 @@ const UserSettings = () => {
         title: "Ayarlar kaydedildi",
         description: "Tercihleriniz başarıyla güncellendi",
       });
-
-      // Apply theme
-      if (theme === "dark") {
-        document.documentElement.classList.add("dark");
-      } else {
+    } catch (error: any) {
+      toast({
+        title: "Hata",
+        description: error.message || "Ayarlar kaydedilirken bir hata oluştu",
+        variant: "destructive",
+      });
+    } finally {
+      setSaving(false);
+    }
+  };
         document.documentElement.classList.remove("dark");
       }
     } catch (error) {
@@ -224,41 +182,11 @@ const UserSettings = () => {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label className="text-base font-medium">Profil Resmi</Label>
-                <div className="flex items-center gap-4">
-                  <Avatar className="h-20 w-20">
-                    <AvatarImage src={avatarUrl || undefined} />
-                    <AvatarFallback>
-                      <User className="h-10 w-10" />
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="flex-1">
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={handleAvatarUpload}
-                      className="hidden"
-                      id="avatar-upload"
-                      disabled={uploading}
-                    />
-                    <label htmlFor="avatar-upload">
-                      <Button
-                        type="button"
-                        variant="outline"
-                        disabled={uploading}
-                        onClick={() => document.getElementById("avatar-upload")?.click()}
-                      >
-                        <Upload className="h-4 w-4 mr-2" />
-                        {uploading ? "Yükleniyor..." : "Resim Yükle"}
-                      </Button>
-                    </label>
-                    <p className="text-xs text-muted-foreground mt-2">
-                      JPG, PNG veya GIF. Maksimum 2MB.
-                    </p>
-                  </div>
-                </div>
-              </div>
+              <AvatarUpload
+                currentAvatarUrl={avatarUrl}
+                username={username}
+                onUploadComplete={(url) => setAvatarUrl(url)}
+              />
 
               <div className="space-y-2">
                 <Label htmlFor="bio" className="text-base font-medium">
@@ -303,35 +231,6 @@ const UserSettings = () => {
                   checked={emailNotifications}
                   onCheckedChange={setEmailNotifications}
                 />
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Theme */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Palette className="h-5 w-5 text-primary" />
-                Tema Tercihi
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="theme" className="text-base font-medium">
-                  Görünüm teması
-                </Label>
-                <Select value={theme} onValueChange={setTheme}>
-                  <SelectTrigger id="theme">
-                    <SelectValue placeholder="Tema seçin" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="dark">Koyu Tema</SelectItem>
-                    <SelectItem value="light">Açık Tema</SelectItem>
-                  </SelectContent>
-                </Select>
-                <p className="text-sm text-muted-foreground">
-                  Site genelinde kullanılacak renk temasını seçin
-                </p>
               </div>
             </CardContent>
           </Card>

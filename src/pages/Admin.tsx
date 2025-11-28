@@ -4,9 +4,10 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { LogOut, Menu } from "lucide-react";
+import { LogOut } from "lucide-react";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AdminSidebar } from "@/components/admin/AdminSidebar";
+import { MaintenanceToggle } from "@/components/admin/MaintenanceToggle";
 import AdminClock from "@/components/admin/AdminClock";
 import AdminCountdown from "@/components/admin/AdminCountdown";
 import AdminSubscribers from "@/components/admin/AdminSubscribers";
@@ -35,6 +36,7 @@ import AdminSecurityLogs from "@/components/admin/AdminSecurityLogs";
 import AdminCommunities from "@/components/admin/AdminCommunities";
 import AdminCommunityModerators from "@/components/admin/AdminCommunityModerators";
 import AdminReports from "@/components/admin/AdminReports";
+import { AdminCommunityBanners } from "@/components/admin/AdminCommunityBanners";
 
 
 
@@ -189,6 +191,8 @@ const Admin = () => {
         return <AdminCommunityModerators />;
       case "reports":
         return <AdminReports />;
+      case "banners":
+        return <AdminCommunityBanners />;
       default:
           return (
             <Card className="p-12 text-center">
@@ -269,6 +273,8 @@ const Admin = () => {
         return <AdminCommunityModerators />;
       case "reports":
         return <AdminReports />;
+      case "banners":
+        return <AdminCommunityBanners />;
       default:
         return <AdminAnalytics />;
     }
@@ -293,10 +299,13 @@ const Admin = () => {
                   <p className="text-sm text-muted-foreground">Hoş geldin, {username}</p>
                 </div>
               </div>
-              <Button onClick={handleLogout} variant="outline" className="rounded-full">
-                <LogOut className="mr-2 h-4 w-4" />
-                Çıkış Yap
-              </Button>
+              <div className="flex items-center gap-3">
+                <MaintenanceToggle />
+                <Button onClick={handleLogout} variant="outline" className="rounded-full">
+                  <LogOut className="mr-2 h-4 w-4" />
+                  Çıkış Yap
+                </Button>
+              </div>
             </div>
           </header>
 
