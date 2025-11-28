@@ -36,7 +36,7 @@ const CreatePost = () => {
   const [tagInput, setTagInput] = useState("");
   const [mediaFiles, setMediaFiles] = useState<File[]>([]);
   const [uploading, setUploading] = useState(false);
-  const [selectedFlair, setSelectedFlair] = useState<string>("");
+  const [selectedFlairs, setSelectedFlairs] = useState<string[]>([]);
 
   const handleAddTag = () => {
     if (tagInput && tags.length < 5) {
@@ -143,8 +143,8 @@ const CreatePost = () => {
         mediaUrls = await uploadMediaFiles();
       }
 
-      // Prepare tags - add flair if selected
-      const finalTags = selectedFlair ? [selectedFlair, ...tags] : tags;
+      // Prepare tags - add flairs if selected
+      const finalTags = [...selectedFlairs, ...tags];
 
       const { data: post, error } = await supabase
         .from("posts")
@@ -223,23 +223,41 @@ const CreatePost = () => {
             </div>
 
             <div className="space-y-2">
-              <Label>Flair (Kategori)</Label>
-              <Select value={selectedFlair} onValueChange={setSelectedFlair}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Bir flair seçin (opsiyonel)" />
-                </SelectTrigger>
-                <SelectContent>
-                  {FLAIR_OPTIONS.map((flair) => (
-                    <SelectItem key={flair.value} value={flair.value}>
+              <Label>Flair (Kategori - çoklu seçim)</Label>
+              <div className="grid grid-cols-2 gap-2">
+                {FLAIR_OPTIONS.map((flair) => {
+                  const isSelected = selectedFlairs.includes(flair.value);
+                  return (
+                    <Button
+                      key={flair.value}
+                      type="button"
+                      variant={isSelected ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => {
+                        if (isSelected) {
+                          setSelectedFlairs(selectedFlairs.filter(f => f !== flair.value));
+                        } else {
+                          setSelectedFlairs([...selectedFlairs, flair.value]);
+                        }
+                      }}
+                      className="justify-start"
+                    >
                       {flair.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              {selectedFlair && (
-                <p className="text-sm text-muted-foreground">
-                  Seçili: {FLAIR_OPTIONS.find(f => f.value === selectedFlair)?.label}
-                </p>
+                    </Button>
+                  );
+                })}
+              </div>
+              {selectedFlairs.length > 0 && (
+                <div className="flex gap-1 flex-wrap">
+                  {selectedFlairs.map((flairValue) => {
+                    const flair = FLAIR_OPTIONS.find(f => f.value === flairValue);
+                    return (
+                      <Badge key={flairValue} variant="secondary">
+                        {flair?.label}
+                      </Badge>
+                    );
+                  })}
+                </div>
               )}
             </div>
 
