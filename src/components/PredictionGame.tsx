@@ -10,14 +10,14 @@ import { useNavigate } from "react-router-dom";
 
 interface PredictionOption {
   label: string;
-  color: string;
+  color?: string;
 }
 
 interface Prediction {
   id: string;
   title: string;
-  description: string;
-  options: PredictionOption[];
+  description: string | null;
+  options: PredictionOption[] | any;
   closes_at: string;
   status: string;
   correct_option_index?: number | null;
@@ -64,7 +64,9 @@ const PredictionGame = () => {
         }
       })
       .on("postgres_changes", { event: "*", schema: "public", table: "prediction_bets" }, () => {
-        loadBets();
+        if (prediction) {
+          loadBets(prediction.id);
+        }
         loadUserStats();
       })
       .subscribe();
@@ -72,7 +74,7 @@ const PredictionGame = () => {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [userBet]);
+  }, [userBet, prediction?.id]);
 
   useEffect(() => {
     if (!prediction) return;
@@ -88,9 +90,17 @@ const PredictionGame = () => {
         return;
       }
 
-      const minutes = Math.floor(diff / 60000);
-      const seconds = Math.floor((diff % 60000) / 1000);
-      setTimeLeft(`${minutes}:${seconds.toString().padStart(2, "0")}`);
+      const hours = Math.floor(diff / (1000 * 60 * 60));
+      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+      
+      if (hours > 0) {
+        setTimeLeft(`${hours}sa ${minutes}dk ${seconds}sn`);
+      } else if (minutes > 0) {
+        setTimeLeft(`${minutes}dk ${seconds}sn`);
+      } else {
+        setTimeLeft(`${seconds}sn`);
+      }
     }, 1000);
 
     return () => clearInterval(timer);
@@ -102,7 +112,7 @@ const PredictionGame = () => {
   };
 
   const loadActivePrediction = async () => {
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from("prediction_games")
       .select("*")
       .eq("status", "active")
@@ -110,23 +120,50 @@ const PredictionGame = () => {
       .limit(1)
       .maybeSingle();
 
+    if (error) {
+      console.error("Error loading prediction:", error);
+      return;
+    }
+
     if (data) {
+      // Parse options - handle different formats from database
+      let parsedOptions: PredictionOption[] = [];
+      
+      try {
+        if (Array.isArray(data.options)) {
+          parsedOptions = data.options.map((opt: any) => ({
+            label: opt.label || opt.text || String(opt),
+            color: opt.color || undefined,
+          }));
+        } else if (typeof data.options === 'object' && data.options !== null) {
+          // If it's an object, try to convert it to array
+          const optionsArray = Object.values(data.options);
+          parsedOptions = optionsArray.map((opt: any) => ({
+            label: opt.label || opt.text || String(opt),
+            color: opt.color || undefined,
+          }));
+        }
+      } catch (e) {
+        console.error("Error parsing options:", e);
+      }
+
       setPrediction({
         ...data,
-        options: data.options as unknown as PredictionOption[]
+        options: parsedOptions
       });
-      loadBets();
-      checkUserBet(data.id);
+      
+      if (parsedOptions.length > 0) {
+        loadBets(data.id);
+        checkUserBet(data.id);
+      }
     }
   };
 
-  const loadBets = async () => {
-    if (!prediction) return;
-    
+  const loadBets = async (predictionId: string) => {
     const { data } = await supabase
       .from("prediction_bets")
       .select("option_index")
-      .eq("prediction_id", prediction.id);
+      .eq("prediction_id", predictionId);
 
     if (data) {
       const counts: Record<number, number> = {};
@@ -216,7 +253,7 @@ const PredictionGame = () => {
         description: "Sonuçlar açıklandığında bildirim alacaksınız.",
       });
       checkUserBet(prediction!.id);
-      loadBets();
+      loadBets(prediction!.id);
       loadUserStats();
     }
     setLoading(false);
@@ -235,6 +272,20 @@ const PredictionGame = () => {
         <div className="text-center space-y-3">
           <TrendingUp className="w-12 h-12 mx-auto text-muted-foreground" />
           <p className="text-muted-foreground">Şu anda aktif tahmin oyunu yok</p>
+        </div>
+      </Card>
+    );
+  }
+
+  // Ensure options is an array
+  const options = Array.isArray(prediction.options) ? prediction.options : [];
+
+  if (options.length === 0) {
+    return (
+      <Card className="p-6 bg-gradient-to-br from-card/60 to-card/40 backdrop-blur-md border-primary/20">
+        <div className="text-center space-y-3">
+          <TrendingUp className="w-12 h-12 mx-auto text-muted-foreground" />
+          <p className="text-muted-foreground">Tahmin seçenekleri yükleniyor...</p>
         </div>
       </Card>
     );
@@ -284,7 +335,7 @@ const PredictionGame = () => {
       </div>
 
       <div className="space-y-3">
-        {prediction.options.map((option: PredictionOption, index: number) => {
+        {options.map((option: PredictionOption, index: number) => {
           const percentage = getPercentage(index);
           const isCorrect = hasWinner && prediction.correct_option_index === index;
           const isUserChoice = userBet && userBet.option_index === index;
@@ -302,7 +353,7 @@ const PredictionGame = () => {
                     : isUserChoice && hasWinner
                     ? "border-red-500 bg-red-500/10"
                     : "border-border hover:border-primary/50"
-                } ${!isAuthenticated || isClosed || userBet ? "cursor-not-allowed" : "cursor-pointer"}`}
+                } ${!isAuthenticated || isClosed || userBet ? "cursor-not-allowed opacity-60" : "cursor-pointer"}`}
               >
                 <div className="flex items-center justify-between relative z-10">
                   <span className="font-medium flex items-center gap-2">
@@ -333,15 +384,21 @@ const PredictionGame = () => {
           className="w-full" 
           size="lg"
         >
-          {loading ? "Kaydediliyor..." : !isAuthenticated ? "Giriş Yap" : "Tahmini Kaydet"}
+          {loading ? "Kaydediliyor..." : !isAuthenticated ? "Giriş Yap" : "Tahmini Kaydet (10 Puan)"}
         </Button>
       )}
 
       {userBet && (
         <Badge variant={userWon ? "default" : "secondary"} className="w-full justify-center p-3 text-base">
-          {userWon ? "🎉 Kazandın! +" + (userBet.points_won || 0) + " puan" : hasWinner ? "❌ Kaybettin" : "⏳ Sonuçlar bekleniyor..."}
+          {userWon ? "🎉 Kazandın! +" + (userBet.points_won || 0) + " puan" : hasWinner ? "❌ Kaybettin -" + userBet.points_wagered + " puan" : "⏳ Sonuçlar bekleniyor..."}
         </Badge>
       )}
+
+      <div className="text-center">
+        <Button variant="link" onClick={() => navigate("/tahmin-profili")} className="text-sm">
+          Tüm Tahmin Geçmişini Gör →
+        </Button>
+      </div>
     </Card>
   );
 };
