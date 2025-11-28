@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { 
   ArrowUp, ArrowDown, MessageSquare, Plus, 
-  TrendingUp, Clock, Pin, Lock, Flame
+  TrendingUp, Clock, Pin, Lock, Flame, Bookmark
 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { formatDistanceToNow } from "date-fns";
@@ -49,12 +49,14 @@ const CommunityPosts = () => {
   const [loading, setLoading] = useState(true);
   const [sortBy, setSortBy] = useState<"hot" | "new" | "top">("hot");
   const [userVotes, setUserVotes] = useState<Record<string, number>>({});
+  const [savedPosts, setSavedPosts] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     if (slug) {
       loadCommunity();
       loadPosts();
       loadUserVotes();
+      loadSavedPosts();
     }
   }, [slug, sortBy]);
 
@@ -74,6 +76,47 @@ const CommunityPosts = () => {
         if (vote.post_id) votesMap[vote.post_id] = vote.vote_type;
       });
       setUserVotes(votesMap);
+    }
+  };
+
+  const loadSavedPosts = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    const { data } = await supabase
+      .from("saved_posts")
+      .select("post_id")
+      .eq("user_id", user.id);
+
+    if (data) {
+      setSavedPosts(new Set(data.map(s => s.post_id)));
+    }
+  };
+
+  const toggleSave = async (postId: string, e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      toast({ title: "Kaydetmek için giriş yapmalısınız", variant: "destructive" });
+      return;
+    }
+
+    const isSaved = savedPosts.has(postId);
+
+    if (isSaved) {
+      await supabase.from("saved_posts").delete().eq("post_id", postId).eq("user_id", user.id);
+      setSavedPosts(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(postId);
+        return newSet;
+      });
+      toast({ title: "Kayıt kaldırıldı" });
+    } else {
+      await supabase.from("saved_posts").insert({ post_id: postId, user_id: user.id });
+      setSavedPosts(prev => new Set([...prev, postId]));
+      toast({ title: "Kaydedildi!" });
     }
   };
 
@@ -356,6 +399,14 @@ const CommunityPosts = () => {
                         <MessageSquare className="h-3 w-3" />
                         <span>{post.comment_count} yorum</span>
                       </div>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={(e) => toggleSave(post.id, e)}
+                        className="ml-2"
+                      >
+                        <Bookmark className={`h-4 w-4 ${savedPosts.has(post.id) ? "fill-primary text-primary" : ""}`} />
+                      </Button>
                     </div>
 
                     {post.tags && post.tags.length > 0 && (

@@ -197,12 +197,13 @@ const UserProfile = () => {
         </Card>
 
         {/* Enhanced Profile Section */}
-        <UserProfileEnhanced
-          karma={karma}
-          postsCount={posts.length}
-          commentsCount={comments.length}
-          joinedDate={profile.created_at}
-        />
+          <UserProfileEnhanced
+            profileId={username}
+            karma={karma}
+            postsCount={posts.length}
+            commentsCount={comments.length}
+            joinedDate={profile.created_at}
+          />
 
         {/* Posts and Comments Tabs */}
         <Tabs defaultValue="posts" className="w-full">

@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { Card } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { 
   ArrowUp, ArrowDown, MessageSquare, ArrowLeft, 
-  Pin, Lock, Share2, Image as ImageIcon, Video as VideoIcon
+  Pin, Lock, Share2, User, Clock, Bookmark
 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { formatDistanceToNow } from "date-fns";
@@ -38,7 +38,9 @@ interface Comment {
   is_anonymous: boolean;
   upvotes: number;
   downvotes: number;
+  parent_comment_id: string | null;
   created_at: string;
+  replies?: Comment[];
 }
 
 const Post = () => {
@@ -50,6 +52,9 @@ const Post = () => {
   const [submitting, setSubmitting] = useState(false);
   const [userVote, setUserVote] = useState<number | null>(null);
   const [userCommentVotes, setUserCommentVotes] = useState<Record<string, number>>({});
+  const [isSaved, setIsSaved] = useState(false);
+  const [replyingTo, setReplyingTo] = useState<string | null>(null);
+  const [replyContent, setReplyContent] = useState("");
 
   useEffect(() => {
     if (postId) {
@@ -57,6 +62,7 @@ const Post = () => {
       loadComments();
       incrementViewCount();
       loadUserVotes();
+      checkIfSaved();
       
       // Realtime subscription for post updates
       const postChannel = supabase
@@ -167,14 +173,51 @@ const Post = () => {
         .from("comments")
         .select("*")
         .eq("post_id", postId)
-        .is("parent_comment_id", null)
-        .order("created_at", { ascending: true });
+        .eq("is_deleted", false)
+        .order("created_at", { ascending: false });
 
       if (error) throw error;
-      setComments(data || []);
+
+      // Organize into tree
+      const commentMap = new Map<string, Comment>();
+      const rootComments: Comment[] = [];
+
+      (data || []).forEach((comment) => {
+        commentMap.set(comment.id, { ...comment, replies: [] });
+      });
+
+      commentMap.forEach((comment) => {
+        if (comment.parent_comment_id) {
+          const parent = commentMap.get(comment.parent_comment_id);
+          if (parent) {
+            parent.replies = parent.replies || [];
+            parent.replies.push(comment);
+          }
+        } else {
+          rootComments.push(comment);
+        }
+      });
+
+      setComments(rootComments);
     } catch (error) {
       console.error("Yorumlar yüklenemedi:", error);
     }
+  };
+
+  const checkIfSaved = async () => {
+    if (!postId) return;
+    
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    const { data } = await supabase
+      .from("saved_posts")
+      .select("id")
+      .eq("post_id", postId)
+      .eq("user_id", user.id)
+      .maybeSingle();
+
+    setIsSaved(!!data);
   };
 
   const handleVote = async (voteType: number) => {
@@ -301,6 +344,76 @@ const Post = () => {
     }
   };
 
+  const handleReplySubmit = async (parentId: string) => {
+    if (!replyContent.trim()) return;
+
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      toast({ title: "Cevap yazmak için giriş yapmalısınız", variant: "destructive" });
+      return;
+    }
+
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("username")
+      .eq("id", user.id)
+      .single();
+
+    const { error } = await supabase.from("comments").insert({
+      post_id: postId,
+      parent_comment_id: parentId,
+      content: replyContent,
+      author_username: profile?.username || "anonymous",
+      author_id: user.id,
+    });
+
+    if (error) {
+      toast({ title: "Cevap eklenemedi", variant: "destructive" });
+      return;
+    }
+
+    setReplyContent("");
+    setReplyingTo(null);
+    loadComments();
+    toast({ title: "Cevap eklendi!" });
+  };
+
+  const toggleSave = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      toast({ title: "Kaydetmek için giriş yapmalısınız", variant: "destructive" });
+      return;
+    }
+
+    if (isSaved) {
+      const { error } = await supabase
+        .from("saved_posts")
+        .delete()
+        .eq("post_id", postId)
+        .eq("user_id", user.id);
+
+      if (error) {
+        toast({ title: "Kayıt kaldırılamadı", variant: "destructive" });
+        return;
+      }
+
+      setIsSaved(false);
+      toast({ title: "Post kaydedilmekten çıkarıldı" });
+    } else {
+      const { error } = await supabase
+        .from("saved_posts")
+        .insert({ post_id: postId, user_id: user.id });
+
+      if (error) {
+        toast({ title: "Post kaydedilemedi", variant: "destructive" });
+        return;
+      }
+
+      setIsSaved(true);
+      toast({ title: "Post kaydedildi!" });
+    }
+  };
+
   const handleShare = () => {
     navigator.clipboard.writeText(window.location.href);
     toast({ title: "Link kopyalandı" });
@@ -397,6 +510,14 @@ const Post = () => {
                   <Button
                     variant="ghost"
                     size="sm"
+                    onClick={toggleSave}
+                  >
+                    <Bookmark className={`h-4 w-4 mr-2 ${isSaved ? "fill-primary text-primary" : ""}`} />
+                    {isSaved ? "Kaydedildi" : "Kaydet"}
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
                     onClick={handleShare}
                   >
                     <Share2 className="h-4 w-4 mr-2" />
@@ -478,50 +599,18 @@ const Post = () => {
             {comments.length} Yorum
           </h3>
           {comments.map((comment) => (
-            <Card key={comment.id} className="p-4">
-              <div className="flex gap-3">
-                <div className="flex flex-col items-center gap-1 text-sm">
-                  <Button 
-                    variant="ghost" 
-                    size="icon" 
-                    className={`h-6 w-6 ${userCommentVotes[comment.id] === 1 ? 'text-orange-500' : ''}`}
-                    onClick={() => handleCommentVote(comment.id, 1)}
-                  >
-                    <ArrowUp className="h-3 w-3" />
-                  </Button>
-                  <span className="font-semibold text-xs">
-                    {comment.upvotes - comment.downvotes}
-                  </span>
-                  <Button 
-                    variant="ghost" 
-                    size="icon" 
-                    className={`h-6 w-6 ${userCommentVotes[comment.id] === -1 ? 'text-blue-500' : ''}`}
-                    onClick={() => handleCommentVote(comment.id, -1)}
-                  >
-                    <ArrowDown className="h-3 w-3" />
-                  </Button>
-                </div>
-
-                <div className="flex-1">
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
-                    <Link 
-                      to={`/u/${comment.author_username}`}
-                      className="font-semibold hover:text-primary hover:underline"
-                    >
-                      {comment.is_anonymous ? "Anonim" : comment.author_username}
-                    </Link>
-                    <span>•</span>
-                    <span>
-                      {formatDistanceToNow(new Date(comment.created_at), {
-                        addSuffix: true,
-                        locale: tr,
-                      })}
-                    </span>
-                  </div>
-                  <p className="whitespace-pre-wrap">{comment.content}</p>
-                </div>
-              </div>
-            </Card>
+            <CommentItem
+              key={comment.id}
+              comment={comment}
+              userCommentVotes={userCommentVotes}
+              handleCommentVote={handleCommentVote}
+              replyingTo={replyingTo}
+              setReplyingTo={setReplyingTo}
+              replyContent={replyContent}
+              setReplyContent={setReplyContent}
+              handleReplySubmit={handleReplySubmit}
+              depth={0}
+            />
           ))}
 
           {comments.length === 0 && (
@@ -533,6 +622,131 @@ const Post = () => {
           )}
         </div>
       </div>
+    </div>
+  );
+};
+
+interface CommentItemProps {
+  comment: Comment;
+  userCommentVotes: Record<string, number>;
+  handleCommentVote: (commentId: string, voteType: number) => void;
+  replyingTo: string | null;
+  setReplyingTo: (id: string | null) => void;
+  replyContent: string;
+  setReplyContent: (content: string) => void;
+  handleReplySubmit: (parentId: string) => void;
+  depth: number;
+}
+
+const CommentItem = ({
+  comment,
+  userCommentVotes,
+  handleCommentVote,
+  replyingTo,
+  setReplyingTo,
+  replyContent,
+  setReplyContent,
+  handleReplySubmit,
+  depth,
+}: CommentItemProps) => {
+  const maxDepth = 5;
+  const marginLeft = Math.min(depth * 2, maxDepth * 2);
+
+  return (
+    <div style={{ marginLeft: `${marginLeft}rem` }}>
+      <Card className="bg-card/50">
+        <CardContent className="p-4">
+          <div className="flex items-start gap-3">
+            <div className="flex flex-col items-center gap-1">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => handleCommentVote(comment.id, 1)}
+                className={userCommentVotes[comment.id] === 1 ? "text-primary" : ""}
+              >
+                <ArrowUp className="h-4 w-4" />
+              </Button>
+              <span className="text-sm font-medium">
+                {comment.upvotes - comment.downvotes}
+              </span>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => handleCommentVote(comment.id, -1)}
+                className={userCommentVotes[comment.id] === -1 ? "text-destructive" : ""}
+              >
+                <ArrowDown className="h-4 w-4" />
+              </Button>
+            </div>
+            <div className="flex-1">
+              <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
+                <User className="h-4 w-4" />
+                <span className="font-medium">u/{comment.author_username}</span>
+                <span>•</span>
+                <Clock className="h-4 w-4" />
+                <span>{new Date(comment.created_at).toLocaleString("tr-TR")}</span>
+              </div>
+              <p className="text-foreground whitespace-pre-wrap mb-2">{comment.content}</p>
+              
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setReplyingTo(replyingTo === comment.id ? null : comment.id)}
+                className="text-xs text-muted-foreground hover:text-primary"
+              >
+                <MessageSquare className="h-3 w-3 mr-1" />
+                Cevapla
+              </Button>
+
+              {replyingTo === comment.id && (
+                <div className="mt-3 space-y-2">
+                  <Textarea
+                    value={replyContent}
+                    onChange={(e) => setReplyContent(e.target.value)}
+                    placeholder="Cevabınızı yazın..."
+                    className="min-h-[80px]"
+                  />
+                  <div className="flex gap-2">
+                    <Button onClick={() => handleReplySubmit(comment.id)} size="sm">
+                      Gönder
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        setReplyingTo(null);
+                        setReplyContent("");
+                      }}
+                    >
+                      İptal
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Render replies */}
+      {comment.replies && comment.replies.length > 0 && (
+        <div className="mt-2 space-y-2">
+          {comment.replies.map((reply) => (
+            <CommentItem
+              key={reply.id}
+              comment={reply}
+              userCommentVotes={userCommentVotes}
+              handleCommentVote={handleCommentVote}
+              replyingTo={replyingTo}
+              setReplyingTo={setReplyingTo}
+              replyContent={replyContent}
+              setReplyContent={setReplyContent}
+              handleReplySubmit={handleReplySubmit}
+              depth={depth + 1}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 };
