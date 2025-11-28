@@ -34,6 +34,7 @@ import AdminMiniGamesAnalytics from "@/components/admin/AdminMiniGamesAnalytics"
 import AdminSecurityLogs from "@/components/admin/AdminSecurityLogs";
 import AdminCommunities from "@/components/admin/AdminCommunities";
 import AdminCommunityModerators from "@/components/admin/AdminCommunityModerators";
+import AdminReports from "@/components/admin/AdminReports";
 
 
 
@@ -182,11 +183,13 @@ const Admin = () => {
     // Forum moderators can only access forum-related tabs
     if (userRole === "forum_mod") {
       switch (activeTab) {
-        case "forum":
-          return <AdminCommunities />;
-        case "moderators":
-          return <AdminCommunityModerators />;
-        default:
+      case "forum":
+        return <AdminCommunities />;
+      case "moderators":
+        return <AdminCommunityModerators />;
+      case "reports":
+        return <AdminReports />;
+      default:
           return (
             <Card className="p-12 text-center">
               <h2 className="text-2xl font-bold mb-4">Forum Yönetim Paneli</h2>
@@ -264,6 +267,8 @@ const Admin = () => {
         return <AdminCommunities />;
       case "moderators":
         return <AdminCommunityModerators />;
+      case "reports":
+        return <AdminReports />;
       default:
         return <AdminAnalytics />;
     }

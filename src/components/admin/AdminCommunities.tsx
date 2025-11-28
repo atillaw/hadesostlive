@@ -15,7 +15,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Plus, Trash2, Edit, Eye, EyeOff } from "lucide-react";
+import { Plus, Trash2, Edit, Eye, EyeOff, Upload, Image as ImageIcon } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -36,8 +36,10 @@ const AdminCommunities = () => {
     description: "",
     description_long: "",
     icon_url: "",
+    banner_url: "",
     theme_color: "#FF4500",
   });
+  const [uploadingBanner, setUploadingBanner] = useState<string | null>(null);
 
   useEffect(() => {
     loadData();
@@ -64,6 +66,49 @@ const AdminCommunities = () => {
     setLoading(false);
   };
 
+  const handleBannerUpload = async (
+    e: React.ChangeEvent<HTMLInputElement>,
+    communityId: string
+  ) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploadingBanner(communityId);
+
+    const fileExt = file.name.split(".").pop();
+    const fileName = `${communityId}-${Date.now()}.${fileExt}`;
+    const filePath = fileName;
+
+    const { error: uploadError } = await supabase.storage
+      .from("community-banners")
+      .upload(filePath, file);
+
+    if (uploadError) {
+      toast.error("Banner yüklenemedi");
+      setUploadingBanner(null);
+      return;
+    }
+
+    const {
+      data: { publicUrl },
+    } = supabase.storage.from("community-banners").getPublicUrl(filePath);
+
+    const { error: updateError } = await supabase
+      .from("communities")
+      .update({ banner_url: publicUrl })
+      .eq("id", communityId);
+
+    if (updateError) {
+      toast.error("Banner güncellenemedi");
+      setUploadingBanner(null);
+      return;
+    }
+
+    toast.success("Banner yüklendi");
+    setUploadingBanner(null);
+    loadData();
+  };
+
   const handleCreateCommunity = async () => {
     const { error } = await supabase.from("communities").insert([newCommunity]);
 
@@ -79,6 +124,7 @@ const AdminCommunities = () => {
       description: "",
       description_long: "",
       icon_url: "",
+      banner_url: "",
       theme_color: "#FF4500",
     });
     loadData();
@@ -282,12 +328,13 @@ const AdminCommunities = () => {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>İsim</TableHead>
-                  <TableHead>Slug</TableHead>
-                  <TableHead>Üyeler</TableHead>
-                  <TableHead>Gönderiler</TableHead>
-                  <TableHead>Durum</TableHead>
-                  <TableHead>İşlemler</TableHead>
+                    <TableHead>İsim</TableHead>
+                    <TableHead>Slug</TableHead>
+                    <TableHead>Banner</TableHead>
+                    <TableHead>Üyeler</TableHead>
+                    <TableHead>Gönderiler</TableHead>
+                    <TableHead>Durum</TableHead>
+                    <TableHead>İşlemler</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -300,6 +347,40 @@ const AdminCommunities = () => {
                       </div>
                     </TableCell>
                     <TableCell>c/{community.slug}</TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-2">
+                        {community.banner_url ? (
+                          <img
+                            src={community.banner_url}
+                            alt="Banner"
+                            className="h-10 w-20 object-cover rounded"
+                          />
+                        ) : (
+                          <div className="h-10 w-20 bg-muted rounded flex items-center justify-center">
+                            <ImageIcon className="h-4 w-4 text-muted-foreground" />
+                          </div>
+                        )}
+                        <label className="cursor-pointer">
+                          <input
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            onChange={(e) => handleBannerUpload(e, community.id)}
+                            disabled={uploadingBanner === community.id}
+                          />
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            disabled={uploadingBanner === community.id}
+                            asChild
+                          >
+                            <span>
+                              <Upload className="h-4 w-4" />
+                            </span>
+                          </Button>
+                        </label>
+                      </div>
+                    </TableCell>
                     <TableCell>{community.member_count}</TableCell>
                     <TableCell>{community.post_count}</TableCell>
                     <TableCell>
