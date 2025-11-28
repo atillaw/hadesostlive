@@ -16,6 +16,14 @@ import UserProfileEnhanced from "@/components/UserProfileEnhanced";
 interface Profile {
   username: string;
   created_at: string;
+  kick_username: string | null;
+  kick_connected_at: string | null;
+}
+
+interface SubscriberInfo {
+  subscription_tier: string;
+  subscribed_at: string;
+  follower_since: string | null;
 }
 
 interface Post {
@@ -54,6 +62,7 @@ const UserProfile = () => {
   const [comments, setComments] = useState<Comment[]>([]);
   const [karma, setKarma] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [subscriberInfo, setSubscriberInfo] = useState<SubscriberInfo | null>(null);
 
   useEffect(() => {
     loadProfile();
@@ -61,15 +70,30 @@ const UserProfile = () => {
 
   const loadProfile = async () => {
     try {
-      // Get profile
+      // Get profile with Kick info
       const { data: profileData, error: profileError } = await supabase
         .from("profiles")
-        .select("username, created_at")
+        .select("username, created_at, kick_username, kick_connected_at")
         .eq("username", username)
         .single();
 
       if (profileError) throw profileError;
       setProfile(profileData);
+
+      // Load subscriber info if Kick is connected
+      if (profileData.kick_username) {
+        const { data: subData } = await supabase
+          .from("kick_subscribers")
+          .select("*")
+          .eq("username", profileData.kick_username)
+          .order("subscribed_at", { ascending: false })
+          .limit(1)
+          .maybeSingle();
+        
+        if (subData) {
+          setSubscriberInfo(subData);
+        }
+      }
 
       // Get user's posts
       const { data: postsData } = await supabase
@@ -156,7 +180,14 @@ const UserProfile = () => {
         <Card className="p-8 mb-6">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold mb-2">u/{profile.username}</h1>
+              <div className="flex items-center gap-3 mb-2">
+                <h1 className="text-3xl font-bold">u/{profile.username}</h1>
+                {subscriberInfo && (
+                  <Badge className="bg-gradient-to-r from-purple-500 to-pink-500 text-white">
+                    ⭐ {subscriberInfo.subscription_tier} Abone
+                  </Badge>
+                )}
+              </div>
               <div className="flex items-center gap-4 text-muted-foreground">
                 <div className="flex items-center gap-2">
                   <Calendar className="h-4 w-4" />
@@ -168,6 +199,11 @@ const UserProfile = () => {
                     })}
                   </span>
                 </div>
+                {profile.kick_username && (
+                  <Badge variant="outline" className="text-xs">
+                    Kick: {profile.kick_username}
+                  </Badge>
+                )}
               </div>
             </div>
             <div className="text-center">
