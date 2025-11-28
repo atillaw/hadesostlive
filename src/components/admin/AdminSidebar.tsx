@@ -19,7 +19,8 @@ import {
   Target,
   Tag,
   Shield,
-  MessageSquare
+  MessageSquare,
+  Flag
 } from "lucide-react";
 import { NavLink } from "react-router-dom";
 import {
@@ -62,6 +63,7 @@ const menuItems = [
   { id: "sponsors", title: "Sponsorlar", icon: Award },
   { id: "forum", title: "Forum", icon: MessageSquare },
   { id: "moderators", title: "Moderatörler", icon: Shield },
+  { id: "reports", title: "Raporlar", icon: Flag },
   { id: "logs", title: "Loglar", icon: ScrollText },
 ];
 
@@ -73,6 +75,7 @@ export function AdminSidebar({ userRole, onTabChange, activeTab }: AdminSidebarP
   const forumModItems = [
     { id: "forum", title: "Forum", icon: MessageSquare },
     { id: "moderators", title: "Moderatörler", icon: Shield },
+    { id: "reports", title: "Raporlar", icon: Flag },
   ];
 
   const displayItems = userRole === "forum_mod" ? forumModItems : menuItems;
