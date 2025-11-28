@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Settings, DollarSign, ImageIcon, Video, MessageCircle, Menu, X, Snowflake, Heart, Home, Calendar, Bell, Users, Trophy, Sparkles, Award, UserCircle, Search, Mail, Rss } from "lucide-react";
+import { Settings, DollarSign, ImageIcon, Video, MessageCircle, Menu, X, Snowflake, Heart, Home, Calendar, Bell, Users, Trophy, Sparkles, Award, UserCircle, Search, Mail, Rss, LogOut } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { supabase } from "@/integrations/supabase/client";
@@ -16,6 +16,18 @@ const Navigation = ({ onSnowToggle, snowEnabled }: { onSnowToggle?: () => void; 
 
   useEffect(() => {
     loadUser();
+    
+    // Auth state değişikliklerini dinle
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+        loadUser();
+      } else if (event === 'SIGNED_OUT') {
+        setIsAuthenticated(false);
+        setUsername(null);
+      }
+    });
+
+    return () => subscription.unsubscribe();
   }, []);
 
   const loadUser = async () => {
@@ -32,6 +44,14 @@ const Navigation = ({ onSnowToggle, snowEnabled }: { onSnowToggle?: () => void; 
         setUsername(profile.username);
       }
     }
+  };
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    setIsAuthenticated(false);
+    setUsername(null);
+    setIsOpen(false);
+    navigate("/");
   };
 
   const allNavLinks = [
@@ -159,6 +179,17 @@ const Navigation = ({ onSnowToggle, snowEnabled }: { onSnowToggle?: () => void; 
                     </Button>
                   </Link>
                 ))}
+                
+                {isAuthenticated && (
+                  <Button
+                    variant="destructive"
+                    onClick={handleLogout}
+                    className="w-full justify-start rounded-full hover:scale-105 transition-all mt-4"
+                  >
+                    <LogOut className="mr-3 h-5 w-5" />
+                    <span className="text-base">Çıkış Yap</span>
+                  </Button>
+                )}
               </div>
             </SheetContent>
           </Sheet>
