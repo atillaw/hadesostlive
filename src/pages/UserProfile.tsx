@@ -11,6 +11,7 @@ import { formatDistanceToNow } from "date-fns";
 import { tr } from "date-fns/locale";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
+import UserProfileEnhanced from "@/components/UserProfileEnhanced";
 
 interface Profile {
   username: string;
@@ -194,6 +195,14 @@ const UserProfile = () => {
             </div>
           </div>
         </Card>
+
+        {/* Enhanced Profile Section */}
+        <UserProfileEnhanced
+          karma={karma}
+          postsCount={posts.length}
+          commentsCount={comments.length}
+          joinedDate={profile.created_at}
+        />
 
         {/* Posts and Comments Tabs */}
         <Tabs defaultValue="posts" className="w-full">
