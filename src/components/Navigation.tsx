@@ -41,6 +41,8 @@ const Navigation = ({ onSnowToggle, snowEnabled }: { onSnowToggle?: () => void; 
     { to: "/takima-katil", icon: Users, label: "Takıma Katıl" },
     { to: "/topluluk", icon: Sparkles, label: "Topluluk" },
     { to: "/forum", icon: MessageCircle, label: "Forum" },
+    { to: "/kaydedilenler", icon: Award, label: "Kaydedilenler", authRequired: true },
+    { to: "/forum-kurallari", icon: Settings, label: "Forum Kuralları" },
     { to: "/aboneler", icon: Heart, label: "Aboneler" },
     { to: "/sponsorlar", icon: Award, label: "Sponsorlar" },
     { to: "/memeler", icon: ImageIcon, label: "Meme's" },

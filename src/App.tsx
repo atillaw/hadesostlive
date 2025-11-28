@@ -32,6 +32,8 @@ import Post from "./pages/Post";
 import UserProfile from "./pages/UserProfile";
 import Messages from "./pages/Messages";
 import FollowingFeed from "./pages/FollowingFeed";
+import SavedPosts from "./pages/SavedPosts";
+import ForumRules from "./pages/ForumRules";
 
 
 const AppContent = () => {
@@ -59,12 +61,15 @@ const AppContent = () => {
       <Route path="/kullanim-kosullari" element={<TermsOfService />} />
       <Route path="/cerez-politikasi" element={<CookiePolicy />} />
       <Route path="/forum" element={<CommunityFeed />} />
-          <Route path="/c/:slug" element={<CommunityPosts />} />
-          <Route path="/c/:slug/new" element={<CreatePost />} />
-          <Route path="/c/:slug/post/:postId" element={<Post />} />
-          <Route path="/u/:username" element={<UserProfile />} />
-          <Route path="/mesajlar" element={<Messages />} />
-          <Route path="/takip-akisi" element={<FollowingFeed />} />
+      <Route path="/c/:slug" element={<CommunityPosts />} />
+      <Route path="/c/:slug/new" element={<CreatePost />} />
+      <Route path="/c/:slug/create" element={<CreatePost />} />
+      <Route path="/c/:slug/post/:postId" element={<Post />} />
+      <Route path="/u/:username" element={<UserProfile />} />
+      <Route path="/mesajlar" element={<Messages />} />
+      <Route path="/takip-akisi" element={<FollowingFeed />} />
+      <Route path="/kaydedilenler" element={<SavedPosts />} />
+      <Route path="/forum-kurallari" element={<ForumRules />} />
       <Route path="*" element={<NotFound />} />
     </Routes>
   );

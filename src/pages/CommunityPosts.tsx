@@ -37,6 +37,8 @@ interface Post {
   is_pinned: boolean;
   is_locked: boolean;
   created_at: string;
+  tags: string[] | null;
+  media_urls: string[] | null;
 }
 
 const CommunityPosts = () => {
@@ -334,9 +336,41 @@ const CommunityPosts = () => {
                         </Link>
                       </div>
 
-                      <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
+                      <p className="text-sm text-muted-foreground mb-2 line-clamp-2">
                         {post.content}
                       </p>
+
+                      {post.media_urls && post.media_urls.length > 0 && (
+                        <div className="flex gap-2 mb-2">
+                          {post.media_urls.slice(0, 2).map((url, idx) => {
+                            const isVideo = url.includes(".mp4") || url.includes(".webm") || url.includes(".mov");
+                            return (
+                              <div key={idx} className="relative w-16 h-16 rounded overflow-hidden flex-shrink-0">
+                                {isVideo ? (
+                                  <video src={url} className="w-full h-full object-cover" />
+                                ) : (
+                                  <img src={url} alt="" className="w-full h-full object-cover" />
+                                )}
+                              </div>
+                            );
+                          })}
+                          {post.media_urls.length > 2 && (
+                            <div className="w-16 h-16 rounded bg-muted/50 flex items-center justify-center text-xs">
+                              +{post.media_urls.length - 2}
+                            </div>
+                          )}
+                        </div>
+                      )}
+
+                      {post.tags && post.tags.length > 0 && (
+                        <div className="flex gap-1 mb-2 flex-wrap">
+                          {post.tags.slice(0, 3).map((tag, idx) => (
+                            <span key={idx} className="text-xs px-2 py-0.5 bg-primary/10 text-primary rounded">
+                              {tag}
+                            </span>
+                          ))}
+                        </div>
+                      )}
 
                       <div className="flex items-center gap-3 text-xs text-muted-foreground">
                         <Link

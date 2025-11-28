@@ -124,7 +124,7 @@ const Index = () => {
       <Navigation onSnowToggle={() => setSnowEnabled(!snowEnabled)} snowEnabled={snowEnabled} />
       <HeroSection />
 
-      {/* Trending Posts Section */}
+      {/* Trend Posts Section */}
       <ErrorBoundary>
         <section className="py-8 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
           <Card className="bg-card/50 backdrop-blur border-border/50">
@@ -146,7 +146,7 @@ const Index = () => {
                   {trendingPosts.map((post) => (
                     <Link
                       key={post.id}
-                      to={`/post/${post.id}`}
+                      to={post.communities?.slug ? `/c/${post.communities.slug}/post/${post.id}` : `/post/${post.id}`}
                       className="block p-4 rounded-lg bg-background/50 hover:bg-background/80 border border-border/50 transition-colors"
                     >
                       <div className="flex items-start gap-3">
@@ -162,15 +162,17 @@ const Index = () => {
                           </h3>
                           <div className="flex items-center gap-3 text-xs text-muted-foreground">
                             {post.communities && (
-                              <Link
-                                to={`/c/${post.communities.slug}`}
-                                className="hover:text-primary transition-colors"
-                                onClick={(e) => e.stopPropagation()}
-                              >
-                                c/{post.communities.name}
-                              </Link>
+                              <>
+                                <Link
+                                  to={`/c/${post.communities.slug}`}
+                                  className="hover:text-primary transition-colors"
+                                  onClick={(e) => e.stopPropagation()}
+                                >
+                                  c/{post.communities.name}
+                                </Link>
+                                <span>•</span>
+                              </>
                             )}
-                            <span>•</span>
                             <span>u/{post.author_username}</span>
                             <span>•</span>
                             <span className="flex items-center gap-1">
