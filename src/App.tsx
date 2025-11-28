@@ -26,6 +26,7 @@ import TermsOfService from "./pages/TermsOfService";
 import CookiePolicy from "./pages/CookiePolicy";
 import CommunityFeed from "./pages/CommunityFeed";
 import Community from "./pages/Community";
+import CommunityPosts from "./pages/CommunityPosts";
 import CreatePost from "./pages/CreatePost";
 import Post from "./pages/Post";
 import UserProfile from "./pages/UserProfile";
@@ -56,7 +57,7 @@ const AppContent = () => {
       <Route path="/kullanim-kosullari" element={<TermsOfService />} />
       <Route path="/cerez-politikasi" element={<CookiePolicy />} />
       <Route path="/forum" element={<CommunityFeed />} />
-          <Route path="/c/:slug" element={<Community />} />
+          <Route path="/c/:slug" element={<CommunityPosts />} />
           <Route path="/c/:slug/new" element={<CreatePost />} />
           <Route path="/c/:slug/post/:postId" element={<Post />} />
           <Route path="/u/:username" element={<UserProfile />} />
