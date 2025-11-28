@@ -1,28 +1,26 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { Card } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { 
-  ArrowUp, ArrowDown, MessageSquare, Plus, 
-  TrendingUp, Clock, Pin, Lock, Flame, Bookmark
+  ArrowUp, ArrowDown, MessageSquare, 
+  Pin, Lock, Bookmark
 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { formatDistanceToNow } from "date-fns";
 import { tr } from "date-fns/locale";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
-import { toast } from "@/hooks/use-toast";
+import { toast } from "sonner";
+import CustomAdUnit from "@/components/CustomAdUnit";
+import AdSenseUnit from "@/components/AdSenseUnit";
 
 interface Community {
   id: string;
   name: string;
   slug: string;
   description: string;
-  description_long: string | null;
-  icon_url: string | null;
-  theme_color: string;
   member_count: number;
   post_count: number;
 }
@@ -39,7 +37,6 @@ interface Post {
   is_pinned: boolean;
   is_locked: boolean;
   created_at: string;
-  tags: string[];
 }
 
 const CommunityPosts = () => {
@@ -49,7 +46,7 @@ const CommunityPosts = () => {
   const [loading, setLoading] = useState(true);
   const [sortBy, setSortBy] = useState<"hot" | "new" | "top">("hot");
   const [userVotes, setUserVotes] = useState<Record<string, number>>({});
-  const [savedPosts, setSavedPosts] = useState<Set<string>>(new Set());
+  const [savedPosts, setSavedPosts] = useState<string[]>([]);
 
   useEffect(() => {
     if (slug) {
@@ -89,7 +86,7 @@ const CommunityPosts = () => {
       .eq("user_id", user.id);
 
     if (data) {
-      setSavedPosts(new Set(data.map(s => s.post_id)));
+      setSavedPosts(data.map(s => s.post_id));
     }
   };
 
@@ -99,24 +96,20 @@ const CommunityPosts = () => {
 
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
-      toast({ title: "Kaydetmek için giriş yapmalısınız", variant: "destructive" });
+      toast.error("Kaydetmek için giriş yapmalısınız");
       return;
     }
 
-    const isSaved = savedPosts.has(postId);
+    const isSaved = savedPosts.includes(postId);
 
     if (isSaved) {
       await supabase.from("saved_posts").delete().eq("post_id", postId).eq("user_id", user.id);
-      setSavedPosts(prev => {
-        const newSet = new Set(prev);
-        newSet.delete(postId);
-        return newSet;
-      });
-      toast({ title: "Kayıt kaldırıldı" });
+      setSavedPosts(prev => prev.filter(id => id !== postId));
+      toast.success("Kayıt kaldırıldı");
     } else {
       await supabase.from("saved_posts").insert({ post_id: postId, user_id: user.id });
-      setSavedPosts(prev => new Set([...prev, postId]));
-      toast({ title: "Kaydedildi!" });
+      setSavedPosts(prev => [...prev, postId]);
+      toast.success("Kaydedildi!");
     }
   };
 
@@ -149,7 +142,6 @@ const CommunityPosts = () => {
       .eq("is_deleted", false);
 
     if (sortBy === "hot") {
-      // Hot algorithm: score = upvotes - downvotes / (hours_since_creation + 2)^1.5
       const { data } = await query;
       if (data) {
         const rankedPosts = data
@@ -185,18 +177,13 @@ const CommunityPosts = () => {
 
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
-      toast({
-        title: "Giriş gerekli",
-        description: "Oy kullanmak için giriş yapmalısınız",
-        variant: "destructive",
-      });
+      toast.error("Oy kullanmak için giriş yapmalısınız");
       return;
     }
 
     const existingVote = userVotes[postId];
 
     if (existingVote === voteType) {
-      // Remove vote
       await supabase
         .from("votes")
         .delete()
@@ -207,7 +194,6 @@ const CommunityPosts = () => {
       delete newVotes[postId];
       setUserVotes(newVotes);
     } else if (existingVote) {
-      // Change vote
       await supabase
         .from("votes")
         .update({ vote_type: voteType })
@@ -216,7 +202,6 @@ const CommunityPosts = () => {
       
       setUserVotes({ ...userVotes, [postId]: voteType });
     } else {
-      // New vote
       await supabase
         .from("votes")
         .insert({
@@ -231,34 +216,12 @@ const CommunityPosts = () => {
     loadPosts();
   };
 
-  if (loading) {
+  if (loading || !community) {
     return (
       <div className="min-h-screen bg-background">
         <Navigation />
-        <div className="container mx-auto px-4 py-24 max-w-5xl">
-          <Skeleton className="h-48 w-full mb-8" />
-          <div className="space-y-4">
-            {[1, 2, 3, 4, 5].map((i) => (
-              <Skeleton key={i} className="h-32 w-full" />
-            ))}
-          </div>
-        </div>
-        <Footer />
-      </div>
-    );
-  }
-
-  if (!community) {
-    return (
-      <div className="min-h-screen bg-background">
-        <Navigation />
-        <div className="container mx-auto px-4 py-24 max-w-5xl">
-          <Card className="p-12 text-center">
-            <p className="text-muted-foreground">Topluluk bulunamadı</p>
-            <Button asChild className="mt-4">
-              <Link to="/forum">Foruma Dön</Link>
-            </Button>
-          </Card>
+        <div className="container mx-auto px-4 py-6 max-w-7xl">
+          <Skeleton className="h-64 w-full mb-8" />
         </div>
         <Footer />
       </div>
@@ -268,176 +231,183 @@ const CommunityPosts = () => {
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
-      <div className="container mx-auto px-4 py-24 max-w-5xl">
-        {/* Community Header */}
-        <Card className="p-8 mb-6">
-          <div className="flex items-start gap-6">
-            <div
-              className="text-6xl p-4 rounded-xl"
-              style={{ backgroundColor: `${community.theme_color}20` }}
-            >
-              {community.icon_url || "📁"}
+      <div className="container mx-auto px-4 py-6 max-w-7xl">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Main Content */}
+          <div className="lg:col-span-2 space-y-4">
+            {/* Sort Tabs */}
+            <div className="flex gap-2 bg-card rounded-lg p-2 border">
+              <Button
+                variant={sortBy === "hot" ? "default" : "ghost"}
+                size="sm"
+                onClick={() => setSortBy("hot")}
+              >
+                🔥 Hot
+              </Button>
+              <Button
+                variant={sortBy === "new" ? "default" : "ghost"}
+                size="sm"
+                onClick={() => setSortBy("new")}
+              >
+                ⚡ Yeni
+              </Button>
+              <Button
+                variant={sortBy === "top" ? "default" : "ghost"}
+                size="sm"
+                onClick={() => setSortBy("top")}
+              >
+                🏆 Top
+              </Button>
             </div>
-            <div className="flex-1">
-              <h1 className="text-4xl font-bold mb-2">c/{community.slug}</h1>
-              <p className="text-lg text-muted-foreground mb-4">
-                {community.description}
-              </p>
-              {community.description_long && (
-                <p className="text-sm text-muted-foreground mb-4">
-                  {community.description_long}
+
+            {/* Posts */}
+            {posts.length === 0 ? (
+              <Card className="p-12 text-center">
+                <p className="text-muted-foreground mb-4">
+                  Henüz gönderi yok. İlk gönderiyi siz oluşturun!
                 </p>
-              )}
-              <div className="flex items-center gap-6 text-sm text-muted-foreground">
-                <div className="flex items-center gap-2">
-                  <MessageSquare className="h-4 w-4" />
-                  <span>{community.post_count.toLocaleString()} gönderi</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span>{community.member_count.toLocaleString()} üye</span>
-                </div>
-              </div>
-            </div>
-            <Button asChild>
-              <Link to={`/c/${slug}/new`}>
-                <Plus className="h-4 w-4 mr-2" />
-                Yeni Gönderi
-              </Link>
-            </Button>
-          </div>
-        </Card>
-
-        {/* Sort Tabs */}
-        <div className="flex gap-2 mb-6">
-          <Button
-            variant={sortBy === "hot" ? "default" : "ghost"}
-            onClick={() => setSortBy("hot")}
-          >
-            <Flame className="h-4 w-4 mr-2" />
-            Hot
-          </Button>
-          <Button
-            variant={sortBy === "new" ? "default" : "ghost"}
-            onClick={() => setSortBy("new")}
-          >
-            <Clock className="h-4 w-4 mr-2" />
-            Yeni
-          </Button>
-          <Button
-            variant={sortBy === "top" ? "default" : "ghost"}
-            onClick={() => setSortBy("top")}
-          >
-            <TrendingUp className="h-4 w-4 mr-2" />
-            En Çok Oylanan
-          </Button>
-        </div>
-
-        {/* Posts List */}
-        <div className="space-y-4">
-          {posts.map((post) => (
-            <Link key={post.id} to={`/c/${slug}/post/${post.id}`}>
-              <Card className="p-6 hover:border-primary transition-all cursor-pointer">
-                <div className="flex gap-4">
-                  {/* Vote Section */}
-                  <div className="flex flex-col items-center gap-2">
-                    <Button 
-                      variant="ghost" 
-                      size="icon" 
-                      className={`h-8 w-8 ${userVotes[post.id] === 1 ? 'text-orange-500' : ''}`}
-                      onClick={(e) => handleVote(post.id, 1, e)}
-                    >
-                      <ArrowUp className="h-4 w-4" />
-                    </Button>
-                    <span className="font-bold text-sm">
-                      {post.upvotes - post.downvotes}
-                    </span>
-                    <Button 
-                      variant="ghost" 
-                      size="icon" 
-                      className={`h-8 w-8 ${userVotes[post.id] === -1 ? 'text-blue-500' : ''}`}
-                      onClick={(e) => handleVote(post.id, -1, e)}
-                    >
-                      <ArrowDown className="h-4 w-4" />
-                    </Button>
-                  </div>
-
-                  {/* Post Content */}
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-start gap-2 mb-2">
-                      {post.is_pinned && (
-                        <Pin className="h-5 w-5 text-primary flex-shrink-0" />
-                      )}
-                      {post.is_locked && (
-                        <Lock className="h-5 w-5 text-muted-foreground flex-shrink-0" />
-                      )}
-                      <h2 className="text-xl font-semibold hover:text-primary transition-colors">
-                        {post.title}
-                      </h2>
-                    </div>
-
-                    <p className="text-sm text-muted-foreground line-clamp-2 mb-3">
-                      {post.content}
-                    </p>
-
-                    <div className="flex items-center gap-3 text-xs text-muted-foreground">
-                      <Link 
-                        to={`/u/${post.author_username}`}
-                        className="hover:text-primary hover:underline"
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        {post.is_anonymous ? "Anonim" : post.author_username}
-                      </Link>
-                      <span>•</span>
-                      <span>
-                        {formatDistanceToNow(new Date(post.created_at), {
-                          addSuffix: true,
-                          locale: tr,
-                        })}
-                      </span>
-                      <span>•</span>
-                      <div className="flex items-center gap-1">
-                        <MessageSquare className="h-3 w-3" />
-                        <span>{post.comment_count} yorum</span>
-                      </div>
+                <Button asChild>
+                  <Link to={`/c/${slug}/create`}>Gönderi Oluştur</Link>
+                </Button>
+              </Card>
+            ) : (
+              posts.map((post) => (
+                <div key={post.id} className="bg-card rounded-lg border hover:border-primary/50 transition-colors">
+                  <div className="flex">
+                    {/* Vote Section */}
+                    <div className="flex flex-col items-center gap-1 bg-muted/30 p-2 rounded-l-lg">
                       <Button
                         variant="ghost"
-                        size="sm"
-                        onClick={(e) => toggleSave(post.id, e)}
-                        className="ml-2"
+                        size="icon"
+                        className={`h-6 w-6 ${
+                          userVotes[post.id] === 1 ? "text-orange-500" : ""
+                        }`}
+                        onClick={(e) => handleVote(post.id, 1, e)}
                       >
-                        <Bookmark className={`h-4 w-4 ${savedPosts.has(post.id) ? "fill-primary text-primary" : ""}`} />
+                        <ArrowUp className="h-4 w-4" />
+                      </Button>
+                      <span className="text-xs font-bold">
+                        {post.upvotes - post.downvotes}
+                      </span>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className={`h-6 w-6 ${
+                          userVotes[post.id] === -1 ? "text-blue-500" : ""
+                        }`}
+                        onClick={(e) => handleVote(post.id, -1, e)}
+                      >
+                        <ArrowDown className="h-4 w-4" />
                       </Button>
                     </div>
 
-                    {post.tags && post.tags.length > 0 && (
-                      <div className="flex gap-2 flex-wrap mt-3">
-                        {post.tags.map((tag, idx) => (
-                          <Badge key={idx} variant="secondary">
-                            {tag}
-                          </Badge>
-                        ))}
+                    {/* Content Section */}
+                    <div className="flex-1 p-3">
+                      <div className="flex items-center gap-2 text-xs text-muted-foreground mb-2">
+                        <Link
+                          to={`/u/${post.author_username}`}
+                          className="hover:underline font-medium"
+                        >
+                          {post.is_anonymous ? "Anonim" : post.author_username}
+                        </Link>
+                        <span>•</span>
+                        <span>
+                          {formatDistanceToNow(new Date(post.created_at), {
+                            addSuffix: true,
+                            locale: tr,
+                          })}
+                        </span>
                       </div>
-                    )}
+
+                      <div className="flex items-start gap-2 mb-2">
+                        {post.is_pinned && (
+                          <Pin className="h-4 w-4 text-primary mt-1 flex-shrink-0" />
+                        )}
+                        {post.is_locked && (
+                          <Lock className="h-4 w-4 text-muted-foreground mt-1 flex-shrink-0" />
+                        )}
+                        <Link
+                          to={`/c/${slug}/post/${post.id}`}
+                          className="text-lg font-semibold hover:text-primary transition-colors"
+                        >
+                          {post.title}
+                        </Link>
+                      </div>
+
+                      <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
+                        {post.content}
+                      </p>
+
+                      <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                        <Link
+                          to={`/c/${slug}/post/${post.id}`}
+                          className="flex items-center gap-1 hover:text-primary"
+                        >
+                          <MessageSquare className="h-3 w-3" />
+                          {post.comment_count}
+                        </Link>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-6 px-2 gap-1"
+                          onClick={(e) => toggleSave(post.id, e)}
+                        >
+                          <Bookmark
+                            className={`h-3 w-3 ${
+                              savedPosts.includes(post.id) ? "fill-current" : ""
+                            }`}
+                          />
+                          Kaydet
+                        </Button>
+                      </div>
+                    </div>
                   </div>
                 </div>
-              </Card>
-            </Link>
-          ))}
+              ))
+            )}
+          </div>
 
-          {posts.length === 0 && (
-            <Card className="p-12 text-center">
-              <MessageSquare className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-              <p className="text-muted-foreground mb-4">
-                Henüz gönderi yok. İlk gönderiyi sen oluştur!
-              </p>
-              <Button asChild>
-                <Link to={`/c/${slug}/new`}>
-                  <Plus className="h-4 w-4 mr-2" />
-                  Yeni Gönderi
-                </Link>
-              </Button>
+          {/* Sidebar */}
+          <div className="space-y-4">
+            {/* Community Info */}
+            <Card>
+              <CardContent className="p-4">
+                <h2 className="font-bold text-lg mb-3">{community.name}</h2>
+                <p className="text-sm text-muted-foreground mb-4">
+                  {community.description}
+                </p>
+                <div className="flex gap-4 text-sm mb-4">
+                  <div>
+                    <div className="font-bold">{community.member_count}</div>
+                    <div className="text-muted-foreground text-xs">Üye</div>
+                  </div>
+                  <div>
+                    <div className="font-bold">{community.post_count}</div>
+                    <div className="text-muted-foreground text-xs">Gönderi</div>
+                  </div>
+                </div>
+                <Button asChild className="w-full" size="sm">
+                  <Link to={`/c/${slug}/create`}>Gönderi Oluştur</Link>
+                </Button>
+              </CardContent>
             </Card>
-          )}
+
+            {/* Ad Space 1 */}
+            <Card>
+              <CardContent className="p-4">
+                <div className="text-xs text-muted-foreground mb-2">Sponsorlu</div>
+                <CustomAdUnit />
+              </CardContent>
+            </Card>
+
+            {/* Ad Space 2 */}
+            <Card>
+              <CardContent className="p-4">
+                <div className="text-xs text-muted-foreground mb-2">Reklam</div>
+                <AdSenseUnit />
+              </CardContent>
+            </Card>
+          </div>
         </div>
       </div>
       <Footer />
