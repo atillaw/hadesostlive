@@ -8,8 +8,22 @@ import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ArrowLeft, X, Upload, Image as ImageIcon, Video as VideoIcon } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
+import Navigation from "@/components/Navigation";
+import Footer from "@/components/Footer";
+
+const FLAIR_OPTIONS = [
+  { value: "tartışma", label: "💬 Tartışma" },
+  { value: "soru", label: "❓ Soru" },
+  { value: "haber", label: "📰 Haber" },
+  { value: "öneri", label: "💡 Öneri" },
+  { value: "mizah", label: "😄 Mizah" },
+  { value: "yardım", label: "🆘 Yardım" },
+  { value: "duyuru", label: "📢 Duyuru" },
+  { value: "analiz", label: "📊 Analiz" },
+];
 
 const CreatePost = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -22,6 +36,7 @@ const CreatePost = () => {
   const [tagInput, setTagInput] = useState("");
   const [mediaFiles, setMediaFiles] = useState<File[]>([]);
   const [uploading, setUploading] = useState(false);
+  const [selectedFlair, setSelectedFlair] = useState<string>("");
 
   const handleAddTag = () => {
     if (tagInput && tags.length < 5) {
@@ -128,6 +143,9 @@ const CreatePost = () => {
         mediaUrls = await uploadMediaFiles();
       }
 
+      // Prepare tags - add flair if selected
+      const finalTags = selectedFlair ? [selectedFlair, ...tags] : tags;
+
       const { data: post, error } = await supabase
         .from("posts")
         .insert({
@@ -137,7 +155,7 @@ const CreatePost = () => {
           title,
           content,
           is_anonymous: isAnonymous,
-          tags: tags.length > 0 ? tags : null,
+          tags: finalTags.length > 0 ? finalTags : null,
           media_urls: mediaUrls.length > 0 ? mediaUrls : null,
         })
         .select()
@@ -166,6 +184,7 @@ const CreatePost = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <Navigation />
       <div className="container mx-auto px-4 py-8 max-w-3xl">
         <div className="flex items-center gap-4 mb-6">
           <Button variant="ghost" size="icon" asChild>
@@ -204,7 +223,28 @@ const CreatePost = () => {
             </div>
 
             <div className="space-y-2">
-              <Label>Etiketler (opsiyonel, max 5)</Label>
+              <Label>Flair (Kategori)</Label>
+              <Select value={selectedFlair} onValueChange={setSelectedFlair}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Bir flair seçin (opsiyonel)" />
+                </SelectTrigger>
+                <SelectContent>
+                  {FLAIR_OPTIONS.map((flair) => (
+                    <SelectItem key={flair.value} value={flair.value}>
+                      {flair.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {selectedFlair && (
+                <p className="text-sm text-muted-foreground">
+                  Seçili: {FLAIR_OPTIONS.find(f => f.value === selectedFlair)?.label}
+                </p>
+              )}
+            </div>
+
+            <div className="space-y-2">
+              <Label>Ek Etiketler (opsiyonel, max 5)</Label>
               <div className="flex gap-2">
                 <Input
                   value={tagInput}
@@ -320,6 +360,7 @@ const CreatePost = () => {
           </form>
         </Card>
       </div>
+      <Footer />
     </div>
   );
 };
