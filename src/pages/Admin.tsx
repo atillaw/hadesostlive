@@ -32,6 +32,7 @@ import AdminPredictionAnalytics from "@/components/admin/AdminPredictionAnalytic
 import AdminMiniGamesAnalytics from "@/components/admin/AdminMiniGamesAnalytics";
 import AdminSecurityLogs from "@/components/admin/AdminSecurityLogs";
 import AdminCommunities from "@/components/admin/AdminCommunities";
+import AdminCommunityModerators from "@/components/admin/AdminCommunityModerators";
 
 
 
@@ -235,6 +236,8 @@ const Admin = () => {
         return <AdminSecurityLogs />;
       case "forum":
         return <AdminCommunities />;
+      case "moderators":
+        return <AdminCommunityModerators />;
       default:
         return <AdminAnalytics />;
     }

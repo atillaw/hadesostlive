@@ -61,6 +61,7 @@ const menuItems = [
   { id: "mini-games", title: "Mini Oyunlar", icon: Gamepad2 },
   { id: "sponsors", title: "Sponsorlar", icon: Award },
   { id: "forum", title: "Forum", icon: MessageSquare },
+  { id: "moderators", title: "Moderatörler", icon: Shield },
   { id: "logs", title: "Loglar", icon: ScrollText },
 ];
 
