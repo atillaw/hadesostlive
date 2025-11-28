@@ -7,12 +7,13 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { 
   ArrowUp, ArrowDown, MessageSquare, ArrowLeft, 
-  Pin, Lock, Share2 
+  Pin, Lock, Share2, Image as ImageIcon, Video as VideoIcon
 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { formatDistanceToNow } from "date-fns";
 import { tr } from "date-fns/locale";
 import { toast } from "@/hooks/use-toast";
+import PostModerationTools from "@/components/PostModerationTools";
 
 interface Post {
   id: string;
@@ -27,6 +28,7 @@ interface Post {
   is_locked: boolean;
   created_at: string;
   tags: string[];
+  media_urls: string[] | null;
 }
 
 interface Comment {
@@ -46,14 +48,86 @@ const Post = () => {
   const [loading, setLoading] = useState(true);
   const [newComment, setNewComment] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [userVote, setUserVote] = useState<number | null>(null);
+  const [userCommentVotes, setUserCommentVotes] = useState<Record<string, number>>({});
 
   useEffect(() => {
     if (postId) {
       loadPost();
       loadComments();
       incrementViewCount();
+      loadUserVotes();
+      
+      // Realtime subscription for post updates
+      const postChannel = supabase
+        .channel(`post-${postId}`)
+        .on(
+          "postgres_changes",
+          {
+            event: "*",
+            schema: "public",
+            table: "posts",
+            filter: `id=eq.${postId}`,
+          },
+          () => {
+            loadPost();
+          }
+        )
+        .subscribe();
+
+      // Realtime subscription for comments
+      const commentsChannel = supabase
+        .channel(`comments-${postId}`)
+        .on(
+          "postgres_changes",
+          {
+            event: "*",
+            schema: "public",
+            table: "comments",
+            filter: `post_id=eq.${postId}`,
+          },
+          () => {
+            loadComments();
+          }
+        )
+        .subscribe();
+
+      return () => {
+        supabase.removeChannel(postChannel);
+        supabase.removeChannel(commentsChannel);
+      };
     }
   }, [postId]);
+
+  const loadUserVotes = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    // Load post vote
+    const { data: postVote } = await supabase
+      .from("votes")
+      .select("vote_type")
+      .eq("post_id", postId)
+      .eq("user_id", user.id)
+      .single();
+
+    if (postVote) setUserVote(postVote.vote_type);
+
+    // Load comment votes
+    const { data: commentVotes } = await supabase
+      .from("votes")
+      .select("comment_id, vote_type")
+      .eq("user_id", user.id)
+      .not("comment_id", "is", null);
+
+    if (commentVotes) {
+      const votesMap: Record<string, number> = {};
+      commentVotes.forEach((vote) => {
+        if (vote.comment_id) votesMap[vote.comment_id] = vote.vote_type;
+      });
+      setUserCommentVotes(votesMap);
+    }
+  };
 
   const incrementViewCount = async () => {
     const { data: currentPost } = await supabase
@@ -106,35 +180,78 @@ const Post = () => {
   const handleVote = async (voteType: number) => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
-      window.location.href = "/auth";
+      toast({
+        title: "Giriş gerekli",
+        description: "Oy kullanmak için giriş yapmalısınız",
+        variant: "destructive",
+      });
       return;
     }
 
-    const { data: existingVote } = await supabase
-      .from("votes")
-      .select("*")
-      .eq("post_id", postId)
-      .eq("user_id", user.id)
-      .single();
-
-    if (existingVote) {
-      if (existingVote.vote_type === voteType) {
-        await supabase.from("votes").delete().eq("id", existingVote.id);
-      } else {
-        await supabase
-          .from("votes")
-          .update({ vote_type: voteType })
-          .eq("id", existingVote.id);
-      }
+    if (userVote === voteType) {
+      // Remove vote
+      await supabase
+        .from("votes")
+        .delete()
+        .eq("post_id", postId)
+        .eq("user_id", user.id);
+      setUserVote(null);
+    } else if (userVote) {
+      // Change vote
+      await supabase
+        .from("votes")
+        .update({ vote_type: voteType })
+        .eq("post_id", postId)
+        .eq("user_id", user.id);
+      setUserVote(voteType);
     } else {
+      // New vote
       await supabase.from("votes").insert({
         post_id: postId,
         user_id: user.id,
         vote_type: voteType,
       });
+      setUserVote(voteType);
+    }
+  };
+
+  const handleCommentVote = async (commentId: string, voteType: number) => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      toast({
+        title: "Giriş gerekli",
+        description: "Oy kullanmak için giriş yapmalısınız",
+        variant: "destructive",
+      });
+      return;
     }
 
-    loadPost();
+    const existingVote = userCommentVotes[commentId];
+
+    if (existingVote === voteType) {
+      await supabase
+        .from("votes")
+        .delete()
+        .eq("comment_id", commentId)
+        .eq("user_id", user.id);
+      const newVotes = { ...userCommentVotes };
+      delete newVotes[commentId];
+      setUserCommentVotes(newVotes);
+    } else if (existingVote) {
+      await supabase
+        .from("votes")
+        .update({ vote_type: voteType })
+        .eq("comment_id", commentId)
+        .eq("user_id", user.id);
+      setUserCommentVotes({ ...userCommentVotes, [commentId]: voteType });
+    } else {
+      await supabase.from("votes").insert({
+        comment_id: commentId,
+        user_id: user.id,
+        vote_type: voteType,
+      });
+      setUserCommentVotes({ ...userCommentVotes, [commentId]: voteType });
+    }
   };
 
   const handleSubmitComment = async () => {
@@ -232,6 +349,7 @@ const Post = () => {
               <Button
                 variant="ghost"
                 size="icon"
+                className={userVote === 1 ? "text-orange-500" : ""}
                 onClick={() => handleVote(1)}
               >
                 <ArrowUp className="h-5 w-5" />
@@ -242,6 +360,7 @@ const Post = () => {
               <Button
                 variant="ghost"
                 size="icon"
+                className={userVote === -1 ? "text-blue-500" : ""}
                 onClick={() => handleVote(-1)}
               >
                 <ArrowDown className="h-5 w-5" />
@@ -274,20 +393,53 @@ const Post = () => {
                   <MessageSquare className="h-4 w-4" />
                   <span>{post.comment_count} yorum</span>
                 </div>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={handleShare}
-                  className="ml-auto"
-                >
-                  <Share2 className="h-4 w-4 mr-2" />
-                  Paylaş
-                </Button>
+                <div className="ml-auto flex items-center gap-2">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleShare}
+                  >
+                    <Share2 className="h-4 w-4 mr-2" />
+                    Paylaş
+                  </Button>
+                  <PostModerationTools
+                    postId={post.id}
+                    isPinned={post.is_pinned}
+                    isLocked={post.is_locked}
+                    authorUsername={post.author_username}
+                    onUpdate={loadPost}
+                  />
+                </div>
               </div>
 
               <div className="prose dark:prose-invert max-w-none mb-4">
                 <p className="whitespace-pre-wrap">{post.content}</p>
               </div>
+
+              {post.media_urls && post.media_urls.length > 0 && (
+                <div className="grid grid-cols-2 gap-2 mb-4">
+                  {post.media_urls.map((url, idx) => {
+                    const isVideo = url.includes(".mp4") || url.includes(".webm") || url.includes(".mov");
+                    return (
+                      <div key={idx} className="relative rounded-lg overflow-hidden">
+                        {isVideo ? (
+                          <video
+                            src={url}
+                            controls
+                            className="w-full h-auto"
+                          />
+                        ) : (
+                          <img
+                            src={url}
+                            alt={`Media ${idx + 1}`}
+                            className="w-full h-auto object-cover"
+                          />
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
 
               {post.tags && post.tags.length > 0 && (
                 <div className="flex gap-2 flex-wrap">
@@ -329,13 +481,23 @@ const Post = () => {
             <Card key={comment.id} className="p-4">
               <div className="flex gap-3">
                 <div className="flex flex-col items-center gap-1 text-sm">
-                  <Button variant="ghost" size="icon" className="h-6 w-6">
+                  <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    className={`h-6 w-6 ${userCommentVotes[comment.id] === 1 ? 'text-orange-500' : ''}`}
+                    onClick={() => handleCommentVote(comment.id, 1)}
+                  >
                     <ArrowUp className="h-3 w-3" />
                   </Button>
                   <span className="font-semibold text-xs">
                     {comment.upvotes - comment.downvotes}
                   </span>
-                  <Button variant="ghost" size="icon" className="h-6 w-6">
+                  <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    className={`h-6 w-6 ${userCommentVotes[comment.id] === -1 ? 'text-blue-500' : ''}`}
+                    onClick={() => handleCommentVote(comment.id, -1)}
+                  >
                     <ArrowDown className="h-3 w-3" />
                   </Button>
                 </div>
