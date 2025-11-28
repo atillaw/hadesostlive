@@ -127,19 +127,6 @@ const UserSettings = () => {
       setSaving(false);
     }
   };
-        document.documentElement.classList.remove("dark");
-      }
-    } catch (error) {
-      console.error("Settings save error:", error);
-      toast({
-        title: "Hata",
-        description: "Ayarlar kaydedilirken bir hata oluştu",
-        variant: "destructive",
-      });
-    } finally {
-      setSaving(false);
-    }
-  };
 
   if (loading) {
     return (
