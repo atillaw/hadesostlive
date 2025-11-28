@@ -88,7 +88,9 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
-          <AppContent />
+          <MaintenanceCheck>
+            <AppContent />
+          </MaintenanceCheck>
         </BrowserRouter>
       </TooltipProvider>
     </QueryClientProvider>

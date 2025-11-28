@@ -431,7 +431,11 @@ const CommunityPosts = () => {
                     <div className="text-muted-foreground text-xs">Gönderi</div>
                   </div>
                 </div>
-                <Button asChild className="w-full" size="sm">
+                <CommunityMembership 
+                  communityId={community.id}
+                  communityName={community.name}
+                />
+                <Button asChild className="w-full mt-2" size="sm">
                   <Link to={`/c/${slug}/create`}>Gönderi Oluştur</Link>
                 </Button>
               </CardContent>
