@@ -20,14 +20,15 @@ export const MaintenanceCheck = ({ children }: { children: React.ReactNode }) =>
         .from("site_settings")
         .select("value")
         .eq("key", "maintenance_mode")
-        .single();
+        .maybeSingle();
 
-      const isMaintenance = settingsData?.value === "true" || settingsData?.value === true;
+      const isMaintenance = settingsData?.value === true || settingsData?.value === "true";
       setMaintenanceMode(isMaintenance);
 
       // Check if user is admin
       const { data: { user } } = await supabase.auth.getUser();
-      let userRoleData = null;
+      let adminCheck = false;
+      
       if (user) {
         const { data: roleData } = await supabase
           .from("user_roles")
@@ -35,25 +36,44 @@ export const MaintenanceCheck = ({ children }: { children: React.ReactNode }) =>
           .eq("user_id", user.id)
           .in("role", ["admin", "super_admin"]);
 
-        userRoleData = roleData;
-        setIsAdmin(!!roleData && roleData.length > 0);
+        adminCheck = !!roleData && roleData.length > 0;
+        setIsAdmin(adminCheck);
       }
 
       // Redirect logic
-      if (isMaintenance && !location.pathname.startsWith("/admin")) {
-        if (userRoleData && userRoleData.length > 0) {
-          // Admin can access
+      if (isMaintenance) {
+        // Site bakımda
+        if (location.pathname === "/maintenance") {
+          // Zaten bakım sayfasında
           setLoading(false);
-        } else {
-          // Non-admin redirect to maintenance
-          navigate("/maintenance");
+          return;
         }
-      } else if (!isMaintenance && location.pathname === "/maintenance") {
-        // If maintenance is off but user is on maintenance page, redirect home
-        navigate("/");
+        
+        if (location.pathname.startsWith("/admin")) {
+          // Admin panel erişimi - sadece adminler girebilir
+          if (adminCheck) {
+            setLoading(false);
+            return;
+          } else {
+            navigate("/maintenance");
+            return;
+          }
+        }
+        
+        // Diğer tüm sayfalar için bakıma yönlendir (admin değilse)
+        if (!adminCheck) {
+          navigate("/maintenance");
+          return;
+        }
       } else {
-        setLoading(false);
+        // Site normal modda
+        if (location.pathname === "/maintenance") {
+          navigate("/");
+          return;
+        }
       }
+      
+      setLoading(false);
     } catch (error) {
       console.error("Maintenance check error:", error);
       setLoading(false);
