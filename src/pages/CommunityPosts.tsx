@@ -16,6 +16,7 @@ import { toast } from "sonner";
 import CustomAdUnit from "@/components/CustomAdUnit";
 import AdSenseUnit from "@/components/AdSenseUnit";
 import { CommunityMembership } from "@/components/CommunityMembership";
+import { SubscriberBadge } from "@/components/SubscriberBadge";
 
 interface Community {
   id: string;
@@ -310,12 +311,15 @@ const CommunityPosts = () => {
                     {/* Content Section */}
                     <div className="flex-1 p-3">
                       <div className="flex items-center gap-2 text-xs text-muted-foreground mb-2">
-                        <Link
-                          to={`/u/${post.author_username}`}
-                          className="hover:underline font-medium"
-                        >
-                          {post.is_anonymous ? "Anonim" : post.author_username}
-                        </Link>
+                        <div className="flex items-center gap-2">
+                          <Link
+                            to={`/u/${post.author_username}`}
+                            className="hover:underline font-medium"
+                          >
+                            {post.is_anonymous ? "Anonim" : post.author_username}
+                          </Link>
+                          {!post.is_anonymous && <SubscriberBadge username={post.author_username} size="sm" />}
+                        </div>
                         <span>•</span>
                         <span>
                           {formatDistanceToNow(new Date(post.created_at), {

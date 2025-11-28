@@ -1198,6 +1198,8 @@ export type Database = {
           created_at: string
           email: string
           id: string
+          kick_connected_at: string | null
+          kick_username: string | null
           username: string
         }
         Insert: {
@@ -1206,6 +1208,8 @@ export type Database = {
           created_at?: string
           email: string
           id: string
+          kick_connected_at?: string | null
+          kick_username?: string | null
           username: string
         }
         Update: {
@@ -1214,6 +1218,8 @@ export type Database = {
           created_at?: string
           email?: string
           id?: string
+          kick_connected_at?: string | null
+          kick_username?: string | null
           username?: string
         }
         Relationships: []

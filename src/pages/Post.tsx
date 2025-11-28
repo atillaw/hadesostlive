@@ -20,6 +20,7 @@ import CustomAdUnit from "@/components/CustomAdUnit";
 import AdSenseUnit from "@/components/AdSenseUnit";
 import ReportDialog from "@/components/ReportDialog";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { SubscriberBadge } from "@/components/SubscriberBadge";
 
 interface Post {
   id: string;
@@ -530,12 +531,15 @@ const Post = () => {
                   </div>
 
                   <div className="flex items-center gap-3 text-sm text-muted-foreground mb-4">
-                    <Link 
-                      to={`/u/${post.author_username}`}
-                      className="hover:text-primary hover:underline font-medium"
-                    >
-                      {post.is_anonymous ? "Anonim" : post.author_username}
-                    </Link>
+                    <div className="flex items-center gap-2">
+                      <Link 
+                        to={`/u/${post.author_username}`}
+                        className="hover:text-primary hover:underline font-medium"
+                      >
+                        {post.is_anonymous ? "Anonim" : post.author_username}
+                      </Link>
+                      {!post.is_anonymous && <SubscriberBadge username={post.author_username} size="sm" />}
+                    </div>
                     <span>•</span>
                     <span>
                       {formatDistanceToNow(new Date(post.created_at), {
@@ -843,6 +847,7 @@ const CommentItem = ({
               <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
                 <User className="h-4 w-4" />
                 <span className="font-medium">u/{comment.author_username}</span>
+                <SubscriberBadge username={comment.author_username} size="sm" />
                 <span>•</span>
                 <Clock className="h-4 w-4" />
                 <span>{new Date(comment.created_at).toLocaleString("tr-TR")}</span>
