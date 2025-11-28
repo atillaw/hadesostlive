@@ -28,10 +28,10 @@ export const MaintenanceToggle = () => {
       .from("site_settings")
       .select("value")
       .eq("key", "maintenance_mode")
-      .single();
+      .maybeSingle();
 
     if (data) {
-      setMaintenanceMode(data.value === "true" || data.value === true);
+      setMaintenanceMode(data.value === true || data.value === "true");
     }
   };
 
@@ -42,8 +42,13 @@ export const MaintenanceToggle = () => {
       
       const { error } = await supabase
         .from("site_settings")
-        .update({ value: newValue })
-        .eq("key", "maintenance_mode");
+        .upsert({ 
+          key: "maintenance_mode",
+          value: newValue,
+          description: "Site maintenance mode status"
+        }, {
+          onConflict: "key"
+        });
 
       if (error) throw error;
 
