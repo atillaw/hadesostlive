@@ -14,6 +14,7 @@ interface UserProfileEnhancedProps {
   postsCount: number;
   commentsCount: number;
   joinedDate: string;
+  kickUsername?: string | null;
 }
 
 interface KarmaDataPoint {
@@ -27,11 +28,13 @@ const UserProfileEnhanced = ({
   postsCount,
   commentsCount,
   joinedDate,
+  kickUsername,
 }: UserProfileEnhancedProps) => {
   const [karmaHistory, setKarmaHistory] = useState<KarmaDataPoint[]>([]);
   const [isFollowing, setIsFollowing] = useState(false);
   const [followerCount, setFollowerCount] = useState(0);
   const [followingCount, setFollowingCount] = useState(0);
+  const [subscriberInfo, setSubscriberInfo] = useState<any>(null);
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -39,7 +42,10 @@ const UserProfileEnhanced = ({
     loadKarmaHistory();
     checkFollowStatus();
     loadFollowCounts();
-  }, [profileId]);
+    if (kickUsername) {
+      loadSubscriberInfo();
+    }
+  }, [profileId, kickUsername]);
 
   const loadKarmaHistory = () => {
     const historyData: KarmaDataPoint[] = [];
@@ -86,6 +92,22 @@ const UserProfileEnhanced = ({
 
     setFollowerCount(followers || 0);
     setFollowingCount(following || 0);
+  };
+
+  const loadSubscriberInfo = async () => {
+    if (!kickUsername) return;
+    
+    const { data } = await supabase
+      .from("kick_subscribers")
+      .select("*")
+      .eq("username", kickUsername)
+      .order("subscribed_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    
+    if (data) {
+      setSubscriberInfo(data);
+    }
   };
 
   const toggleFollow = async () => {
@@ -146,6 +168,20 @@ const UserProfileEnhanced = ({
       (Date.now() - new Date(joinedDate).getTime()) / (1000 * 60 * 60 * 24)
     );
     if (accountAge >= 365) badges.push({ icon: Calendar, label: "Kıdemli Üye", color: "text-red-500" });
+    
+    // Kick subscriber badge
+    if (subscriberInfo) {
+      const months = Math.floor(
+        (Date.now() - new Date(subscriberInfo.subscribed_at).getTime()) / (1000 * 60 * 60 * 24 * 30)
+      );
+      if (months >= 12) {
+        badges.push({ icon: Crown, label: "Kick Destekçisi (1 Yıl+)", color: "text-purple-600" });
+      } else if (months >= 6) {
+        badges.push({ icon: Star, label: "Kick Destekçisi (6+ Ay)", color: "text-pink-500" });
+      } else {
+        badges.push({ icon: Award, label: "Kick Abonesi", color: "text-indigo-500" });
+      }
+    }
     
     return badges;
   };

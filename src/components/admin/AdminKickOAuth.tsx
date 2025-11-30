@@ -1,11 +1,16 @@
+import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Copy, ExternalLink } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Copy, ExternalLink, TestTube2, Save } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 const AdminKickOAuth = () => {
   const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
   const redirectUrl = `${supabaseUrl}/functions/v1/kick-oauth-callback`;
+  const [testing, setTesting] = useState(false);
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
@@ -13,6 +18,42 @@ const AdminKickOAuth = () => {
       title: "Kopyalandı",
       description: "URL panoya kopyalandı.",
     });
+  };
+
+  const testOAuthConnection = async () => {
+    setTesting(true);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast({
+          title: "Hata",
+          description: "Test için giriş yapmalısınız",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Simulate OAuth flow
+      const testUrl = `https://kick.com/oauth2/authorize?client_id=test&redirect_uri=${encodeURIComponent(redirectUrl)}&response_type=code&state=${user.id}&scope=user:read`;
+      
+      toast({
+        title: "Test URL Oluşturuldu",
+        description: "OAuth test URL'si konsola yazdırıldı. Tarayıcı geliştirici araçlarından kontrol edin.",
+      });
+      
+      console.log("OAuth Test URL:", testUrl);
+      console.log("Redirect URI:", redirectUrl);
+      console.log("User ID (state):", user.id);
+      
+    } catch (error: any) {
+      toast({
+        title: "Test Başarısız",
+        description: error.message,
+        variant: "destructive",
+      });
+    } finally {
+      setTesting(false);
+    }
   };
 
   return (
@@ -94,6 +135,16 @@ const AdminKickOAuth = () => {
             >
               <ExternalLink className="h-4 w-4" />
               Kick Developer Console
+            </Button>
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={testOAuthConnection}
+              disabled={testing}
+              className="gap-2"
+            >
+              <TestTube2 className="h-4 w-4" />
+              {testing ? "Test Ediliyor..." : "OAuth Test"}
             </Button>
           </div>
         </CardContent>
