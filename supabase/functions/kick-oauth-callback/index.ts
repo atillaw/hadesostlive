@@ -94,11 +94,10 @@ serve(async (req) => {
     }
 
     // Redirect back to settings page with success
-    const frontendUrl = Deno.env.get("SUPABASE_URL")?.replace(".supabase.co", ".lovableproject.com") || "";
     return new Response(null, {
       status: 302,
       headers: {
-        Location: `${frontendUrl}/kullanici-ayarlari?kick_connected=success`,
+        Location: `https://hadesost.uk/kullanici-ayarlari?kick_connected=success`,
         ...corsHeaders,
       },
     });
