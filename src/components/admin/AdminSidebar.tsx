@@ -92,6 +92,7 @@ const menuCategories = {
       { id: "clock", title: "Saat Ayarları", icon: Clock },
       { id: "countdown", title: "Geri Sayım", icon: Timer },
       { id: "holiday-banners", title: "Bayram Banner'ları", icon: Heart },
+      { id: "kick-oauth", title: "Kick OAuth", icon: Shield },
     ]
   },
   users: {
