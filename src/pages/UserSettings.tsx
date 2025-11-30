@@ -44,6 +44,26 @@ const UserSettings = () => {
       // Remove query param
       window.history.replaceState({}, "", "/kullanici-ayarlari");
     }
+    
+    // Check for OAuth errors
+    const kickError = searchParams.get("kick_error");
+    if (kickError) {
+      const errorMessages: Record<string, string> = {
+        missing_params: "OAuth bağlantısı sırasında gerekli parametreler eksik",
+        auth_failed: "Kick ile kimlik doğrulama başarısız oldu",
+        user_fetch_failed: "Kick kullanıcı bilgileri alınamadı",
+        profile_update_failed: "Profil güncellenirken bir hata oluştu",
+      };
+      
+      toast({
+        title: "Bağlantı Başarısız",
+        description: errorMessages[kickError] || "Kick hesabı bağlanırken bir hata oluştu",
+        variant: "destructive",
+      });
+      
+      // Remove error param
+      window.history.replaceState({}, "", "/kullanici-ayarlari");
+    }
   }, [searchParams]);
 
   const loadUser = async () => {
