@@ -16,10 +16,16 @@ serve(async (req) => {
     const code = url.searchParams.get("code");
     const state = url.searchParams.get("state"); // This should contain user_id
 
+    console.log("OAuth callback received:", { code: code?.substring(0, 10), state });
+
     if (!code || !state) {
-      return new Response(JSON.stringify({ error: "Missing code or state" }), {
-        status: 400,
-        headers: { "Content-Type": "application/json", ...corsHeaders },
+      console.error("Missing required parameters");
+      return new Response(null, {
+        status: 302,
+        headers: {
+          Location: `https://hadesost.uk/kullanici-ayarlari?kick_error=missing_params`,
+          ...corsHeaders,
+        },
       });
     }
 
@@ -43,10 +49,14 @@ serve(async (req) => {
     });
 
     if (!tokenResponse.ok) {
-      console.error("Token exchange failed:", await tokenResponse.text());
-      return new Response(JSON.stringify({ error: "Token exchange failed" }), {
-        status: 500,
-        headers: { "Content-Type": "application/json", ...corsHeaders },
+      const errorText = await tokenResponse.text();
+      console.error("Token exchange failed:", errorText);
+      return new Response(null, {
+        status: 302,
+        headers: {
+          Location: `https://hadesost.uk/kullanici-ayarlari?kick_error=auth_failed`,
+          ...corsHeaders,
+        },
       });
     }
 
@@ -61,10 +71,14 @@ serve(async (req) => {
     });
 
     if (!userResponse.ok) {
-      console.error("User info fetch failed:", await userResponse.text());
-      return new Response(JSON.stringify({ error: "Failed to get user info" }), {
-        status: 500,
-        headers: { "Content-Type": "application/json", ...corsHeaders },
+      const errorText = await userResponse.text();
+      console.error("User info fetch failed:", errorText);
+      return new Response(null, {
+        status: 302,
+        headers: {
+          Location: `https://hadesost.uk/kullanici-ayarlari?kick_error=user_fetch_failed`,
+          ...corsHeaders,
+        },
       });
     }
 
@@ -87,11 +101,16 @@ serve(async (req) => {
 
     if (updateError) {
       console.error("Profile update failed:", updateError);
-      return new Response(JSON.stringify({ error: "Failed to update profile" }), {
-        status: 500,
-        headers: { "Content-Type": "application/json", ...corsHeaders },
+      return new Response(null, {
+        status: 302,
+        headers: {
+          Location: `https://hadesost.uk/kullanici-ayarlari?kick_error=profile_update_failed`,
+          ...corsHeaders,
+        },
       });
     }
+
+    console.log("Successfully connected Kick account:", kickUsername);
 
     // Redirect back to settings page with success
     return new Response(null, {
