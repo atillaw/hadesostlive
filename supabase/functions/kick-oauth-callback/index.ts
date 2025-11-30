@@ -14,69 +14,63 @@ serve(async (req) => {
   try {
     const url = new URL(req.url);
     const code = url.searchParams.get("code");
-    const state = url.searchParams.get("state"); // This should contain user_id
-
-    console.log("OAuth callback received:", { code: code?.substring(0, 10), state });
+    const state = url.searchParams.get("state");
 
     if (!code || !state) {
-      console.error("Missing required parameters");
       return new Response(null, {
         status: 302,
         headers: {
-          Location: `https://hadesost.uk/kullanici-ayarlari?kick_error=missing_params`,
+          Location: "https://hadesost.uk/kullanici-ayarlari?kick_error=missing_params",
           ...corsHeaders,
         },
       });
     }
 
-    const clientId = Deno.env.get("KICK_CLIENT_ID");
-    const clientSecret = Deno.env.get("KICK_CLIENT_SECRET");
-    const redirectUri = `${Deno.env.get("SUPABASE_URL")}/functions/v1/kick-oauth-callback`;
+    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+    const clientId = Deno.env.get("KICK_CLIENT_ID")!;
+    const clientSecret = Deno.env.get("KICK_CLIENT_SECRET")!;
 
-    // Exchange code for access token
+    // 💀 ÖLÜMCÜL HATA BURADA DUZELTILDI:
+    const redirectUri = `${supabaseUrl.replace(/\/$/, "")}/functions/v1/kick-oauth-callback`;
+
+    // TOKEN AL
     const tokenResponse = await fetch("https://kick.com/oauth2/token", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
       body: new URLSearchParams({
-        client_id: clientId!,
-        client_secret: clientSecret!,
+        client_id: clientId,
+        client_secret: clientSecret,
         code,
         grant_type: "authorization_code",
         redirect_uri: redirectUri,
       }),
     });
 
-    if (!tokenResponse.ok) {
-      const errorText = await tokenResponse.text();
-      console.error("Token exchange failed:", errorText);
+    const tokenData = await tokenResponse.json();
+
+    if (!tokenResponse.ok || !tokenData.access_token) {
+      console.log("Token exchange failed:", tokenData);
       return new Response(null, {
         status: 302,
         headers: {
-          Location: `https://hadesost.uk/kullanici-ayarlari?kick_error=auth_failed`,
+          Location: "https://hadesost.uk/kullanici-ayarlari?kick_error=auth_failed",
           ...corsHeaders,
         },
       });
     }
 
-    const tokenData = await tokenResponse.json();
-    const accessToken = tokenData.access_token;
-
-    // Get user info from Kick API
+    // USER DATA
     const userResponse = await fetch("https://kick.com/api/v2/user", {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
+      headers: { Authorization: `Bearer ${tokenData.access_token}` },
     });
 
     if (!userResponse.ok) {
       const errorText = await userResponse.text();
-      console.error("User info fetch failed:", errorText);
+      console.log("User fetch failed:", errorText);
       return new Response(null, {
         status: 302,
         headers: {
-          Location: `https://hadesost.uk/kullanici-ayarlari?kick_error=user_fetch_failed`,
+          Location: "https://hadesost.uk/kullanici-ayarlari?kick_error=user_fetch_failed",
           ...corsHeaders,
         },
       });
@@ -85,11 +79,9 @@ serve(async (req) => {
     const userData = await userResponse.json();
     const kickUsername = userData.username;
 
-    // Update profile with Kick username
-    const supabaseAdmin = createClient(
-      Deno.env.get("SUPABASE_URL")!,
-      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
-    );
+    // PROFİL UPDATE
+    const serviceRole = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+    const supabaseAdmin = createClient(supabaseUrl, serviceRole);
 
     const { error: updateError } = await supabaseAdmin
       .from("profiles")
@@ -100,29 +92,26 @@ serve(async (req) => {
       .eq("id", state);
 
     if (updateError) {
-      console.error("Profile update failed:", updateError);
+      console.log("Profile update failed:", updateError);
       return new Response(null, {
         status: 302,
         headers: {
-          Location: `https://hadesost.uk/kullanici-ayarlari?kick_error=profile_update_failed`,
+          Location: "https://hadesost.uk/kullanici-ayarlari?kick_error=profile_update_failed",
           ...corsHeaders,
         },
       });
     }
 
-    console.log("Successfully connected Kick account:", kickUsername);
-
-    // Redirect back to settings page with success
+    // BAŞARILI
     return new Response(null, {
       status: 302,
       headers: {
-        Location: `https://hadesost.uk/kullanici-ayarlari?kick_connected=success`,
+        Location: "https://hadesost.uk/kullanici-ayarlari?kick_connected=success",
         ...corsHeaders,
       },
     });
-  } catch (error: any) {
-    console.error("Error in kick-oauth-callback:", error);
-    return new Response(JSON.stringify({ error: error.message }), {
+  } catch (err) {
+    return new Response(JSON.stringify({ error: err.message }), {
       status: 500,
       headers: { "Content-Type": "application/json", ...corsHeaders },
     });
