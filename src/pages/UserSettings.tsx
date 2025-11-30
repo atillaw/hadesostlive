@@ -341,10 +341,24 @@ const UserSettings = () => {
                   <p className="text-sm text-muted-foreground">
                     Kick hesabınızı bağlayarak HadesOST kanalına abonelik durumunuzu gösterin
                   </p>
-                  <Button onClick={handleConnectKick} className="w-full">
-                    <ExternalLink className="mr-2 h-4 w-4" />
-                    Kick Hesabını Bağla
-                  </Button>
+                  {searchParams.get("kick_error") ? (
+                    <div className="space-y-2">
+                      <div className="p-3 bg-destructive/10 border border-destructive/20 rounded-lg">
+                        <p className="text-sm text-destructive font-medium">
+                          Bağlantı başarısız oldu. Lütfen tekrar deneyin.
+                        </p>
+                      </div>
+                      <Button onClick={handleConnectKick} className="w-full" variant="default">
+                        <ExternalLink className="mr-2 h-4 w-4" />
+                        Yeniden Dene
+                      </Button>
+                    </div>
+                  ) : (
+                    <Button onClick={handleConnectKick} className="w-full">
+                      <ExternalLink className="mr-2 h-4 w-4" />
+                      Kick Hesabını Bağla
+                    </Button>
+                  )}
                 </div>
               ) : (
                 <div className="space-y-3">

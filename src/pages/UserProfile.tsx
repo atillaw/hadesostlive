@@ -240,6 +240,7 @@ const UserProfile = () => {
             postsCount={posts.length}
             commentsCount={comments.length}
             joinedDate={profile.created_at}
+            kickUsername={profile.kick_username}
           />
 
         {/* Posts and Comments Tabs */}
