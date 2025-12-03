@@ -6,6 +6,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/co
 import { supabase } from "@/integrations/supabase/client";
 import ForumSearch from "./ForumSearch";
 import { NotificationDropdown } from "./NotificationDropdown";
+import { KickStatusIndicator } from "./KickStatusIndicator";
 
 const Navigation = ({ onSnowToggle, snowEnabled }: { onSnowToggle?: () => void; snowEnabled?: boolean }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -109,6 +110,7 @@ const Navigation = ({ onSnowToggle, snowEnabled }: { onSnowToggle?: () => void; 
             {/* Authenticated User Actions */}
             {isAuthenticated && (
               <>
+                <KickStatusIndicator />
                 <Button
                   variant="ghost"
                   size="icon"

@@ -8,10 +8,10 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Badge } from "@/components/ui/badge";
-import { Settings, Mail, Palette, Eye, User, Link as LinkIcon, ExternalLink, Check } from "lucide-react";
+import { Settings, Mail, Eye, User } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { AvatarUpload } from "@/components/AvatarUpload";
+import { KickConnectionCard } from "@/components/KickConnectionCard";
 
 const UserSettings = () => {
   const navigate = useNavigate();
@@ -27,10 +27,8 @@ const UserSettings = () => {
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [bio, setBio] = useState("");
   
-  // Kick connection state
-  const [kickUsername, setKickUsername] = useState<string | null>(null);
-  const [kickConnectedAt, setKickConnectedAt] = useState<string | null>(null);
-  const [subscriberInfo, setSubscriberInfo] = useState<any>(null);
+  // Kick OAuth error state
+  const [kickError, setKickError] = useState(false);
 
   useEffect(() => {
     loadUser();
@@ -41,27 +39,30 @@ const UserSettings = () => {
         title: "Kick hesabı bağlandı!",
         description: "Kick hesabınız başarıyla bağlandı.",
       });
-      // Remove query param
       window.history.replaceState({}, "", "/kullanici-ayarlari");
     }
     
     // Check for OAuth errors
-    const kickError = searchParams.get("kick_error");
-    if (kickError) {
+    const kickErrorParam = searchParams.get("kick_error");
+    if (kickErrorParam) {
+      setKickError(true);
       const errorMessages: Record<string, string> = {
         missing_params: "OAuth bağlantısı sırasında gerekli parametreler eksik",
         auth_failed: "Kick ile kimlik doğrulama başarısız oldu",
         user_fetch_failed: "Kick kullanıcı bilgileri alınamadı",
         profile_update_failed: "Profil güncellenirken bir hata oluştu",
+        invalid_state: "Güvenlik doğrulaması başarısız. Lütfen tekrar deneyin.",
+        state_expired: "Oturum süresi doldu. Lütfen tekrar deneyin.",
+        token_exchange_failed: "Token alınamadı. Lütfen tekrar deneyin.",
+        server_error: "Sunucu hatası. Lütfen daha sonra tekrar deneyin.",
       };
       
       toast({
         title: "Bağlantı Başarısız",
-        description: errorMessages[kickError] || "Kick hesabı bağlanırken bir hata oluştu",
+        description: errorMessages[kickErrorParam] || "Kick hesabı bağlanırken bir hata oluştu",
         variant: "destructive",
       });
       
-      // Remove error param
       window.history.replaceState({}, "", "/kullanici-ayarlari");
     }
   }, [searchParams]);
@@ -81,22 +82,14 @@ const UserSettings = () => {
 
     setUserId(user.id);
     
-    // Load profile with Kick info
     const { data: profile } = await supabase
       .from("profiles")
-      .select("username, kick_username, kick_connected_at")
+      .select("username")
       .eq("id", user.id)
       .single();
     
     if (profile) {
       setUsername(profile.username);
-      setKickUsername(profile.kick_username);
-      setKickConnectedAt(profile.kick_connected_at);
-      
-      // Load subscriber info if Kick is connected
-      if (profile.kick_username) {
-        loadSubscriberInfo(profile.kick_username);
-      }
     }
     
     await loadPreferences(user.id);
@@ -114,7 +107,6 @@ const UserSettings = () => {
       setShowNsfw(prefs.show_nsfw ?? false);
     }
 
-    // Load profile data
     const { data: profile } = await supabase
       .from("profiles")
       .select("avatar_url, bio")
@@ -127,72 +119,6 @@ const UserSettings = () => {
     }
     
     setLoading(false);
-  };
-
-  const loadSubscriberInfo = async (kickUser: string) => {
-    const { data } = await supabase
-      .from("kick_subscribers")
-      .select("*")
-      .eq("username", kickUser)
-      .order("subscribed_at", { ascending: false })
-      .limit(1)
-      .maybeSingle();
-    
-    if (data) {
-      setSubscriberInfo(data);
-    }
-  };
-
-  const handleConnectKick = () => {
-    if (!userId) return;
-    
-    const clientId = import.meta.env.VITE_SUPABASE_PROJECT_ID; // We'll use project ID as placeholder
-    const redirectUri = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/kick-oauth-callback`;
-    const state = userId; // Pass user ID as state
-    
-    // Redirect to Kick OAuth
-    window.location.href = `https://kick.com/oauth2/authorize?client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=code&state=${state}&scope=user:read`;
-  };
-
-  const handleDisconnectKick = async () => {
-    if (!userId) return;
-
-    const { error } = await supabase
-      .from("profiles")
-      .update({
-        kick_username: null,
-        kick_connected_at: null,
-      })
-      .eq("id", userId);
-
-    if (error) {
-      toast({
-        title: "Hata",
-        description: "Bağlantı koparılırken bir hata oluştu",
-        variant: "destructive",
-      });
-    } else {
-      setKickUsername(null);
-      setKickConnectedAt(null);
-      setSubscriberInfo(null);
-      toast({
-        title: "Bağlantı koparıldı",
-        description: "Kick hesabınızın bağlantısı kesildi",
-      });
-    }
-  };
-
-  const getSubscriptionMonths = () => {
-    if (!subscriberInfo) return 0;
-    const now = new Date();
-    const subscribedDate = new Date(subscriberInfo.subscribed_at);
-    const months = Math.floor((now.getTime() - subscribedDate.getTime()) / (1000 * 60 * 60 * 24 * 30));
-    return Math.max(1, months);
-  };
-
-  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    // This function is now handled by AvatarUpload component
-    return;
   };
 
   const handleSave = async () => {
@@ -328,78 +254,10 @@ const UserSettings = () => {
           </Card>
 
           {/* Kick Connection */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <LinkIcon className="h-5 w-5 text-primary" />
-                Kick Hesabı Bağlantısı
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {!kickUsername ? (
-                <div className="space-y-3">
-                  <p className="text-sm text-muted-foreground">
-                    Kick hesabınızı bağlayarak HadesOST kanalına abonelik durumunuzu gösterin
-                  </p>
-                  {searchParams.get("kick_error") ? (
-                    <div className="space-y-2">
-                      <div className="p-3 bg-destructive/10 border border-destructive/20 rounded-lg">
-                        <p className="text-sm text-destructive font-medium">
-                          Bağlantı başarısız oldu. Lütfen tekrar deneyin.
-                        </p>
-                      </div>
-                      <Button onClick={handleConnectKick} className="w-full" variant="default">
-                        <ExternalLink className="mr-2 h-4 w-4" />
-                        Yeniden Dene
-                      </Button>
-                    </div>
-                  ) : (
-                    <Button onClick={handleConnectKick} className="w-full">
-                      <ExternalLink className="mr-2 h-4 w-4" />
-                      Kick Hesabını Bağla
-                    </Button>
-                  )}
-                </div>
-              ) : (
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between p-4 bg-primary/10 rounded-lg">
-                    <div className="space-y-1">
-                      <div className="flex items-center gap-2">
-                        <Check className="h-5 w-5 text-green-500" />
-                        <span className="font-semibold">{kickUsername}</span>
-                      </div>
-                      {subscriberInfo && (
-                        <div className="space-y-1">
-                          <Badge variant="secondary" className="bg-gradient-to-r from-purple-500 to-pink-500">
-                            {subscriberInfo.subscription_tier} Abone
-                          </Badge>
-                          <p className="text-xs text-muted-foreground">
-                            {getSubscriptionMonths()} aydır abone • {new Date(subscriberInfo.subscribed_at).toLocaleDateString('tr-TR')} tarihinden beri
-                          </p>
-                          {subscriberInfo.follower_since && (
-                            <p className="text-xs text-muted-foreground">
-                              Takipçi: {new Date(subscriberInfo.follower_since).toLocaleDateString('tr-TR')}
-                            </p>
-                          )}
-                        </div>
-                      )}
-                      {!subscriberInfo && (
-                        <p className="text-xs text-muted-foreground">
-                          Abone değilsiniz
-                        </p>
-                      )}
-                    </div>
-                    <Button variant="outline" size="sm" onClick={handleDisconnectKick}>
-                      Bağlantıyı Kes
-                    </Button>
-                  </div>
-                  <p className="text-xs text-muted-foreground">
-                    Bağlantı tarihi: {new Date(kickConnectedAt!).toLocaleDateString('tr-TR')}
-                  </p>
-                </div>
-              )}
-            </CardContent>
-          </Card>
+          <KickConnectionCard 
+            hasError={kickError} 
+            onConnectionChange={() => setKickError(false)} 
+          />
 
           {/* NSFW Content */}
           <Card>
