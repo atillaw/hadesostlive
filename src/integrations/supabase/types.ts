@@ -683,6 +683,78 @@ export type Database = {
         }
         Relationships: []
       }
+      kick_accounts: {
+        Row: {
+          access_token: string
+          access_token_expires_at: string
+          created_at: string
+          id: string
+          kick_avatar_url: string | null
+          kick_channel_slug: string | null
+          kick_display_name: string | null
+          kick_user_id: string
+          kick_username: string
+          refresh_token: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          access_token: string
+          access_token_expires_at: string
+          created_at?: string
+          id?: string
+          kick_avatar_url?: string | null
+          kick_channel_slug?: string | null
+          kick_display_name?: string | null
+          kick_user_id: string
+          kick_username: string
+          refresh_token: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          access_token?: string
+          access_token_expires_at?: string
+          created_at?: string
+          id?: string
+          kick_avatar_url?: string | null
+          kick_channel_slug?: string | null
+          kick_display_name?: string | null
+          kick_user_id?: string
+          kick_username?: string
+          refresh_token?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      kick_oauth_states: {
+        Row: {
+          code_verifier: string
+          created_at: string
+          expires_at: string
+          id: string
+          state: string
+          user_id: string
+        }
+        Insert: {
+          code_verifier: string
+          created_at?: string
+          expires_at?: string
+          id?: string
+          state: string
+          user_id: string
+        }
+        Update: {
+          code_verifier?: string
+          created_at?: string
+          expires_at?: string
+          id?: string
+          state?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       kick_subscribers: {
         Row: {
           created_at: string

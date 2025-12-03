@@ -44,3 +44,15 @@ verify_jwt = false
 
 [functions.auto-sync-kick-subscribers]
 verify_jwt = false
+
+[functions.kick-oauth-login]
+verify_jwt = false
+
+[functions.kick-disconnect]
+verify_jwt = false
+
+[functions.kick-refresh-token]
+verify_jwt = false
+
+[functions.kick-get-account]
+verify_jwt = false
