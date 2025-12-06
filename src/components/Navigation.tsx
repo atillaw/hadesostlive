@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Settings, DollarSign, ImageIcon, Video, MessageCircle, Menu, X, Snowflake, Heart, Home, Calendar, Bell, Users, Trophy, Sparkles, Award, UserCircle, Search, Mail, Rss, LogOut } from "lucide-react";
+import { Settings, DollarSign, ImageIcon, Video, MessageCircle, Menu, X, Snowflake, Heart, Home, Calendar, Bell, Users, Trophy, Sparkles, Award, UserCircle, Search, Mail, Rss, LogOut, Gamepad2 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { supabase } from "@/integrations/supabase/client";
@@ -108,6 +108,17 @@ const Navigation = ({ onSnowToggle, snowEnabled }: { onSnowToggle?: () => void; 
             </Button>
 
             {/* Authenticated User Actions */}
+            {/* Minecraft Link */}
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => navigate("/minecraft")}
+              className="hover:bg-emerald-500/20 hover:scale-105 transition-all"
+              title="Minecraft Sunucusu"
+            >
+              <Gamepad2 className="h-6 w-6 text-emerald-500" />
+            </Button>
+
             {isAuthenticated && (
               <>
                 <KickStatusIndicator />
