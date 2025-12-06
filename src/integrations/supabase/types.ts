@@ -869,6 +869,84 @@ export type Database = {
         }
         Relationships: []
       }
+      minecraft_announcements: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          image_url: string | null
+          title: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          title: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          title?: string
+        }
+        Relationships: []
+      }
+      minecraft_contact_messages: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          message: string
+          status: string | null
+          subject: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          message: string
+          status?: string | null
+          subject: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          message?: string
+          status?: string | null
+          subject?: string
+        }
+        Relationships: []
+      }
+      minecraft_profiles: {
+        Row: {
+          created_at: string
+          id: string
+          minecraft_username: string | null
+          minecraft_uuid: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          minecraft_username?: string | null
+          minecraft_uuid?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          minecraft_username?: string | null
+          minecraft_uuid?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       mini_game_scores: {
         Row: {
           completed_at: string
@@ -1853,6 +1931,36 @@ export type Database = {
           is_live?: boolean | null
           recorded_at?: string
           viewer_count?: number
+        }
+        Relationships: []
+      }
+      vip_requests: {
+        Row: {
+          created_at: string
+          id: string
+          message: string | null
+          package_name: string
+          status: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          message?: string | null
+          package_name: string
+          status?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          message?: string | null
+          package_name?: string
+          status?: string | null
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
