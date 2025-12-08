@@ -37,13 +37,6 @@ import FollowingFeed from "./pages/FollowingFeed";
 import SavedPosts from "./pages/SavedPosts";
 import ForumRules from "./pages/ForumRules";
 import UserSettings from "./pages/UserSettings";
-import MinecraftHome from "./pages/minecraft/MinecraftHome";
-import MinecraftVIP from "./pages/minecraft/MinecraftVIP";
-import MinecraftProfile from "./pages/minecraft/MinecraftProfile";
-import MinecraftAbout from "./pages/minecraft/MinecraftAbout";
-import MinecraftContact from "./pages/minecraft/MinecraftContact";
-import MinecraftAdmin from "./pages/minecraft/MinecraftAdmin";
-
 const AppContent = () => {
   usePageTracking();
   
@@ -80,12 +73,6 @@ const AppContent = () => {
       <Route path="/kaydedilenler" element={<SavedPosts />} />
       <Route path="/forum-kurallari" element={<ForumRules />} />
       <Route path="/ayarlar" element={<UserSettings />} />
-      <Route path="/minecraft" element={<MinecraftHome />} />
-      <Route path="/minecraft/vip" element={<MinecraftVIP />} />
-      <Route path="/minecraft/profile" element={<MinecraftProfile />} />
-      <Route path="/minecraft/about" element={<MinecraftAbout />} />
-      <Route path="/minecraft/contact" element={<MinecraftContact />} />
-      <Route path="/minecraft/admin" element={<MinecraftAdmin />} />
       <Route path="*" element={<NotFound />} />
     </Routes>
   );
