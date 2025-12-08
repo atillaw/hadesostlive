@@ -56,3 +56,15 @@ verify_jwt = false
 
 [functions.kick-get-account]
 verify_jwt = false
+
+[functions.kick-bot-generate-token]
+verify_jwt = false
+
+[functions.kick-verify-token]
+verify_jwt = false
+
+[functions.kick-bot-sync-user]
+verify_jwt = false
+
+[functions.kick-bot-bulk-sync]
+verify_jwt = false

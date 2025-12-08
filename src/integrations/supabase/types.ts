@@ -687,44 +687,131 @@ export type Database = {
         Row: {
           access_token: string
           access_token_expires_at: string
+          badges: Json | null
           created_at: string
+          followed_at: string | null
           id: string
+          is_follower: boolean | null
+          is_founder: boolean | null
+          is_moderator: boolean | null
+          is_og: boolean | null
+          is_subscriber: boolean | null
+          is_vip: boolean | null
           kick_avatar_url: string | null
           kick_channel_slug: string | null
           kick_display_name: string | null
           kick_user_id: string
           kick_username: string
+          last_synced_at: string | null
           refresh_token: string
+          subscribed_at: string | null
+          subscription_months: number | null
+          subscription_tier: string | null
           updated_at: string
           user_id: string
+          verified_via: string | null
         }
         Insert: {
           access_token: string
           access_token_expires_at: string
+          badges?: Json | null
           created_at?: string
+          followed_at?: string | null
           id?: string
+          is_follower?: boolean | null
+          is_founder?: boolean | null
+          is_moderator?: boolean | null
+          is_og?: boolean | null
+          is_subscriber?: boolean | null
+          is_vip?: boolean | null
           kick_avatar_url?: string | null
           kick_channel_slug?: string | null
           kick_display_name?: string | null
           kick_user_id: string
           kick_username: string
+          last_synced_at?: string | null
           refresh_token: string
+          subscribed_at?: string | null
+          subscription_months?: number | null
+          subscription_tier?: string | null
           updated_at?: string
           user_id: string
+          verified_via?: string | null
         }
         Update: {
           access_token?: string
           access_token_expires_at?: string
+          badges?: Json | null
           created_at?: string
+          followed_at?: string | null
           id?: string
+          is_follower?: boolean | null
+          is_founder?: boolean | null
+          is_moderator?: boolean | null
+          is_og?: boolean | null
+          is_subscriber?: boolean | null
+          is_vip?: boolean | null
           kick_avatar_url?: string | null
           kick_channel_slug?: string | null
           kick_display_name?: string | null
           kick_user_id?: string
           kick_username?: string
+          last_synced_at?: string | null
           refresh_token?: string
+          subscribed_at?: string | null
+          subscription_months?: number | null
+          subscription_tier?: string | null
           updated_at?: string
           user_id?: string
+          verified_via?: string | null
+        }
+        Relationships: []
+      }
+      kick_connect_tokens: {
+        Row: {
+          created_at: string
+          expires_at: string
+          id: string
+          is_used: boolean
+          kick_avatar_url: string | null
+          kick_channel_slug: string | null
+          kick_data: Json | null
+          kick_display_name: string | null
+          kick_user_id: string
+          kick_username: string
+          token: string
+          used_at: string | null
+          used_by_user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          expires_at?: string
+          id?: string
+          is_used?: boolean
+          kick_avatar_url?: string | null
+          kick_channel_slug?: string | null
+          kick_data?: Json | null
+          kick_display_name?: string | null
+          kick_user_id: string
+          kick_username: string
+          token: string
+          used_at?: string | null
+          used_by_user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          expires_at?: string
+          id?: string
+          is_used?: boolean
+          kick_avatar_url?: string | null
+          kick_channel_slug?: string | null
+          kick_data?: Json | null
+          kick_display_name?: string | null
+          kick_user_id?: string
+          kick_username?: string
+          token?: string
+          used_at?: string | null
+          used_by_user_id?: string | null
         }
         Relationships: []
       }
@@ -2250,6 +2337,7 @@ export type Database = {
       }
     }
     Functions: {
+      cleanup_expired_kick_tokens: { Args: never; Returns: undefined }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
