@@ -4,7 +4,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Link as LinkIcon, ExternalLink, Check, RefreshCw, AlertCircle, Loader2 } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Link as LinkIcon, ExternalLink, Check, RefreshCw, AlertCircle, Loader2, MessageSquare, Crown, Shield, Star, Zap } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 
 interface KickAccount {
@@ -17,6 +19,19 @@ interface KickAccount {
   access_token_expires_at: string;
   created_at: string;
   is_token_expired?: boolean;
+  verified_via?: string;
+  is_follower?: boolean;
+  followed_at?: string;
+  is_subscriber?: boolean;
+  subscription_tier?: string;
+  subscribed_at?: string;
+  subscription_months?: number;
+  is_moderator?: boolean;
+  is_vip?: boolean;
+  is_og?: boolean;
+  is_founder?: boolean;
+  badges?: Array<{ type: string; text: string }>;
+  last_synced_at?: string;
 }
 
 interface KickConnectionCardProps {
@@ -29,8 +44,11 @@ export const KickConnectionCard = ({ hasError, onConnectionChange }: KickConnect
   const [connecting, setConnecting] = useState(false);
   const [disconnecting, setDisconnecting] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+  const [verifying, setVerifying] = useState(false);
   const [kickAccount, setKickAccount] = useState<KickAccount | null>(null);
   const [subscriberInfo, setSubscriberInfo] = useState<any>(null);
+  const [tokenInput, setTokenInput] = useState("");
+  const [connectionMethod, setConnectionMethod] = useState<"oauth" | "bot">("bot");
 
   useEffect(() => {
     loadKickAccount();
@@ -51,7 +69,6 @@ export const KickConnectionCard = ({ hasError, onConnectionChange }: KickConnect
 
       if (response.data?.connected && response.data?.account) {
         setKickAccount(response.data.account);
-        // Load subscriber info
         await loadSubscriberInfo(response.data.account.kick_username);
       } else {
         setKickAccount(null);
@@ -74,6 +91,59 @@ export const KickConnectionCard = ({ hasError, onConnectionChange }: KickConnect
     
     if (data) {
       setSubscriberInfo(data);
+    }
+  };
+
+  const handleVerifyToken = async () => {
+    if (!tokenInput.trim()) {
+      toast({
+        title: "Token gerekli",
+        description: "Lütfen Kick chatinden aldığınız tokeni girin",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setVerifying(true);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        toast({
+          title: "Giriş yapmalısınız",
+          description: "Token doğrulamak için giriş yapmalısınız",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      const response = await supabase.functions.invoke("kick-verify-token", {
+        headers: { Authorization: `Bearer ${session.access_token}` },
+        body: { token: tokenInput.trim() },
+      });
+
+      if (response.error) {
+        throw new Error(response.error.message || "Token doğrulanamadı");
+      }
+
+      if (response.data?.success) {
+        toast({
+          title: "Başarılı!",
+          description: response.data.message || "Kick hesabınız başarıyla bağlandı!",
+        });
+        setTokenInput("");
+        await loadKickAccount();
+        onConnectionChange?.();
+      } else {
+        throw new Error(response.data?.error || "Token doğrulanamadı");
+      }
+    } catch (error: any) {
+      toast({
+        title: "Doğrulama Hatası",
+        description: error.message || "Token doğrulanırken bir hata oluştu",
+        variant: "destructive",
+      });
+    } finally {
+      setVerifying(false);
     }
   };
 
@@ -178,11 +248,77 @@ export const KickConnectionCard = ({ hasError, onConnectionChange }: KickConnect
   };
 
   const getSubscriptionMonths = () => {
+    if (kickAccount?.subscription_months) return kickAccount.subscription_months;
     if (!subscriberInfo) return 0;
     const now = new Date();
     const subscribedDate = new Date(subscriberInfo.subscribed_at);
     const months = Math.floor((now.getTime() - subscribedDate.getTime()) / (1000 * 60 * 60 * 24 * 30));
     return Math.max(1, months);
+  };
+
+  const renderBadges = () => {
+    if (!kickAccount) return null;
+    
+    const badges = [];
+    
+    if (kickAccount.is_subscriber) {
+      badges.push(
+        <Badge key="sub" className="bg-gradient-to-r from-purple-500 to-pink-500">
+          <Crown className="w-3 h-3 mr-1" />
+          {kickAccount.subscription_tier || "Abone"}
+        </Badge>
+      );
+    }
+    
+    if (kickAccount.is_moderator) {
+      badges.push(
+        <Badge key="mod" className="bg-gradient-to-r from-green-500 to-emerald-500">
+          <Shield className="w-3 h-3 mr-1" />
+          Moderatör
+        </Badge>
+      );
+    }
+    
+    if (kickAccount.is_vip) {
+      badges.push(
+        <Badge key="vip" className="bg-gradient-to-r from-yellow-500 to-orange-500">
+          <Star className="w-3 h-3 mr-1" />
+          VIP
+        </Badge>
+      );
+    }
+    
+    if (kickAccount.is_og) {
+      badges.push(
+        <Badge key="og" className="bg-gradient-to-r from-blue-500 to-cyan-500">
+          <Zap className="w-3 h-3 mr-1" />
+          OG
+        </Badge>
+      );
+    }
+    
+    if (kickAccount.is_founder) {
+      badges.push(
+        <Badge key="founder" className="bg-gradient-to-r from-red-500 to-rose-500">
+          <Star className="w-3 h-3 mr-1" />
+          Founder
+        </Badge>
+      );
+    }
+    
+    if (kickAccount.is_follower) {
+      badges.push(
+        <Badge key="follower" variant="secondary">
+          Takipçi
+        </Badge>
+      );
+    }
+    
+    return badges.length > 0 ? (
+      <div className="flex flex-wrap gap-1 mt-2">
+        {badges}
+      </div>
+    ) : null;
   };
 
   if (loading) {
@@ -213,10 +349,11 @@ export const KickConnectionCard = ({ hasError, onConnectionChange }: KickConnect
       </CardHeader>
       <CardContent className="space-y-4">
         {!kickAccount ? (
-          <div className="space-y-3">
+          <div className="space-y-4">
             <p className="text-sm text-muted-foreground">
               Kick hesabınızı bağlayarak HadesOST kanalına abonelik durumunuzu gösterin ve özel rozetler kazanın.
             </p>
+            
             {hasError && (
               <div className="p-3 bg-destructive/10 border border-destructive/20 rounded-lg flex items-center gap-2">
                 <AlertCircle className="h-5 w-5 text-destructive" />
@@ -225,23 +362,88 @@ export const KickConnectionCard = ({ hasError, onConnectionChange }: KickConnect
                 </p>
               </div>
             )}
-            <Button 
-              onClick={handleConnect} 
-              className="w-full bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700"
-              disabled={connecting}
-            >
-              {connecting ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Bağlanıyor...
-                </>
-              ) : (
-                <>
-                  <ExternalLink className="mr-2 h-4 w-4" />
-                  Kick Hesabını Bağla
-                </>
-              )}
-            </Button>
+
+            <Tabs value={connectionMethod} onValueChange={(v) => setConnectionMethod(v as "oauth" | "bot")}>
+              <TabsList className="grid w-full grid-cols-2">
+                <TabsTrigger value="bot" className="flex items-center gap-1">
+                  <MessageSquare className="h-4 w-4" />
+                  Chat Komutu
+                </TabsTrigger>
+                <TabsTrigger value="oauth" className="flex items-center gap-1">
+                  <ExternalLink className="h-4 w-4" />
+                  OAuth
+                </TabsTrigger>
+              </TabsList>
+              
+              <TabsContent value="bot" className="space-y-4 mt-4">
+                <div className="p-4 bg-muted/50 rounded-lg space-y-3">
+                  <h4 className="font-semibold text-sm">Nasıl Bağlanılır?</h4>
+                  <ol className="text-sm text-muted-foreground space-y-2 list-decimal list-inside">
+                    <li>
+                      <a 
+                        href="https://kick.com/hadesost" 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="text-primary hover:underline"
+                      >
+                        kick.com/hadesost
+                      </a>{" "}
+                      kanalına gidin
+                    </li>
+                    <li>Chat'e <code className="bg-background px-1.5 py-0.5 rounded text-primary font-mono">!connect</code> yazın</li>
+                    <li>Bot size özel bir kod verecek</li>
+                    <li>O kodu aşağıya girin</li>
+                  </ol>
+                </div>
+                
+                <div className="flex gap-2">
+                  <Input
+                    placeholder="Token kodu (örn: ABC12XYZ)"
+                    value={tokenInput}
+                    onChange={(e) => setTokenInput(e.target.value.toUpperCase())}
+                    className="font-mono tracking-wider"
+                    maxLength={8}
+                  />
+                  <Button 
+                    onClick={handleVerifyToken}
+                    disabled={verifying || !tokenInput.trim()}
+                    className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700"
+                  >
+                    {verifying ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <>
+                        <Check className="h-4 w-4 mr-1" />
+                        Doğrula
+                      </>
+                    )}
+                  </Button>
+                </div>
+              </TabsContent>
+              
+              <TabsContent value="oauth" className="space-y-4 mt-4">
+                <p className="text-sm text-muted-foreground">
+                  Kick'in resmi OAuth sistemiyle hesabınızı bağlayın. Kick sayfasına yönlendirileceksiniz.
+                </p>
+                <Button 
+                  onClick={handleConnect} 
+                  className="w-full bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700"
+                  disabled={connecting}
+                >
+                  {connecting ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Bağlanıyor...
+                    </>
+                  ) : (
+                    <>
+                      <ExternalLink className="mr-2 h-4 w-4" />
+                      Kick ile Bağlan
+                    </>
+                  )}
+                </Button>
+              </TabsContent>
+            </Tabs>
           </div>
         ) : (
           <div className="space-y-4">
@@ -256,6 +458,12 @@ export const KickConnectionCard = ({ hasError, onConnectionChange }: KickConnect
                 <div className="flex items-center gap-2">
                   <Check className="h-5 w-5 text-green-500" />
                   <span className="font-bold text-lg">{kickAccount.kick_display_name || kickAccount.kick_username}</span>
+                  {kickAccount.verified_via === "bot" && (
+                    <Badge variant="outline" className="text-xs">
+                      <MessageSquare className="w-3 h-3 mr-1" />
+                      Bot
+                    </Badge>
+                  )}
                 </div>
                 <a 
                   href={`https://kick.com/${kickAccount.kick_channel_slug || kickAccount.kick_username}`}
@@ -265,20 +473,16 @@ export const KickConnectionCard = ({ hasError, onConnectionChange }: KickConnect
                 >
                   kick.com/{kickAccount.kick_channel_slug || kickAccount.kick_username}
                 </a>
-                {subscriberInfo && (
-                  <div className="flex items-center gap-2 mt-2">
-                    <Badge className="bg-gradient-to-r from-purple-500 to-pink-500">
-                      {subscriberInfo.subscription_tier} Abone
-                    </Badge>
-                    <span className="text-xs text-muted-foreground">
-                      {getSubscriptionMonths()} aydır
-                    </span>
-                  </div>
+                {renderBadges()}
+                {kickAccount.is_subscriber && (
+                  <p className="text-xs text-muted-foreground mt-1">
+                    {getSubscriptionMonths()} aydır abone
+                  </p>
                 )}
               </div>
             </div>
 
-            {kickAccount.is_token_expired && (
+            {kickAccount.is_token_expired && kickAccount.verified_via !== "bot" && (
               <div className="p-3 bg-amber-500/10 border border-amber-500/20 rounded-lg flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <AlertCircle className="h-5 w-5 text-amber-500" />
@@ -300,6 +504,12 @@ export const KickConnectionCard = ({ hasError, onConnectionChange }: KickConnect
                   )}
                 </Button>
               </div>
+            )}
+
+            {kickAccount.last_synced_at && (
+              <p className="text-xs text-muted-foreground">
+                Son senkronizasyon: {new Date(kickAccount.last_synced_at).toLocaleString('tr-TR')}
+              </p>
             )}
 
             <div className="flex justify-between items-center pt-2 border-t">
