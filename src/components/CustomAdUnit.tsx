@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from "react";
 import { useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Loader2 } from "lucide-react";
+import DOMPurify from "dompurify";
 
 interface CustomAdUnitProps {
   className?: string;
@@ -76,10 +77,16 @@ const CustomAdUnit = ({ className = "" }: CustomAdUnitProps) => {
     return null;
   }
 
+  // Sanitize HTML to prevent XSS attacks
+  const sanitizedHtml = DOMPurify.sanitize(htmlContent, {
+    ADD_TAGS: ['ins', 'script'],
+    ADD_ATTR: ['data-ad-client', 'data-ad-slot', 'data-ad-format', 'data-full-width-responsive', 'async', 'crossorigin'],
+  });
+
   return (
     <div 
       className={className}
-      dangerouslySetInnerHTML={{ __html: htmlContent }}
+      dangerouslySetInnerHTML={{ __html: sanitizedHtml }}
     />
   );
 };
