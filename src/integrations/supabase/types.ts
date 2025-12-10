@@ -872,6 +872,105 @@ export type Database = {
         }
         Relationships: []
       }
+      kick_user_stats: {
+        Row: {
+          badges: Json | null
+          channel_points: number | null
+          created_at: string
+          donation_count: number | null
+          follow_months: number | null
+          followed_at: string | null
+          id: string
+          kick_user_id: string
+          kick_username: string
+          last_donation_at: string | null
+          last_seen_at: string | null
+          last_synced_at: string | null
+          loyalty_points: number | null
+          messages_this_month: number | null
+          monthly_activity: Json | null
+          most_active_day: number | null
+          most_active_hour: number | null
+          renewal_cycle: string | null
+          special_badges: Json | null
+          subscription_end_date: string | null
+          subscription_months: number | null
+          subscription_start_date: string | null
+          subscription_streak: number | null
+          total_donations: number | null
+          total_gifted_subs: number | null
+          total_messages: number | null
+          total_watch_time_minutes: number | null
+          updated_at: string
+          user_id: string
+          watch_time_this_month: number | null
+        }
+        Insert: {
+          badges?: Json | null
+          channel_points?: number | null
+          created_at?: string
+          donation_count?: number | null
+          follow_months?: number | null
+          followed_at?: string | null
+          id?: string
+          kick_user_id: string
+          kick_username: string
+          last_donation_at?: string | null
+          last_seen_at?: string | null
+          last_synced_at?: string | null
+          loyalty_points?: number | null
+          messages_this_month?: number | null
+          monthly_activity?: Json | null
+          most_active_day?: number | null
+          most_active_hour?: number | null
+          renewal_cycle?: string | null
+          special_badges?: Json | null
+          subscription_end_date?: string | null
+          subscription_months?: number | null
+          subscription_start_date?: string | null
+          subscription_streak?: number | null
+          total_donations?: number | null
+          total_gifted_subs?: number | null
+          total_messages?: number | null
+          total_watch_time_minutes?: number | null
+          updated_at?: string
+          user_id: string
+          watch_time_this_month?: number | null
+        }
+        Update: {
+          badges?: Json | null
+          channel_points?: number | null
+          created_at?: string
+          donation_count?: number | null
+          follow_months?: number | null
+          followed_at?: string | null
+          id?: string
+          kick_user_id?: string
+          kick_username?: string
+          last_donation_at?: string | null
+          last_seen_at?: string | null
+          last_synced_at?: string | null
+          loyalty_points?: number | null
+          messages_this_month?: number | null
+          monthly_activity?: Json | null
+          most_active_day?: number | null
+          most_active_hour?: number | null
+          renewal_cycle?: string | null
+          special_badges?: Json | null
+          subscription_end_date?: string | null
+          subscription_months?: number | null
+          subscription_start_date?: string | null
+          subscription_streak?: number | null
+          total_donations?: number | null
+          total_gifted_subs?: number | null
+          total_messages?: number | null
+          total_watch_time_minutes?: number | null
+          updated_at?: string
+          user_id?: string
+          watch_time_this_month?: number | null
+        }
+        Relationships: []
+      }
       live_polls: {
         Row: {
           active: boolean
@@ -2273,6 +2372,16 @@ export type Database = {
       }
     }
     Views: {
+      channel_subscriber_summary: {
+        Row: {
+          avg_loyalty_points: number | null
+          avg_messages: number | null
+          subscriber_count: number | null
+          subscription_months: number | null
+          total_donations: number | null
+        }
+        Relationships: []
+      }
       prediction_leaderboard: {
         Row: {
           correct_predictions: number | null

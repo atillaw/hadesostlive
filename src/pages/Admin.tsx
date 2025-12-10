@@ -38,6 +38,7 @@ import AdminCommunityModerators from "@/components/admin/AdminCommunityModerator
 import AdminReports from "@/components/admin/AdminReports";
 import { AdminCommunityBanners } from "@/components/admin/AdminCommunityBanners";
 import AdminKickOAuth from "@/components/admin/AdminKickOAuth";
+import AdminKickSubsDashboard from "@/components/admin/AdminKickSubsDashboard";
 
 
 
@@ -278,6 +279,8 @@ const Admin = () => {
         return <AdminCommunityBanners />;
       case "kick-oauth":
         return <AdminKickOAuth />;
+      case "kick-dashboard":
+        return <AdminKickSubsDashboard />;
       default:
         return <AdminAnalytics />;
     }
