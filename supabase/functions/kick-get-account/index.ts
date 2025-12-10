@@ -12,9 +12,12 @@ serve(async (req) => {
   }
 
   try {
-    const authHeader = req.headers.get("Authorization");
+    const authHeader = req.headers.get("authorization") || req.headers.get("Authorization");
+    console.log("Auth header present:", !!authHeader);
+    
     if (!authHeader) {
-      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+      console.log("No authorization header found");
+      return new Response(JSON.stringify({ error: "Unauthorized", reason: "no_auth_header" }), {
         status: 401,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
@@ -30,23 +33,70 @@ serve(async (req) => {
     });
 
     const { data: { user }, error: userError } = await supabaseClient.auth.getUser();
-    if (userError || !user) {
-      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+    
+    if (userError) {
+      console.log("User verification error:", userError.message);
+      return new Response(JSON.stringify({ error: "Unauthorized", reason: "user_verification_failed" }), {
+        status: 401,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    
+    if (!user) {
+      console.log("No user found");
+      return new Response(JSON.stringify({ error: "Unauthorized", reason: "no_user" }), {
         status: 401,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
+    console.log("User verified:", user.id);
+
     const supabaseAdmin = createClient(supabaseUrl, serviceRole);
 
-    // Get kick account (without exposing tokens)
+    // Get kick account with all fields (without exposing tokens)
     const { data: kickAccount, error: accountError } = await supabaseAdmin
       .from("kick_accounts")
-      .select("id, kick_user_id, kick_username, kick_channel_slug, kick_display_name, kick_avatar_url, access_token_expires_at, created_at, updated_at")
+      .select(`
+        id, 
+        kick_user_id, 
+        kick_username, 
+        kick_channel_slug, 
+        kick_display_name, 
+        kick_avatar_url, 
+        access_token_expires_at, 
+        created_at, 
+        updated_at,
+        verified_via,
+        is_follower,
+        followed_at,
+        is_subscriber,
+        subscription_tier,
+        subscribed_at,
+        subscription_months,
+        is_moderator,
+        is_vip,
+        is_og,
+        is_founder,
+        badges,
+        last_synced_at
+      `)
       .eq("user_id", user.id)
-      .single();
+      .maybeSingle();
 
-    if (accountError || !kickAccount) {
+    if (accountError) {
+      console.log("Account fetch error:", accountError.message);
+      return new Response(
+        JSON.stringify({ connected: false, account: null }),
+        {
+          status: 200,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        }
+      );
+    }
+
+    if (!kickAccount) {
+      console.log("No kick account found for user");
       return new Response(
         JSON.stringify({ connected: false, account: null }),
         {
@@ -58,6 +108,8 @@ serve(async (req) => {
 
     // Check if token is expired
     const isExpired = new Date(kickAccount.access_token_expires_at) < new Date();
+
+    console.log("Kick account found:", kickAccount.kick_username);
 
     return new Response(
       JSON.stringify({ 
