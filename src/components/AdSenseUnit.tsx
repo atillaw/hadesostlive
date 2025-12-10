@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from "react";
 import { useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Loader2 } from "lucide-react";
+import DOMPurify from "dompurify";
 
 interface AdSenseUnitProps {
   client?: string;
@@ -113,10 +114,15 @@ const AdSenseUnit = ({
   if (!client || !slot) {
     // Show custom HTML if available
     if (customHtml) {
+      // Sanitize HTML to prevent XSS attacks
+      const sanitizedHtml = DOMPurify.sanitize(customHtml, {
+        ADD_TAGS: ['ins', 'script'],
+        ADD_ATTR: ['data-ad-client', 'data-ad-slot', 'data-ad-format', 'data-full-width-responsive', 'async', 'crossorigin'],
+      });
       return (
         <div 
           className={className}
-          dangerouslySetInnerHTML={{ __html: customHtml }}
+          dangerouslySetInnerHTML={{ __html: sanitizedHtml }}
         />
       );
     }
