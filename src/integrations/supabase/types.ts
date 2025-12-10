@@ -2282,6 +2282,36 @@ export type Database = {
         }
         Relationships: []
       }
+      public_profiles: {
+        Row: {
+          avatar_url: string | null
+          bio: string | null
+          created_at: string | null
+          id: string | null
+          kick_connected_at: string | null
+          kick_username: string | null
+          username: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string | null
+          id?: string | null
+          kick_connected_at?: string | null
+          kick_username?: string | null
+          username?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string | null
+          id?: string | null
+          kick_connected_at?: string | null
+          kick_username?: string | null
+          username?: string | null
+        }
+        Relationships: []
+      }
       viewer_stats_daily: {
         Row: {
           avg_viewers: number | null
