@@ -27,12 +27,12 @@ serve(async (req) => {
     const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
     const serviceRole = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 
-    // Verify the user
-    const supabaseClient = createClient(supabaseUrl, supabaseAnonKey, {
-      global: { headers: { Authorization: authHeader } },
-    });
+    // Extract the JWT token from the authorization header
+    const token = authHeader.replace("Bearer ", "");
 
-    const { data: { user }, error: userError } = await supabaseClient.auth.getUser();
+    // Verify the user using the token directly
+    const supabaseClient = createClient(supabaseUrl, supabaseAnonKey);
+    const { data: { user }, error: userError } = await supabaseClient.auth.getUser(token);
     
     if (userError) {
       console.log("User verification error:", userError.message);

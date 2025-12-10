@@ -26,12 +26,12 @@ serve(async (req) => {
     const clientId = Deno.env.get("KICK_CLIENT_ID")!;
     const clientSecret = Deno.env.get("KICK_CLIENT_SECRET")!;
 
-    // Verify the user
-    const supabaseClient = createClient(supabaseUrl, supabaseAnonKey, {
-      global: { headers: { Authorization: authHeader } },
-    });
+    // Extract the JWT token from the authorization header
+    const token = authHeader.replace("Bearer ", "");
 
-    const { data: { user }, error: userError } = await supabaseClient.auth.getUser();
+    // Verify the user using the token directly
+    const supabaseClient = createClient(supabaseUrl, supabaseAnonKey);
+    const { data: { user }, error: userError } = await supabaseClient.auth.getUser(token);
     if (userError || !user) {
       return new Response(JSON.stringify({ error: "Unauthorized" }), {
         status: 401,
