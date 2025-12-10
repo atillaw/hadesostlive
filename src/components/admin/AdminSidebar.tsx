@@ -21,7 +21,8 @@ import {
   Shield,
   MessageSquare,
   Flag,
-  ChevronDown
+  ChevronDown,
+  Crown
 } from "lucide-react";
 import {
   Sidebar,
@@ -100,6 +101,7 @@ const menuCategories = {
     items: [
       { id: "subscribers", title: "Email Aboneleri", icon: Mail },
       { id: "kick-subs", title: "Kick Subs", icon: TrendingUp },
+      { id: "kick-dashboard", title: "Kick Dashboard", icon: Crown },
       { id: "support", title: "Destek Mesajları", icon: MessageCircle },
     ]
   }
