@@ -80,9 +80,10 @@ const AdminKickSubsDashboard = () => {
 
       // Load subscribers
       const { data: subsData } = await supabase.functions.invoke(
-        "kick-admin-stats?action=subscribers",
+        "kick-admin-stats",
         {
           headers: { Authorization: `Bearer ${session.access_token}` },
+          body: { action: "subscribers" },
         }
       );
       if (subsData?.subscribers) {
@@ -91,9 +92,10 @@ const AdminKickSubsDashboard = () => {
 
       // Load top chatters
       const { data: chattersData } = await supabase.functions.invoke(
-        "kick-admin-stats?action=top-chatters",
+        "kick-admin-stats",
         {
           headers: { Authorization: `Bearer ${session.access_token}` },
+          body: { action: "top-chatters" },
         }
       );
       if (chattersData?.topChatters) {
@@ -102,9 +104,10 @@ const AdminKickSubsDashboard = () => {
 
       // Load leaderboard
       const { data: leaderboardData } = await supabase.functions.invoke(
-        "kick-admin-stats?action=loyalty-leaderboard",
+        "kick-admin-stats",
         {
           headers: { Authorization: `Bearer ${session.access_token}` },
+          body: { action: "loyalty-leaderboard" },
         }
       );
       if (leaderboardData?.leaderboard) {
