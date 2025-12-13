@@ -96,15 +96,23 @@ serve(async (req) => {
       });
     }
 
-    // Build Kick OAuth authorization URL
-    // Using Kick's official OAuth 2.0 endpoints
+    // Build Kick OAuth authorization URL with CORRECT scopes
+    // Scopes: user:read (profile), channel:read (follow/sub status)
     const redirectUri = `${supabaseUrl.replace(/\/$/, "")}/functions/v1/kick-oauth-callback`;
+    
+    // CRITICAL: Request all necessary scopes for full data access
+    const scopes = [
+      "user:read",      // User profile data
+      "channel:read",   // Channel & subscription status
+    ].join(" ");
+
+    console.log("[OAUTH_LOGIN] Building auth URL with scopes:", scopes);
     
     const authorizationUrl = new URL("https://id.kick.com/oauth/authorize");
     authorizationUrl.searchParams.set("client_id", clientId);
     authorizationUrl.searchParams.set("redirect_uri", redirectUri);
     authorizationUrl.searchParams.set("response_type", "code");
-    authorizationUrl.searchParams.set("scope", "user:read channel:read");
+    authorizationUrl.searchParams.set("scope", scopes);
     authorizationUrl.searchParams.set("state", state);
     authorizationUrl.searchParams.set("code_challenge", codeChallenge);
     authorizationUrl.searchParams.set("code_challenge_method", "S256");
