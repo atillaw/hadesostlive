@@ -73,6 +73,7 @@ const AppContent = () => {
       <Route path="/kaydedilenler" element={<SavedPosts />} />
       <Route path="/forum-kurallari" element={<ForumRules />} />
       <Route path="/ayarlar" element={<UserSettings />} />
+      <Route path="/kullanici-ayarlari" element={<UserSettings />} />
       <Route path="*" element={<NotFound />} />
     </Routes>
   );
