@@ -244,6 +244,8 @@ async function storeKickData(supabaseAdmin: any, params: StoreKickDataParams): P
     relationship,
   } = params;
 
+  const now = new Date();
+
   // Delete existing kick account
   await supabaseAdmin.from("kick_accounts").delete().eq("user_id", userId);
 
@@ -271,7 +273,7 @@ async function storeKickData(supabaseAdmin: any, params: StoreKickDataParams): P
     is_founder: relationship.is_founder,
     badges: relationship.badges,
     verified_via: "oauth",
-    last_synced_at: new Date().toISOString(),
+    last_synced_at: now.toISOString(),
   });
 
   if (accountError) {
@@ -280,7 +282,6 @@ async function storeKickData(supabaseAdmin: any, params: StoreKickDataParams): P
   }
 
   // Upsert kick_user_stats for detailed stats tracking
-  const now = new Date();
   const { error: statsError } = await supabaseAdmin.from("kick_user_stats").upsert({
     user_id: userId,
     kick_user_id: kickUserId,
@@ -301,7 +302,38 @@ async function storeKickData(supabaseAdmin: any, params: StoreKickDataParams): P
 
   if (statsError) {
     console.error("[DB] Failed to upsert kick_user_stats:", statsError);
-    // Non-critical, don't throw
+  }
+
+  // ============================================
+  // AUTO-ADD TO kick_subscribers IF SUBSCRIBED
+  // ============================================
+  if (relationship.is_subscribed) {
+    console.log("[DB] User is subscriber, adding to kick_subscribers...");
+    
+    // Check if already exists
+    const { data: existing } = await supabaseAdmin
+      .from("kick_subscribers")
+      .select("id")
+      .eq("username", kickUsername)
+      .single();
+
+    if (!existing) {
+      const { error: subError } = await supabaseAdmin.from("kick_subscribers").insert({
+        username: kickUsername,
+        subscription_tier: relationship.subscription_tier || "tier1",
+        subscribed_at: relationship.subscribed_at || now.toISOString(),
+        follower_since: relationship.followed_at,
+        subscription_type: "oauth_verified",
+      });
+
+      if (subError) {
+        console.error("[DB] Failed to add to kick_subscribers:", subError);
+      } else {
+        console.log("[DB] Added to kick_subscribers successfully");
+      }
+    } else {
+      console.log("[DB] User already exists in kick_subscribers");
+    }
   }
 
   // Update profiles table for backward compatibility
@@ -315,7 +347,6 @@ async function storeKickData(supabaseAdmin: any, params: StoreKickDataParams): P
 
   if (profileError) {
     console.error("[DB] Failed to update profile:", profileError);
-    // Non-critical, don't throw
   }
 
   console.log("[DB] All data stored successfully");
