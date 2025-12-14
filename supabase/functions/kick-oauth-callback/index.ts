@@ -58,12 +58,31 @@ async function fetchKickUserProfile(accessToken: string): Promise<{ data: KickUs
 
     if (response.ok) {
       const data = await response.json();
-      const user = data.data?.[0] || data;
-      console.log("[KICK_API] User profile fetched via v1:", user?.username);
-      return { data: user, error: null };
+      console.log("[KICK_API] v1 raw response:", JSON.stringify(data));
+      
+      // Handle different response structures
+      const rawUser = data.data?.[0] || data;
+      
+      // Map Kick API fields to our interface
+      // Kick API returns: user_id, name, profile_picture
+      // We need: id, username, profile_pic
+      const user: KickUserProfile = {
+        id: rawUser.user_id || rawUser.id,
+        username: rawUser.name || rawUser.username || rawUser.slug,
+        profile_pic: rawUser.profile_picture || rawUser.profile_pic,
+        email: rawUser.email,
+        bio: rawUser.bio,
+      };
+      
+      if (user.id && user.username) {
+        console.log("[KICK_API] User profile fetched via v1:", user.username);
+        return { data: user, error: null };
+      }
+      
+      console.log("[KICK_API] v1 response missing required fields:", { id: user.id, username: user.username });
+    } else {
+      console.log("[KICK_API] v1 user endpoint failed:", response.status);
     }
-
-    console.log("[KICK_API] v1 user endpoint failed:", response.status);
   } catch (err) {
     console.log("[KICK_API] v1 user endpoint error:", err);
   }
@@ -78,9 +97,24 @@ async function fetchKickUserProfile(accessToken: string): Promise<{ data: KickUs
     });
 
     if (response.ok) {
-      const user = await response.json();
-      console.log("[KICK_API] User profile fetched via v2:", user?.username);
-      return { data: user, error: null };
+      const rawUser = await response.json();
+      console.log("[KICK_API] v2 raw response:", JSON.stringify(rawUser));
+      
+      // Map v2 fields
+      const user: KickUserProfile = {
+        id: rawUser.user_id || rawUser.id,
+        username: rawUser.name || rawUser.username || rawUser.slug,
+        profile_pic: rawUser.profile_picture || rawUser.profile_pic || rawUser.profilepic,
+        email: rawUser.email,
+        bio: rawUser.bio,
+      };
+      
+      if (user.id && user.username) {
+        console.log("[KICK_API] User profile fetched via v2:", user.username);
+        return { data: user, error: null };
+      }
+      
+      console.log("[KICK_API] v2 response missing required fields");
     }
 
     const errorText = await response.text();
